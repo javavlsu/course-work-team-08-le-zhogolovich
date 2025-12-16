@@ -1,58 +1,112 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/global.css" />
-  </head>
-  <body>
-    <div class="screen">
-      <div class="rectangle"></div>
-      <img class="img" src="img/rectangle-3.png" />
-      <img class="rectangle-2" src="img/rectangle-18.png" />
-      <div class="div"></div>
-      <img class="rectangle-3" src="img/rectangle-4.png" />
-      <img class="rectangle-4" src="img/rectangle-19.png" />
-      <img class="rectangle-5" src="img/rectangle-5.png" />
-      <img class="rectangle-6" src="img/rectangle-20.png" />
-      <img class="rectangle-7" src="img/rectangle-6.png" />
-      <img class="rectangle-8" src="img/rectangle-21.png" />
-      <img class="rectangle-9" src="img/rectangle-7.png" />
-      <img class="rectangle-10" src="img/rectangle-22.png" />
-      <div class="text-wrapper">Лучшие фильмы за месяц</div>
-      <div class="text-wrapper-2">Статьи</div>
-      <div class="text-wrapper-3">Иллюзия обмана</div>
-      <div class="text-wrapper-4">новогодняя</div>
-      <div class="text-wrapper-5">11 кругов ада</div>
-      <div class="text-wrapper-6">@real_pibble</div>
-      <img class="image" src="img/image-7.png" />
-      <div class="text-wrapper-7">A24</div>
-      <div class="text-wrapper-8">про <br />Нью-Йорк</div>
-      <div class="text-wrapper-9">великие истории</div>
-      <div class="text-wrapper-10">Шоу Трумана</div>
-      <div class="text-wrapper-11">Алиса в стране чудес</div>
-      <div class="text-wrapper-12">Паразиты</div>
-      <div class="text-wrapper-13">Солтберн</div>
-      <div class="text-wrapper-14">Лучшие подборки за месяц</div>
-      <p class="p">“Солтбёрн и символизм <br />в нём”</p>
-      <div class="text-wrapper-15">моя страница</div>
-      <div class="text-wrapper-16">рецензии</div>
-      <div class="text-wrapper-17">подборки</div>
-      <div class="text-wrapper-18">каталог</div>
-      <div class="text-wrapper-19">главная</div>
-      <div class="rectangle-11"></div>
-      <div class="rectangle-12"></div>
-      <img class="line" src="img/line-2.svg" />
-      <img class="line-2" src="img/line-4.svg" />
-      <img class="line-3" src="img/line-5.svg" />
-      <img class="line-4" src="img/line-6.svg" />
-      <p class="text-wrapper-20">
-        В фильме «Солтберн» символизм строится вокруг темы власти, желания и социального неравенства: роскошное поместье
-        выступает метафорой закрытого мира элиты, который одновременно притягивает и разрушает. Повторяющиеся образы
-        воды, тела и избыточности подчёркивают размывание моральных границ и постепенное перерождение главного героя под
-        влиянием этого мира...
-      </p>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КиноПортал - Главная</title>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/index-style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <nav class="navbar">
+                <a href="sorry.html" class="nav-btn active">Главная</a>
+                <a href="sorry.html" class="nav-btn">Каталог</a>
+                <a href="add-coll.html" class="nav-btn">Подборки</a>
+                <a href="sorry.html" class="nav-btn">Рецензии</a>
+                <a href="sorry.html" class="nav-btn">Моя страница</a>
+            </nav>
+        </header>
+
+        <main class="content">
+            <section class="section">
+                <h2 class="section-title">Лучшие фильмы за месяц</h2>
+                <div class="movie-grid">
+                    <a href="sorry.html" class="movie-card">
+                        <img src="images/now_you_see_me.jpg" alt="1">
+                        <p>Иллюзия обмана</p>
+                    </a>
+                    <a href="sorry.html" class="movie-card">
+                        <img src="images/the_truman_show.jpg" alt="2">
+                        <p>Шоу Трумана</p>
+                    </a>
+                    <a href="sorry.html" class="movie-card">
+                        <img src="images/alice_in_wonderland.jpg" alt="3">
+                        <p>Алиса в стране чудес</p>
+                    </a>
+                    <a href="sorry.html" class="movie-card">
+                        <img src="images/parasite.jpg" alt="4">
+                        <p>Паразиты</p>
+                    </a>
+                    <a href="sorry.html" class="movie-card">
+                        <img src="images/saltburn.jpg" alt="5">
+                        <p>Солтберн</p>
+                    </a>
+                </div>
+                <div class="arrow-footer">
+                    <div class="arrow-block">
+                        <a href="sorry.html" class="arrow-btn">⟶</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Лучшие подборки за месяц</h2>
+                <div class="collection-grid">
+                    <a href="sorry.html" class="coll-card">
+                        <div class="img-box"><img src="images/сфе.jpg" alt="p1"></div>
+                        <p>Новогодняя</p>
+                    </a>
+                    <a href="sorry.html" class="coll-card">
+                        <div class="img-box"><img src="images/xmastree.jpg" alt="p2"></div>
+                        <p>11 кругов ада</p>
+                    </a>
+                    <a href="sorry.html" class="coll-card">
+                        <div class="img-box"><img src="images/a24.jpg" alt="p3"></div>
+                        <p>A24</p>
+                    </a>
+                    <a href="sorry.html" class="coll-card">
+                        <div class="img-box"><img src="images/new_york.jpg" alt="p4"></div>
+                        <p>Про Нью-Йорк</p>
+                    </a>
+                    <a href="sorry.html" class="coll-card">
+                        <div class="img-box"><img src="images/social_network.jpg" alt="p5"></div>
+                        <p>Великие истории</p>
+                    </a>
+                </div>
+                <div class="arrow-footer">
+                    <div class="arrow-block">
+                        <a href="sorry.html" class="arrow-btn">⟶</a>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title big">Статьи</h2>
+                <div class="article-container">
+                    <div class="article-header">
+                        <img src="images/saltburn_article.jpg" class="article-img" alt="Saltburn">
+                        <div class="article-headline-box">
+                            <a href="sorry.html" class="user-pill custom-btn">@real_pibble</a>
+                            <h3>"Солтбёрн и символизм в нём"</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="article-content">
+                        <p>
+                            В фильме «Солтберн» символизм строится вокруг темы власти, желания и социального неравенства: 
+                            роскошное поместье выступает метафорой закрытого мира элиты, который одновременно притягивает и разрушает. 
+                            Повторяющиеся образы воды, тела и избыточности подчёркивают размывание моральных границ и постепенное 
+                            перерождение главного героя под влиянием этого мира...
+                        </p>
+                        <div class="arrow-block">
+                            <a href="sorry.html" class="arrow-btn">⟶</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
-  </body>
+</body>
 </html>
