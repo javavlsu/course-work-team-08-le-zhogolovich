@@ -4,103 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>КиноПортал - Главная</title>
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/index-style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="wrapper">
-        <header class="header">
-            <nav class="navbar">
+    <div class="container-wrapper">
+        <header class="header-sticky d-flex justify-content-center mb-5 mt-4">
+            <nav class="custom-navbar d-flex align-items-center">
                 <a href="index.html" class="nav-btn">Главная</a>
-                <a href="sorry.html" class="nav-btn">Каталог</a>
-                <a href="add-coll.html" class="nav-btn">Подборки</a>
+                <a href="movies.html" class="nav-btn">Фильмы</a>
+                <a href="collections.html" class="nav-btn">Подборки</a>
                 <a href="sorry.html" class="nav-btn">Рецензии</a>
                 <a href="sorry.html" class="nav-btn">Моя страница</a>
             </nav>
         </header>
 
-        <main class="content">
-            <section class="section">
-                <h2 class="section-title">Лучшие фильмы за месяц</h2>
-                <div class="movie-grid">
-                    <a href="sorry.html" class="movie-card">
-                        <img src="images/now_you_see_me.jpg" alt="1">
-                        <p>Иллюзия обмана</p>
-                    </a>
-                    <a href="sorry.html" class="movie-card">
-                        <img src="images/the_truman_show.jpg" alt="2">
-                        <p>Шоу Трумана</p>
-                    </a>
-                    <a href="sorry.html" class="movie-card">
-                        <img src="images/alice_in_wonderland.jpg" alt="3">
-                        <p>Алиса в стране чудес</p>
-                    </a>
-                    <a href="sorry.html" class="movie-card">
-                        <img src="images/parasite.jpg" alt="4">
-                        <p>Паразиты</p>
-                    </a>
-                    <a href="sorry.html" class="movie-card">
-                        <img src="images/saltburn.jpg" alt="5">
-                        <p>Солтберн</p>
-                    </a>
-                </div>
-                <div class="arrow-footer">
-                    <div class="arrow-block">
-                        <a href="sorry.html" class="arrow-btn">⟶</a>
+        <main class="container-xl px-4 px-md-5">
+            <section class="mb-5 text-center section-divider">
+                <h2 class="section-title fw-light mb-5 pt-4 d-inline-block w-75">Лучшие фильмы за месяц</h2>
+                
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 movie-grid">
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <img src="images/now_you_see_me.jpg" alt="1" class="img-fluid rounded-3 mb-3">
+                            <p class="text-light m-0">Иллюзия обмана</p>
+                        </a>
                     </div>
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <img src="images/the_truman_show.jpg" alt="2" class="img-fluid rounded-3 mb-3">
+                            <p class="text-light m-0">Шоу Трумана</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <img src="images/alice_in_wonderland.jpg" alt="3" class="img-fluid rounded-3 mb-3">
+                            <p class="text-light m-0">Алиса в стране чудес</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <img src="images/parasite.jpg" alt="4" class="img-fluid rounded-3 mb-3">
+                            <p class="text-light m-0">Паразиты</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <img src="images/saltburn.jpg" alt="5" class="img-fluid rounded-3 mb-3">
+                            <p class="text-light m-0">Солтберн</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end align-items-center mt-3">
+                    <a href="sorry.html" class="arrow-btn">⟶</a>
                 </div>
             </section>
 
-            <section class="section">
-                <h2 class="section-title">Лучшие подборки за месяц</h2>
-                <div class="collection-grid">
-                    <a href="sorry.html" class="coll-card">
-                        <div class="img-box"><img src="images/сфе.jpg" alt="p1"></div>
-                        <p>Новогодняя</p>
-                    </a>
-                    <a href="sorry.html" class="coll-card">
-                        <div class="img-box"><img src="images/xmastree.jpg" alt="p2"></div>
-                        <p>11 кругов ада</p>
-                    </a>
-                    <a href="sorry.html" class="coll-card">
-                        <div class="img-box"><img src="images/a24.jpg" alt="p3"></div>
-                        <p>A24</p>
-                    </a>
-                    <a href="sorry.html" class="coll-card">
-                        <div class="img-box"><img src="images/new_york.jpg" alt="p4"></div>
-                        <p>Про Нью-Йорк</p>
-                    </a>
-                    <a href="sorry.html" class="coll-card">
-                        <div class="img-box"><img src="images/social_network.jpg" alt="p5"></div>
-                        <p>Великие истории</p>
-                    </a>
-                </div>
-                <div class="arrow-footer">
-                    <div class="arrow-block">
-                        <a href="sorry.html" class="arrow-btn">⟶</a>
+            <section class="mb-5 text-center section-divider">
+                <h2 class="section-title fw-light mb-5 pt-4 d-inline-block w-75">Лучшие подборки за месяц</h2>
+                
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+                    <div class="col">
+                        <a href="sorry.html" class="coll-card d-block text-decoration-none">
+                            <div class="img-box rounded-4 overflow-hidden mb-3">
+                                <img src="images/new_year.jpg" alt="p1" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <p class="text-light m-0">Новогодняя</p>
+                        </a>
                     </div>
+                    <div class="col">
+                        <a href="sorry.html" class="coll-card d-block text-decoration-none">
+                            <div class="img-box rounded-4 overflow-hidden mb-3">
+                                <img src="images/xmastree.jpg" alt="p2" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <p class="text-light m-0">11 кругов ада</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="coll-card d-block text-decoration-none">
+                            <div class="img-box rounded-4 overflow-hidden mb-3">
+                                <img src="images/a24.jpg" alt="p3" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <p class="text-light m-0">A24</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="coll-card d-block text-decoration-none">
+                            <div class="img-box rounded-4 overflow-hidden mb-3">
+                                <img src="images/new_york.jpg" alt="p4" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <p class="text-light m-0">Про Нью-Йорк</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="coll-card d-block text-decoration-none">
+                            <div class="img-box rounded-4 overflow-hidden mb-3">
+                                <img src="images/social_network.jpg" alt="p5" class="w-100 h-100 object-fit-cover">
+                            </div>
+                            <p class="text-light m-0">Великие истории</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end align-items-center mt-3">
+                    <a href="sorry.html" class="arrow-btn">⟶</a>
                 </div>
             </section>
 
-            <section class="section">
-                <h2 class="section-title big">Статьи</h2>
-                <div class="article-container">
-                    <div class="article-header">
-                        <img src="images/saltburn_article.jpg" class="article-img" alt="Saltburn">
-                        <div class="article-headline-box">
-                            <a href="sorry.html" class="user-pill custom-btn">@real_pibble</a>
-                            <h3>"Солтбёрн и символизм в нём"</h3>
+            <section class="mb-5 text-center">
+                <h2 class="section-title big fw-light mb-5 w-75 mx-auto">Статьи</h2>
+                
+                <div class="article-container p-4 mx-auto text-start">
+                    <div class="d-flex flex-column flex-md-row gap-4 mb-4 align-items-stretch">
+                        <img src="images/saltburn_article.jpg" class="article-img rounded-1 w-100 w-md-45 object-fit-cover" alt="Saltburn">
+                        
+                        <div class="d-flex flex-column gap-3 flex-grow-1">
+                            <a href="sorry.html" class="user-pill custom-btn align-self-center text-decoration-none">@real_pibble</a>
+                            <h3 class="article-title fw-normal text-white my-auto">"Солтбёрн и символизм в нём"</h3>
                         </div>
                     </div>
                     
                     <div class="article-content">
-                        <p>
+                        <p class="article-text mb-4">
                             В фильме «Солтберн» символизм строится вокруг темы власти, желания и социального неравенства: 
                             роскошное поместье выступает метафорой закрытого мира элиты, который одновременно притягивает и разрушает. 
                             Повторяющиеся образы воды, тела и избыточности подчёркивают размывание моральных границ и постепенное 
                             перерождение главного героя под влиянием этого мира...
                         </p>
-                        <div class="arrow-block">
+                        <div class="d-flex justify-content-end">
                             <a href="sorry.html" class="arrow-btn">⟶</a>
                         </div>
                     </div>
@@ -108,5 +140,7 @@
             </section>
         </main>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

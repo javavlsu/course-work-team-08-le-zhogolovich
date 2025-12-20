@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог фильмов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css"> 
+</head>
+<body>
+    <div class="container-wrapper">
+        <header class="header-sticky d-flex justify-content-center mb-5 mt-4">
+                <nav class="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+                    <a href="index.html" class="nav-btn">Главная</a>
+                    <a href="movies.html" class="nav-btn">Фильмы</a>
+                    <a href="collections.html" class="nav-btn">Подборки</a>
+                    <a href="sorry.html" class="nav-btn">Рецензии</a>
+                    <a href="sorry.html" class="nav-btn">Моя страница</a>
+                </nav>
+        </header>
+
+        <main>
+            <div class="container mt-4">
+                <form class="search-wrapper" action="#" method="GET">
+                    <input type="text" class="search-input" placeholder="Поиск по названию">
+                    <button type="submit" class="search-btn">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+
+                <div class="filters-container">
+                    <select class="filter-select" name="genre">
+                        <option value="" selected>Жанр</option>
+                        <option value="drama">Драма</option>
+                        <option value="comedy">Комедия</option>
+                        <option value="thriller">Триллер</option>
+                        <option value="scifi">Фантастика</option>
+                    </select>
+
+                    <select class="filter-select" name="tag">
+                        <option value="" selected>Тег</option>
+                        <option value="new">Новинки</option>
+                        <option value="classic">Классика</option>
+                        <option value="oscar">Оскар</option>
+                    </select>
+
+                    <select class="filter-select" name="country">
+                        <option value="" selected>Страна</option>
+                        <option value="usa">США</option>
+                        <option value="uk">Великобритания</option>
+                        <option value="korea">Южная Корея</option>
+                        <option value="russia">Россия</option>
+                    </select>
+
+                    <select class="filter-select" name="year">
+                        <option value="" selected>Год</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="old">Ранее</option>
+                    </select>
+                </div>
+
+                <div class="sort-wrapper">
+                    <button class="btn-filter-main">
+                        Фильтр<i class="fa-solid fa-filter ms-4"></i>
+                    </button>
+                </div>
+
+
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 px-4 movie-grid">
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">7.1</div>
+                            <img src="images/now_you_see_me.jpg" alt="Постер" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Иллюзия обмана</p>
+                            <p class="card-year">2013</p>
+                        </a>
+                    </div>
+
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">7.8</div>
+                            <img src="images/the_truman_show.jpg" alt="Постер" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Шоу Трумана</p>
+                            <p class="card-year">1998</p>
+                        </a>
+                    </div>
+
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">7.1</div>
+                            <img src="images/alice_in_wonderland.jpg" alt="Постер" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Алиса в стране чудес</p>
+                            <p class="card-year">2010</p>
+                        </a>
+                    </div>
+
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">8.5</div>
+                            <img src="images/parasite.jpg" alt="Постер" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Паразиты</p>
+                            <p class="card-year">2019</p>
+                        </a>
+                    </div>
+
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">7.0</div>
+                            <img src="images/saltburn.jpg" alt="Постер" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Солтберн</p>
+                            <p class="card-year">2023</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">8.1</div>
+                            <img src="images/dune.png" alt="Постер фильма" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Дюна</p>
+                            <p class="card-year">2021</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">7.9</div>
+                            <img src="images/arrival.jpg" alt="Постер фильма" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Прибытие</p>
+                            <p class="card-year">2016</p>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="sorry.html" class="movie-card d-block text-decoration-none">
+                            <div class="badge-overlay">6.5</div>
+                            <img src="images/menu.jpg" alt="Постер фильма" class="img-fluid rounded-3 mb-3">
+                            <p class="card-title">Меню</p>
+                            <p class="card-year">2022</p>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="pagination-wrapper">
+                    <a href="#" class="custom-btn text-decoration-none"><</a>
+                    <a href="#" class="custom-btn text-decoration-none">6</a>
+                    <a href="#" class="custom-btn active text-decoration-none">7</a>
+                    <a href="#" class="custom-btn text-decoration-none">8</a>
+                    <a href="#" class="custom-btn text-decoration-none">></a>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
