@@ -423,3 +423,26 @@ body {
     margin-top: 40px;
     padding-bottom: 20px;
 }
+/* css для login */
+/* Ограничиваем ширину всей формы */
+.login-form {
+    width: 100%;
+    max-width: 400px; /* Делаем поле меньше по ширине */
+}
+
+/* Обертка для позиционирования иконки внутри каждого инпута */
+.input-container {
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+/* Корректируем отступы, так как теперь иконка справа во всех полях */
+.login-form .search-input {
+    padding-right: 50px; 
+}
+
+/* Используем ваш стиль иконки, убедившись, что она внутри контейнера */
+.input-container .search-icon {
+    pointer-events: none; /* Чтобы иконка не мешала клику по полю */
+}
