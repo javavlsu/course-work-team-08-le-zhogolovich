@@ -424,25 +424,101 @@ body {
     padding-bottom: 20px;
 }
 /* css для login */
-/* Ограничиваем ширину всей формы */
+
 .login-form {
     width: 100%;
-    max-width: 400px; /* Делаем поле меньше по ширине */
+    max-width: 400px; 
 }
 
-/* Обертка для позиционирования иконки внутри каждого инпута */
+
 .input-container {
     position: relative;
     display: flex;
     width: 100%;
 }
 
-/* Корректируем отступы, так как теперь иконка справа во всех полях */
+
 .login-form .search-input {
     padding-right: 50px; 
 }
 
-/* Используем ваш стиль иконки, убедившись, что она внутри контейнера */
+
 .input-container .search-icon {
-    pointer-events: none; /* Чтобы иконка не мешала клику по полю */
+    pointer-events: none; 
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    outline: none !important;
+}
+
+/* КНОПКА ЛАЙКА */
+.like-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px; 
+    height: 50px;
+    font-size: 40px; 
+    transition: all 0.3s ease;
+    outline: none !important;
+}
+
+
+.like-btn i {
+    display: block;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s ease;
+}
+
+
+.like-btn:hover i {
+    transform: scale(1.1); 
+    color: #ff4d4d;
+}
+
+
+.like-btn.active {
+    color: #ff4d4d;
+}   
+
+.review-text {
+    text-indent: 30px; 
+    text-align: justify; 
+}
+/* ПЛАШКИ НАД ПОДБОРКАМИ*/
+.img-box {
+    position: relative; 
+}
+
+.card-badge {
+    position: absolute;
+    top: 10px;    
+    left: 10px;   
+    background-color: rgba(0, 0, 0, 0.8); 
+    color: white;
+    padding: 4px 12px;
+    border-radius: 8px; 
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 2;
+}
+
+
+.card-badge i {
+    font-size: 0.8rem;
 }
