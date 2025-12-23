@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КиноПортал - Фильм "Иллюзия обмана"</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container-wrapper">
+        <header class="header-sticky d-flex justify-content-center mb-5 mt-4">
+            <nav class="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+                <a href="index.html" class="nav-btn">Главная</a>
+                <a href="movies.html" class="nav-btn">Фильмы</a>
+                <a href="collections.html" class="nav-btn">Подборки</a>
+                <a href="reviews.html" class="nav-btn">Рецензии</a>
+                <a href="my-profile.html" class="nav-btn">Моя страница</a>
+            </nav>
+        </header>
+
+        <main class="container-xl px-4">
+            <h1 class="text-center mb-5">Иллюзия обмана</h1>
+
+            <div class="justify-content-center row g-5 mb-5">
+                <div class="col-lg-4 col-md-5 text-center">
+                    <div class="movie-card-static mb-4 mx-auto" style="max-width: 300px;">
+                        <img src="images/now_you_see_me.jpg" alt="Постер" class="img-fluid rounded-3">
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="custom-btn w-70" type="button" id="labelBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                            Добавить метку
+                        </button>
+                        <ul class=" text-center dropdown-menu dropdown-menu-dark custom-dropdown w-80">
+                            <li><button class="dropdown-item" onclick="setLabel('Буду смотреть')">Буду смотреть</button></li>
+                            <li><button class="dropdown-item" onclick="setLabel('Просмотрено')">Просмотрено</button></li>
+                            <li><button class="dropdown-item" onclick="setLabel('Любимое')">Любимое</button></li>
+                            <li><hr class="dropdown-divider border-secondary"></li>
+                            <li><button class="dropdown-item text-danger" onclick="setLabel('Добавить метку')">Убрать метку</button></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 d-flex flex-column gap-4 position-relative">
+                    <div class="article-container p-3 mt-auto">
+                        <p class="text-white fs-5 m-0">
+                            Команда лучших иллюзионистов мира проворачивает дерзкие ограбления прямо во время своих шоу, играя в кошки-мышки с агентами ФБР.                            
+                        </p>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mt-0 mb-auto">
+                        <span class="tag-pill">Триллер</span>
+                        <span class="tag-pill">Детектив</span>
+                        <span class="tag-pill">Криминал</span>
+                        <span class="tag-pill">Фантастика</span>
+                        <span class="tag-pill">Экшен</span>
+                        <button class="tag-pill tag-add-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-center gap-3 star-rating-wrapper position-relative bottom-0 start-50 translate-middle-x">
+                        <div class="star-rating">
+                            <input type="range" class="star-input" min="0" max="5" step="0.25" value="4.25" id="movieRating">
+                            <div class="stars-outer">
+                                <div class="stars-inner" style="width: 85%;"></div> </div>
+                        </div>
+                        <span class="fs-4 text-secondary"><span id="ratingCount">701</span> оценили</span>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <section class="mb-5 text-center">
+                <div class="d-flex flex-wrap justify-content-center gap-3 mt-2">
+                        <button class="custom-btn">Написать рецензию</button>
+                        <button class="custom-btn">Добавить в подборку</button>
+                    </div>
+            </section>                
+
+            <section class="mb-5 text-center">
+                <h2 class="section-title fw-light mb-4">Где посмотреть</h2>
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="http://kinopoisk.ru" class="custom-btn text-decoration-none">Кинопоиск</a>
+                    <a href="http://ivi.ru" class="custom-btn text-decoration-none">IVI</a>
+                    <a href="http://okko.tv" class="custom-btn text-decoration-none">Okko</a>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h2 class="section-title fw-light text-center mb-5">Комментарии</h2>
+                
+                <div class="p-4 mb-5 mx-auto" style="max-width: 800px;">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="images/Ellipse 2.png" class="rounded-circle" width="40" height="40" alt="Avatar">
+                        <a href="my-profile.html" class="text-decoration-none text-white">@real_pibble</a>
+                    </div>
+                    <textarea class="form-control custom-input mb-3" rows="5" maxlength="500" placeholder="Введите текст..."></textarea>
+                    <div class="d-flex justify-content-end">
+                        <button class="custom-btn py-2 px-4 fs-6">Отправить</button>
+                    </div>
+                </div>
+
+                <div class="comment-list d-flex flex-column gap-4 mx-auto" style="max-width: 800px;">
+                    <div class="p-4 position-relative">
+                        <div class="dropdown position-absolute top-0 end-0 m-3">
+                            <button class="btn text-white p-0 border-0" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark custom-dropdown">
+                                <li><button class="dropdown-item">Редактировать</button></li>
+                                <li><button class="dropdown-item text-danger">Удалить</button></li>
+                            </ul>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="images/Ellipse 2.png" class="rounded-circle" width="35" height="35" alt="Avatar">
+                            <a href="my-profile.html" class="text-decoration-none text-white">@real_pibble</a>
+                        </div>
+                        <div class="article-container p-4">
+                            <p class="text-white fs-6 m-0">Потрясающая сказка для взрослых, которая заставляет на пару часов снова поверить в невозможное! Фильм смотрится на одном дыхании: ярко, динамично и по-настоящему волшебно. Актеры подобраны просто чудесно, между ними чувствуется такая химия, что невольно начинаешь улыбаться вместе с ними. Это именно то кино, которое дарит вдохновение и оставляет после себя приятное послевкусие чуда. Обязательно посмотрите, если соскучились по доброй магии!</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="images/bad_comedian.jpg" class="rounded-circle" width="35" height="35" alt="Avatar">
+                            <a href="sorry.html" class="text-decoration-none text-white">@bad_comedian</a>
+                        </div>
+                        <div class="article-container p-4">
+                            <p class="text-white fs-6 m-0">Смотрите внимательнее! Ведь чем ближе вы к экрану, тем меньше логики видите в этом сценарии. Гениальный план всадников держится на честном слове сценариста и магии монтажа, которая склеивает дыры в сюжете плотнее, чем скотч. Магия вне Хогвартса? Нет, просто персонажи заранее прочитали сценарий и знают, куда встать. Красиво, пафосно, бессмысленно. Ю-ху!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function setLabel(text) {
+            document.getElementById('labelBtn').innerText = text;
+        }
+
+        const ratingInput = document.getElementById('movieRating');
+        const starsInner = document.querySelector('.stars-inner');
+        const ratingCount = document.getElementById('ratingCount');
+        let voted = false;
+
+        ratingInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            starsInner.style.width = (val / 5 * 100) + '%';
+        });
+
+        ratingInput.addEventListener('change', () => {
+            if(!voted) {
+                ratingCount.innerText = parseInt(ratingCount.innerText) + 1;
+                voted = true;
+            }
+        });
+    </script>
+</body>
+</html>
