@@ -192,8 +192,6 @@ body {
     background-color: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    width: 180px;
-    height: 180px;
     flex-shrink: 0;
     border-radius: 20px;
     border: 2px solid transparent;
@@ -589,4 +587,16 @@ body {
     opacity: 0;
     cursor: pointer;
     z-index: 5;
+}
+/* Плейсхолдер для contenteditable */
+#editor {
+    position: relative;
+}
+
+#editor:empty:before {
+    content: attr(data-placeholder);
+    position: absolute;
+    color: rgba(255, 255, 255, 0.4);
+    pointer-events: none; /* Чтобы можно было кликнуть сквозь текст */
+    display: block; /* Для корректного позиционирования */
 }
