@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КиноПортал - Рецензия</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container-wrapper">
+        <header class="header-sticky d-flex justify-content-center mb-5 mt-4">
+            <nav class="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+                <a href="index.html" class="nav-btn">Главная</a>
+                <a href="movies.html" class="nav-btn">Фильмы</a>
+                <a href="collections.html" class="nav-btn">Подборки</a>
+                <a href="reviews.html" class="nav-btn">Рецензии</a>
+                <a href="my-profile.html" class="nav-btn">Моя страница</a>
+            </nav>
+        </header>
+
+        <main class="container-xl px-4" style="max-width: 900px;">
+
+
+            <div class="row align-items-start mb-5 g-0">
+                <div class="d-flex gap-4 align-items-start mb-10">
+                    <div style="min-width: 300px; width: 300px;">
+                        <div class="ratio ratio-4x3">
+                            <label
+                                class="d-flex flex-column align-items-center justify-content-center text-center border rounded"
+                                style="cursor: pointer; overflow: hidden;">
+                                <input type="file" id="file-input" accept="image/*" hidden>
+                                <img src="" id="preview-img" alt="Превью"
+                                    class="position-absolute w-100 h-100 object-fit-cover"
+                                    style="display: none; top: 0; left: 0;">
+                                <span id="upload-text">Добавить обложку</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-2 w-100">
+                        <a href="movie-page.html" class="text-decoration-none text-white">
+                            <h3 class="mb-3">Солтберн</h3>
+                        </a>
+                        <textarea class="form-control custom-input" style="height: 120px; resize: none;"
+                            placeholder="Введите название..."></textarea>
+                    </div>
+                </div>
+
+                <section class="mt-5">
+
+
+                    <div class="btn-toolbar mb-2 d-flex gap-1 p-2 border rounded">
+                        <button type="button" id="btn-bold" class="btn btn-sm btn-outline-secondary"
+                            onmousedown="event.preventDefault()" onclick="format('bold')"><b>B</b></button>
+
+                        <button type="button" id="btn-italic" class="btn btn-sm btn-outline-secondary"
+                            onmousedown="event.preventDefault()" onclick="format('italic')"><i>I</i></button>
+
+                        <button type="button" id="btn-underline" class="btn btn-sm btn-outline-secondary"
+                            onmousedown="event.preventDefault()" onclick="format('underline')"><u>U</u></button>
+
+                        <select id="select-header" class="form-select form-select-sm w-auto"
+                            onchange="format('formatBlock', this.value); this.selectedIndex=0;">
+                            <option selected disabled>Заголовок</option>
+                            <option value="H1">Заголовок 1</option>
+                            <option value="H2">Заголовок 2</option>
+                            <option value="P">Обычный текст</option>
+                        </select>
+                    </div>
+
+                    <div id="editor" contenteditable="true" class="form-control custom-input text-white"
+                        style="min-height: 500px; height: auto;" placeholder="Введите текст..."></div>
+            </div>
+
+
+
+
+            <div class="">
+                <div class="form-actions d-flex justify-content-end">
+                    <button type="button" class="action-btn custom-btn">Сохранить в черновик</button>
+                    <button type="submit" class="action-btn custom-btn ms-2">Опубликовать</button>
+
+                    </section>
+
+
+                </div>
+            </div>
+    </div>
+
+
+
+
+    </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function format(command, value = null) {
+            // Выполняем команду
+            document.execCommand(command, false, value);
+            // Принудительно возвращаем фокус (на всякий случай)
+            const editor = document.getElementById('editor');
+            editor.focus();
+            updateToolbar();
+        }
+
+        function updateToolbar() {
+            const commands = [
+                { cmd: 'bold', id: 'btn-bold' },
+                { cmd: 'italic', id: 'btn-italic' },
+                { cmd: 'underline', id: 'btn-underline' }
+            ];
+
+            commands.forEach(item => {
+                const btn = document.getElementById(item.id);
+                if (btn) {
+                    if (document.queryCommandState(item.cmd)) {
+                        btn.classList.add('active');
+                        btn.classList.replace('btn-outline-secondary', 'btn-secondary');
+                    } else {
+                        btn.classList.remove('active');
+                        btn.classList.replace('btn-secondary', 'btn-outline-secondary');
+                    }
+                }
+            });
+        }
+
+        const editorElement = document.getElementById('editor');
+
+        // Один слушатель для выделения
+        document.addEventListener('selectionchange', () => {
+            if (document.activeElement === editorElement) {
+                updateToolbar();
+            }
+        });
+
+        // Один слушатель для плейсхолдера
+        editorElement.addEventListener('input', function () {
+            if (this.innerText.trim() === "") {
+                this.innerHTML = "";
+            }
+        });
+    </script>
+</body>
+
+</html>
