@@ -338,7 +338,6 @@ body {
     font-size: 18px;
 }
 
-/* Фильтры (Выпадающие списки) */
 .filters-container {
     display: flex;
     justify-content: center;
@@ -438,7 +437,6 @@ body {
     margin-top: 40px;
     padding-bottom: 20px;
 }
-/* css для login */
 
 .login-form {
     width: 100%;
@@ -608,7 +606,7 @@ body {
     cursor: pointer;
     z-index: 5;
 }
-/* Плейсхолдер для contenteditable */
+
 #editor {
     position: relative;
 }
@@ -617,6 +615,6 @@ body {
     content: attr(data-placeholder);
     position: absolute;
     color: rgba(255, 255, 255, 0.4);
-    pointer-events: none; /* Чтобы можно было кликнуть сквозь текст */
-    display: block; /* Для корректного позиционирования */
+    pointer-events: none;
+    display: block;
 }
