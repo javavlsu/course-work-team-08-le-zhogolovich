@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Optional с найденным пользователем
      *         или Optional.empty(), если пользователь не найден
      */
-    Optional<User> findbyEmail(String email);
+    Optional<User> findByEmail(String email);
 
     /**
      * Проверяет существование пользователя с указанным email.

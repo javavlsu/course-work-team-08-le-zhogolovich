@@ -9,7 +9,8 @@ import java.util.HashSet;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
@@ -18,7 +19,7 @@ public class User {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(length = 100)
     private String username;
 
     @Column(nullable = false, unique = true)

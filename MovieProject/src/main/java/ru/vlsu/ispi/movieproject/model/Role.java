@@ -1,7 +1,7 @@
 package ru.vlsu.ispi.movieproject.model;
 
 public enum Role {
-    USER,
-    REVIEWER,
-    ADMIN
+    ROLE_USER,
+    ROLE_REVIEWER,
+    ROLE_ADMIN
 }
