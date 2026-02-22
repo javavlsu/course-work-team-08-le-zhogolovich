@@ -10,3 +10,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
+jwt:
+  secret: BnaqHVf6SlMBjYcB5bPvcXLX3LCSxvfZW09ZYPPBm1K
+  access-exp: 1 #1 час
+  refresh-exp: 24 # 24 часа
+server:
+  port: 8080
+  address: 127.0.0.1
+  servlet:
+    context-path: /movie-project
+logging:
+  level:
+    org.springframework.security: DEBUG

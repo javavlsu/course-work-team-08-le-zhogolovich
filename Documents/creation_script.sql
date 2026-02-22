@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(100) NOT NULL,
   email VARCHAR(255) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  role ENUM('user','reviewer','admin') NOT NULL DEFAULT 'user',
+  role ENUM('ROLE_USER','ROLE_REVIEWER','ROLE_ADMIN') NOT NULL DEFAULT 'ROLE_USER',
   avatar_url VARCHAR(1000),
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uq_users_username UNIQUE (username),

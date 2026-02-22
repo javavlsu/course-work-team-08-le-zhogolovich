@@ -3,34 +3,35 @@ package ru.vlsu.ispi.movieproject.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.vlsu.ispi.movieproject.dto.JwtAuthenticationDto;
 import ru.vlsu.ispi.movieproject.dto.LoginRequest;
+import ru.vlsu.ispi.movieproject.dto.RefreshTokenDto;
 import ru.vlsu.ispi.movieproject.dto.RegisterRequest;
-import ru.vlsu.ispi.movieproject.service.UserService;
+import ru.vlsu.ispi.movieproject.service.AuthService;
 
-@Controller
+@RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-        userService.register(request);
-        return ResponseEntity.ok("Пользователь успешно зарегистрирован");
+        authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Пользователь успешно зарегистрирован.");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
-        boolean logged = userService.login(request);
-        if (logged) {
-            return ResponseEntity.ok("Успешный вход.");
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный пароль или email");
-        }
+    public ResponseEntity<JwtAuthenticationDto> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<JwtAuthenticationDto> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
+        return ResponseEntity.ok(authService.refreshToken(refreshTokenDto));
     }
 }
