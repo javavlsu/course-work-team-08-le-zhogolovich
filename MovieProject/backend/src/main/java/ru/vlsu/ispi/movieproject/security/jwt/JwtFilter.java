@@ -27,13 +27,15 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String token = getTokenFromRequest(request);
         if (token != null && jwtService.isTokenValid(token)) {
-            setCustomUserDetailsToSecurityContextHolder(token);
+            String email = jwtService.extractEmail(token);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                setCustomUserDetailsToSecurityContextHolder(email);
+            }
         }
         filterChain.doFilter(request, response);
     }
 
-    private void setCustomUserDetailsToSecurityContextHolder(String token) {
-        String email = jwtService.extractEmail(token);
+    private void setCustomUserDetailsToSecurityContextHolder(String email) {
         CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(email);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 customUserDetails,
