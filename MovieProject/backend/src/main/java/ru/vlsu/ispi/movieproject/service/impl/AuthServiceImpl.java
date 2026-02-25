@@ -29,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
         User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setRole(Role.ROLE_USER);
+        user.setRole(Role.USER);
 
         userRepository.save(user);
     }
@@ -50,7 +50,8 @@ public class AuthServiceImpl implements AuthService {
         return jwtService.generateAuthToken(
                 user.getEmail(),
                 user.getRole().name()
-        );    }
+        );
+    }
 
     @Override
     public JwtAuthenticationDto refreshToken(RefreshTokenDto refreshTokenDto) {

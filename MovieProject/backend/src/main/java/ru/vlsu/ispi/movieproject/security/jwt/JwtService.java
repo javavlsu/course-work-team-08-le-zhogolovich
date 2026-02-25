@@ -47,9 +47,9 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
 
-        return Jwts.builder().
-                setSubject(email)
+        return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(email)
                 .setExpiration(date)
                 .signWith(getSignKey())
                 .compact();

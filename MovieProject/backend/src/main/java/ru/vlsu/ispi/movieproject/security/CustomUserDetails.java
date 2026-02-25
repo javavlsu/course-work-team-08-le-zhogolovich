@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
         this.email = user.getEmail();
         this.passwordHash = user.getPasswordHash();
         this.authorities = List.of(
-                new SimpleGrantedAuthority(user.getRole().name())
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
         );
     }
     @Override
