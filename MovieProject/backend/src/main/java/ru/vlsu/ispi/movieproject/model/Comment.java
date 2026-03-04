@@ -6,10 +6,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "comment")
 @Getter @Setter
 @NoArgsConstructor
-public class Comment {
+public class Comment extends AuditableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +24,4 @@ public class Comment {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-
-    private LocalDateTime createdAt;
 }

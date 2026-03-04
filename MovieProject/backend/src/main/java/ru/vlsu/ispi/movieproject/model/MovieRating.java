@@ -6,10 +6,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "movie_ratings")
+@Table(name = "movie_rating")
 @Getter @Setter
 @NoArgsConstructor
-public class MovieRating {
+public class MovieRating extends AuditableEntity {
     @EmbeddedId
     private MovieRatingId id;
 
@@ -24,6 +24,4 @@ public class MovieRating {
     private Movie movie;
 
     private Integer rating;
-
-    private LocalDateTime createdAt;
 }

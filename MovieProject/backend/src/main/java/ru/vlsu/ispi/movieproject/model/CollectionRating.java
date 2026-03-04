@@ -6,12 +6,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "collection_ratings")
+@Table(name = "compilation_rating")
 @Getter @Setter
 @NoArgsConstructor
-public class CollectionRating {
+public class CollectionRating extends AuditableEntity{
     @EmbeddedId
-    private CollectionRatingId id;
+    private CompilationRatingId id;
 
     @ManyToOne
     @MapsId("userId")
@@ -21,10 +21,7 @@ public class CollectionRating {
     @ManyToOne
     @MapsId("collectionId")
     @JoinColumn(name = "collection_id")
-    private Collection movie;
+    private Compilation movie;
 
     private Integer rating;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 }

@@ -8,10 +8,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "collections")
+@Table(name = "compilation")
 @Getter @Setter
 @NoArgsConstructor
-public class Collection {
+public class Compilation extends AuditableEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,12 +29,9 @@ public class Collection {
     @Column(name = "is_public", nullable = false)
     private Boolean isPublic;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
     @ManyToMany
     @JoinTable(
-            name = "collection_movies",
+            name = "collection_movie",
             joinColumns = @JoinColumn(name = "collection_id"),
             inverseJoinColumns = @JoinColumn(name = "movie_id")
     )

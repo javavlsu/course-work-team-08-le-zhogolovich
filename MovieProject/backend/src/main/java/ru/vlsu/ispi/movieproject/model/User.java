@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,23 +35,15 @@ public class User {
     @Column(name = "avatar_url", length = 1000)
     private String avatarUrl;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @OneToMany(mappedBy = "author")
     private Set<Review> reviews = new HashSet<>();
 
     @OneToMany(mappedBy = "author")
-    private Set<Collection> collections = new HashSet<>();
+    private Set<Compilation> compilations = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<MovieRating> movieRatings = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<CollectionRating> collectionRatings = new HashSet<>();
-
-    @PrePersist
-    void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }

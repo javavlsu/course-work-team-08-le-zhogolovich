@@ -6,10 +6,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_saved_collections")
+@Table(name = "user_saved_compilation")
 @Getter @Setter
 @NoArgsConstructor
-public class UserSavedCollection {
+public class UserSavedCompilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,7 +20,7 @@ public class UserSavedCollection {
 
     @ManyToOne
     @JoinColumn(name = "collection_id", nullable = false)
-    private Collection collection;
+    private Compilation compilation;
 
     @Column(name = "saved_at")
     private LocalDateTime savedAt;

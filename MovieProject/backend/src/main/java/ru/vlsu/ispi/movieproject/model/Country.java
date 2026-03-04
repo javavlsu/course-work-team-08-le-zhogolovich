@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "countries")
+@Table(name = "countrie")
 @Getter @Setter
 @NoArgsConstructor
 public class Country {

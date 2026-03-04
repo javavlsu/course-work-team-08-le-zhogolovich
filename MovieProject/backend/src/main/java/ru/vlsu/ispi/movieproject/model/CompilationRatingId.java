@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CollectionRatingId implements Serializable {
+public class CompilationRatingId implements Serializable {
     private Long userId;
     private Long collectionId;
 }

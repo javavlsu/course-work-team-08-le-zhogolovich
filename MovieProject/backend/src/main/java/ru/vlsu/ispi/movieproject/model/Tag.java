@@ -5,13 +5,12 @@ import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tags")
+@Table(name = "tag")
 @Getter @Setter
 @NoArgsConstructor
-public class Tag {
+public class Tag extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,14 +22,6 @@ public class Tag {
     @Column(nullable = false)
     private TagType type;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
     @ManyToMany(mappedBy = "tags")
     private Set<Movie> movies = new HashSet<>();
-
-    @PrePersist
-    void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
 }

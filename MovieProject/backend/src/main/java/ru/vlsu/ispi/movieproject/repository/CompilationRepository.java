@@ -1,12 +1,10 @@
 package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.vlsu.ispi.movieproject.model.Collection;
-
-import java.util.List;
+import ru.vlsu.ispi.movieproject.model.Compilation;
 
 /**
- * Репозиторий для работы с сущностью {@link Collection}.
+ * Репозиторий для работы с сущностью {@link Compilation}.
  *
  * <p>
  * Предоставляет стандартные CRUD-операции, автоматически реализуемые Spring Data JPA
@@ -30,6 +28,6 @@ import java.util.List;
  * на основе имени метода.
  * </p>
  */
-public interface CollectionRepository extends JpaRepository<Collection, Long> {
+public interface CompilationRepository extends JpaRepository<Compilation, Long> {
 
 }

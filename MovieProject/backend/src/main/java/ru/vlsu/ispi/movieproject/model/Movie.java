@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "movies")
+@Table(name = "movie")
 @Getter @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -37,7 +37,7 @@ public class Movie {
 
     @ManyToMany
     @JoinTable(
-            name = "movie_genres",
+            name = "movie_genre",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
@@ -45,7 +45,7 @@ public class Movie {
 
     @ManyToMany
     @JoinTable(
-            name = "movie_countries",
+            name = "movie_country",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "country_id")
     )
@@ -53,7 +53,7 @@ public class Movie {
 
     @ManyToMany
     @JoinTable(
-            name = "movie_tags",
+            name = "movie_tag",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
