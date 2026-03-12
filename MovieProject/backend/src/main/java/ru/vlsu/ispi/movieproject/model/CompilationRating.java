@@ -1,15 +1,21 @@
 package ru.vlsu.ispi.movieproject.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.JoinColumn;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "compilation_rating")
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
-public class CollectionRating extends AuditableEntity{
+public class CompilationRating extends AuditableEntity{
     @EmbeddedId
     private CompilationRatingId id;
 

@@ -15,7 +15,7 @@ import java.util.List;
 public class MovieController {
     private final MovieService movieService;
 
-    @GetMapping("/get-all")
+    @GetMapping()
     public List<Movie> getMovies() {
         return movieService.getAllMovies();
     }

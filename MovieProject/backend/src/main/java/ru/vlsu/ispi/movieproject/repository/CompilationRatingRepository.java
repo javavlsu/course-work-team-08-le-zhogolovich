@@ -1,11 +1,11 @@
 package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.vlsu.ispi.movieproject.model.CollectionRating;
+import ru.vlsu.ispi.movieproject.model.CompilationRating;
 import ru.vlsu.ispi.movieproject.model.CompilationRatingId;
 
 /**
- * Репозиторий для работы с сущностью {@link CollectionRating}.
+ * Репозиторий для работы с сущностью {@link CompilationRating}.
  *
  * <p>
  * Сущность представляет оценку коллекции пользователем
@@ -26,5 +26,5 @@ import ru.vlsu.ispi.movieproject.model.CompilationRatingId;
  * </p>
  */
 public interface CompilationRatingRepository
-        extends JpaRepository<CollectionRating, CompilationRatingId> {
+        extends JpaRepository<CompilationRating, CompilationRatingId> {
 }

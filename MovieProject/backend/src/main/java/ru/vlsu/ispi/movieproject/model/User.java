@@ -1,9 +1,19 @@
 package ru.vlsu.ispi.movieproject.model;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.OneToMany;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -45,5 +55,5 @@ public class User {
     private Set<MovieRating> movieRatings = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<CollectionRating> collectionRatings = new HashSet<>();
+    private Set<CompilationRating> collectionRatings = new HashSet<>();
 }
