@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.auth.AuthRequest;
 import ru.vlsu.ispi.movieproject.dto.auth.JwtAuthenticationDto;
 import ru.vlsu.ispi.movieproject.dto.auth.RefreshTokenDto;
+import ru.vlsu.ispi.movieproject.exception.InvalidTokenException;
+import ru.vlsu.ispi.movieproject.exception.UserAlreadyExistsException;
+import ru.vlsu.ispi.movieproject.exception.UserNotFoundException;
 import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.security.jwt.JwtService;
@@ -25,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void register(AuthRequest authRequest) {
         if (userRepository.existsByEmail(authRequest.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует.");
+            throw new UserAlreadyExistsException();
         }
 
         User user = new User();
@@ -47,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByEmail(authRequest.getEmail())
                 .orElseThrow(() ->
-                        new RuntimeException("Пользователь с таким email не найден."));
+                        new UserNotFoundException(authRequest.getEmail()));
 
         return jwtService.generateAuthToken(
                 user.getEmail(),
@@ -60,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = refreshTokenDto.getRefreshToken();
 
         if (!jwtService.isTokenValid(refreshToken)) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidTokenException();
         }
 
         String email = jwtService.extractEmail(refreshToken);
