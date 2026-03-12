@@ -5,7 +5,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.vlsu.ispi.movieproject.dto.*;
+import ru.vlsu.ispi.movieproject.dto.auth.AuthRequest;
+import ru.vlsu.ispi.movieproject.dto.auth.JwtAuthenticationDto;
+import ru.vlsu.ispi.movieproject.dto.auth.RefreshTokenDto;
 import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.security.jwt.JwtService;
@@ -21,29 +23,29 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public void register(RegisterRequest registerRequest) {
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+    public void register(AuthRequest authRequest) {
+        if (userRepository.existsByEmail(authRequest.getEmail())) {
             throw new RuntimeException("Пользователь с таким email уже существует.");
         }
 
         User user = new User();
-        user.setEmail(registerRequest.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setEmail(authRequest.getEmail());
+        user.setPasswordHash(passwordEncoder.encode(authRequest.getPassword()));
         user.setRole(Role.USER);
 
         userRepository.save(user);
     }
 
     @Override
-    public JwtAuthenticationDto login(LoginRequest loginRequest) {
+    public JwtAuthenticationDto login(AuthRequest authRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
+                        authRequest.getEmail(),
+                        authRequest.getPassword()
                 )
         );
 
-        User user = userRepository.findByEmail(loginRequest.getEmail())
+        User user = userRepository.findByEmail(authRequest.getEmail())
                 .orElseThrow(() ->
                         new RuntimeException("Пользователь с таким email не найден."));
 

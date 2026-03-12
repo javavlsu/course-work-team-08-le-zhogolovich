@@ -2,9 +2,10 @@ package ru.vlsu.ispi.movieproject.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.vlsu.ispi.movieproject.model.Movie;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;
 import ru.vlsu.ispi.movieproject.service.MovieService;
+import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
 
     @Override
-    public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+    public List<MovieDto> getAllMovies() {
+        return movieRepository.findAll().stream().map(MovieMapper::toDto).toList();
     }
 }

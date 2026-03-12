@@ -1,4 +1,4 @@
-package ru.vlsu.ispi.movieproject.dto;
+package ru.vlsu.ispi.movieproject.dto.auth;
 
 import lombok.Data;
 

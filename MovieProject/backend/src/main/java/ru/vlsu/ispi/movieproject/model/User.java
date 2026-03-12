@@ -55,5 +55,5 @@ public class User {
     private Set<MovieRating> movieRatings = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<CompilationRating> collectionRatings = new HashSet<>();
+    private Set<CompilationRating> compilationRatings = new HashSet<>();
 }

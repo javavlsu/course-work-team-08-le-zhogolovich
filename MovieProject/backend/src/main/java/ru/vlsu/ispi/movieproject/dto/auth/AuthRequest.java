@@ -1,9 +1,9 @@
-package ru.vlsu.ispi.movieproject.dto;
+package ru.vlsu.ispi.movieproject.dto.auth;
 
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class AuthRequest {
     private String email;
     private String password;
 }

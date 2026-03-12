@@ -2,7 +2,8 @@ package ru.vlsu.ispi.movieproject.service.impl;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.vlsu.ispi.movieproject.model.User;
+import ru.vlsu.ispi.movieproject.dto.user.UserDto;
+import ru.vlsu.ispi.movieproject.mapper.UserMapper;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.service.UserService;
 
@@ -14,7 +15,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).toList();
     }
 }

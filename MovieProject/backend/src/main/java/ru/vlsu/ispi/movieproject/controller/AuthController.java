@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.vlsu.ispi.movieproject.dto.JwtAuthenticationDto;
-import ru.vlsu.ispi.movieproject.dto.LoginRequest;
-import ru.vlsu.ispi.movieproject.dto.RefreshTokenDto;
-import ru.vlsu.ispi.movieproject.dto.RegisterRequest;
+import ru.vlsu.ispi.movieproject.dto.auth.JwtAuthenticationDto;
+import ru.vlsu.ispi.movieproject.dto.auth.AuthRequest;
+import ru.vlsu.ispi.movieproject.dto.auth.RefreshTokenDto;
 import ru.vlsu.ispi.movieproject.service.AuthService;
 
 @RestController
@@ -20,13 +19,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<String> register(@RequestBody AuthRequest request) {
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthenticationDto> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<JwtAuthenticationDto> login(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
