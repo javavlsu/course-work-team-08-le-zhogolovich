@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-movie-rating
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: movie_rating
+            columns:
+              - column: { name: user_id, type: BIGINT }
+              - column: { name: movie_id, type: BIGINT }
+              - column: { name: rating, type: INT }
+              - column: { name: created_at, type: DATETIME }
+        - addPrimaryKey:
+            tableName: movie_rating
+            columnNames: user_id, movie_id
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_rating_user
+            baseTableName: movie_rating
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_rating_movie
+            baseTableName: movie_rating
+            baseColumnNames: movie_id
+            referencedTableName: movie
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: create-compilation-rating
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: compilation_rating
+            columns:
+              - column: { name: user_id, type: BIGINT }
+              - column: { name: collection_id, type: BIGINT }
+              - column: { name: rating, type: INT }
+              - column: { name: created_at, type: DATETIME, constraints: { nullable: false } }
+              - column: { name: updated_at, type: DATETIME }
+        - addPrimaryKey:
+            tableName: compilation_rating
+            columnNames: user_id, collection_id
+        - addForeignKeyConstraint:
+            constraintName: fk_compilation_rating_user
+            baseTableName: compilation_rating
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_compilation_rating_compilation
+            baseTableName: compilation_rating
+            baseColumnNames: collection_id
+            referencedTableName: compilation
+            referencedColumnNames: id
+            onDelete: CASCADE

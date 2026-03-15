@@ -1,0 +1,54 @@
+package ru.vlsu.ispi.movieproject.security.jwt;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import ru.vlsu.ispi.movieproject.security.CustomUserDetails;
+import ru.vlsu.ispi.movieproject.security.CustomUserDetailsService;
+
+import java.io.IOException;
+
+@Component
+@RequiredArgsConstructor
+public class JwtFilter extends OncePerRequestFilter {
+    private final JwtService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        String token = getTokenFromRequest(request);
+        if (token != null && jwtService.isTokenValid(token)) {
+            String email = jwtService.extractEmail(token);
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                setCustomUserDetailsToSecurityContextHolder(email);
+            }
+        }
+        filterChain.doFilter(request, response);
+    }
+
+    private void setCustomUserDetailsToSecurityContextHolder(String email) {
+        CustomUserDetails customUserDetails = customUserDetailsService.loadUserByUsername(email);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                customUserDetails,
+                null,
+                customUserDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
+    private String getTokenFromRequest(@NonNull HttpServletRequest request) {
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+}

@@ -1,0 +1,113 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-compilation
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: compilation
+            columns:
+              - column: { name: id, type: BIGINT AUTO_INCREMENT, constraints: { primaryKey: true } }
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: title, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: description, type: TEXT }
+              - column: { name: is_public, type: BOOLEAN, constraints: { nullable: false } }
+              - column: { name: created_at, type: DATETIME, constraints: { nullable: false } }
+              - column: { name: updated_at, type: DATETIME }
+        - addForeignKeyConstraint:
+            constraintName: fk_compilation_user
+            baseTableName: compilation
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: create-compilation-movie
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: compilation_movie
+            columns:
+              - column: { name: compilation_id, type: BIGINT }
+              - column: { name: movie_id, type: BIGINT }
+        - addPrimaryKey:
+            tableName: compilation_movie
+            columnNames: compilation_id, movie_id
+        - addForeignKeyConstraint:
+            constraintName: fk_compilation_movie_compilation
+            baseTableName: compilation_movie
+            baseColumnNames: compilation_id
+            referencedTableName: compilation
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_compilation_movie_movie
+            baseTableName: compilation_movie
+            baseColumnNames: movie_id
+            referencedTableName: movie
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: create-comment
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: comment
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT AUTO_INCREMENT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: movie_id
+                  type: BIGINT
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+
+        - addForeignKeyConstraint:
+            constraintName: fk_comment_user
+            baseTableName: comment
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            constraintName: fk_comment_movie
+            baseTableName: comment
+            baseColumnNames: movie_id
+            referencedTableName: movie
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: comment
+            indexName: idx_comment_movie
+            columns:
+              - column:
+                  name: movie_id
+
+        - createIndex:
+            tableName: comment
+            indexName: idx_comment_user
+            columns:
+              - column:
+                  name: user_id
