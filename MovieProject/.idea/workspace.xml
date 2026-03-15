@@ -5,59 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7d3eeac6-cb36-4122-a72e-6c221e0aaea0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/MovieProjectApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/controller/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/dto/JwtAuthenticationDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/dto/LoginRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/dto/RefreshTokenDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/dto/RegisterRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Collection.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/CollectionRating.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/CollectionRatingId.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Comment.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Country.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Genre.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Movie.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/MovieRating.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/MovieRatingId.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Review.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/ReviewStatus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Role.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/Tag.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/TagType.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/UserFollow.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/model/UserSavedCollection.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/CollectionRatingRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/CollectionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/CommentRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/CountryRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/GenreRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/MovieRatingRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/MovieRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/ReviewRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/TagRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/UserFollowRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/UserRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/repository/UserSavedCollectionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/security/CustomUserDetails.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/security/CustomUserDetailsService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/security/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/security/jwt/JwtFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/security/jwt/JwtService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/service/AuthService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ru/vlsu/ispi/movieproject/service/impl/AuthServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/home.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/login.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/register.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ru/vlsu/ispi/movieproject/MovieProjectApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,18 +15,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Hiraeth-qw"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Hiraeth-qw&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/javavlsu/course-work-team-08-le-zhogolovich.git",
-    "accountId": "4521acc5-c666-422e-93f9-8475743545ad"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/javavlsu/course-work-team-08-le-zhogolovich.git&quot;,
+    &quot;accountId&quot;: &quot;4521acc5-c666-422e-93f9-8475743545ad&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -86,31 +34,32 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 6
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="3A7cDyBrbl38qFFGpxGoRkkwnJe" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "mydev",
-    "last_opened_file_path": "D:/VLSU/3_курс/6_семестр/РПС/course-work-team-08-le-zhogolovich/MovieProject/Backend",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev__zh&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/VLSU/3_курс/6_семестр/РПС/course-work-team-08-le-zhogolovich/MovieProject/Backend&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.poratu.idea.plugins.tomcat.setting.TomcatServersConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103" />
       </set>
     </attachedChunks>
   </component>
@@ -123,7 +72,12 @@
       <option name="presentableId" value="Default" />
       <updated>1771946935334</updated>
       <workItem from="1771946937582" duration="25000" />
+      <workItem from="1773597849512" duration="192000" />
+      <workItem from="1773598062051" duration="101000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>
