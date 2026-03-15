@@ -1,7 +1,10 @@
 package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Movie;
+
+import java.util.Set;
 
 /**
  * Репозиторий для работы с сущностью Movie
@@ -24,5 +27,8 @@ import ru.vlsu.ispi.movieproject.model.Movie;
  * </p>
  */
 public interface MovieRepository extends JpaRepository<Movie, Long> {
+    boolean existsByKinopoiskId(Integer kinopoiskId);
 
+    @Query("SELECT m.kinopoiskId from Movie m")
+    Set<Integer> findAllKinopoiskId();
 }

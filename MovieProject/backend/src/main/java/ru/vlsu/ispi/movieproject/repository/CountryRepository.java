@@ -33,8 +33,8 @@ public interface CountryRepository extends JpaRepository<Country, Long> {
     /**
      * Находит страну по идентификатору Kinopoisk.
      *
-     * @param kinopoiskId идентификатор страны во внешнем API
+     * @param name название страны из внешнего API
      * @return Optional с найденной страной
      */
-    Optional<Country> findByKinopoiskId(Integer kinopoiskId);
+    Optional<Country> findByName(String name);
 }

@@ -26,15 +26,16 @@ import java.util.Optional;
  * </p>
  *
  * <p>
- * Дополнительно содержит методы поиска по  внешним идентификаторам.
+ * Дополнительно содержит методы поиска по внешним идентификаторам.
  * </p>
  */
 public interface GenreRepository extends JpaRepository<Genre, Long> {
     /**
      * Находит жанр по идентификатору Kinopoisk
      *
-     * @param kinopoiskId внешний идентификатор жанра
+     * @param name внешний идентификатор жанра
      * @return Optional с найденным жанром
      */
-    Optional<Genre> findByKinopoiskId(Integer kinopoiskId);
+    Optional<Genre> findByName(String name);
+
 }

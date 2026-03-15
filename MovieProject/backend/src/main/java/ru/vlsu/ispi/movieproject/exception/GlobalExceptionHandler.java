@@ -33,4 +33,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Неверный email или пароль"));
     }
+
+    @ExceptionHandler(KinopoiskApiException.class)
+    public ResponseEntity<ErrorResponse> handleKinopoiskApiException (KinopoiskApiException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MovieImportException.class)
+    public ResponseEntity<ErrorResponse> handleMovieImportException (MovieImportException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(GenreMapException.class)
+    public ResponseEntity<ErrorResponse> handleGenreMapException (GenreMapException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CountryMapException.class)
+    public ResponseEntity<ErrorResponse> handleCountryMapException (CountryMapException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ex.getMessage()));
+    }
 }
