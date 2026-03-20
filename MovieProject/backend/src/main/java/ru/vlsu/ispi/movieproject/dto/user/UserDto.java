@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.dto.user;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.vlsu.ispi.movieproject.model.User;
 
 @Data
 @NoArgsConstructor
@@ -13,4 +14,6 @@ public class UserDto {
     private String email;
     private String role;
     private String avatarUrl;
+
+
 }

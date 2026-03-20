@@ -15,4 +15,12 @@ public class UserMapper {
             user.getAvatarUrl()
         );
     }
+    public static UserDto mapToDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setAvatarUrl(user.getAvatarUrl());
+        dto.setRole(user.getRole().name());
+        return dto;
+    }
 }

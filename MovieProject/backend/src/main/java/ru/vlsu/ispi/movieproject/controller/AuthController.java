@@ -3,10 +3,7 @@ package ru.vlsu.ispi.movieproject.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.vlsu.ispi.movieproject.dto.auth.JwtAuthenticationDto;
 import ru.vlsu.ispi.movieproject.dto.auth.AuthRequest;
 import ru.vlsu.ispi.movieproject.dto.auth.RefreshTokenDto;
@@ -15,6 +12,7 @@ import ru.vlsu.ispi.movieproject.service.AuthService;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
     private final AuthService authService;
 

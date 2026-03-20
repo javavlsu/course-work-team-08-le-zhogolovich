@@ -1,29 +1,44 @@
 import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 function HomePage() {
   const [movies, setMovies] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8080/movie-project/movies")
+    const token = localStorage.getItem("accessToken");
+
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    fetch("http://localhost:8080/movie-project/movies", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    })
       .then(response => response.json())
       .then(data => setMovies(data))
       .catch(error => console.error("Ошибка загрузки фильмов:", error));
-  }, []);
+
+  }, [navigate]);
 
   return (
     <div className="wrapper">
-      <header className="header">
-        <nav className="navbar">
-          <a href="/" className="nav-btn">Главная</a>
-          <a href="/catalog" className="nav-btn">Каталог</a>
-          <a href="/collections" className="nav-btn">Подборки</a>
-          <a href="/reviews" className="nav-btn">Рецензии</a>
-          <a href="/profile" className="nav-btn">Моя страница</a>
-        </nav>
-      </header>
+      {/* Меню */}
+            <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
+              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+                <Link to="/" className="nav-btn">Главная</Link>
+                <Link to="/movies" className="nav-btn">Фильмы</Link>
+                <Link to="/collections" className="nav-btn">Подборки</Link>
+                <Link to="/reviews" className="nav-btn">Рецензии</Link>
+                <Link to="/profile" className="nav-btn">Моя страница</Link>
+              </nav>
+            </header>
 
       <main className="content">
-
         <section className="section">
           <h2 className="section-title">Лучшие фильмы за месяц</h2>
 
@@ -35,9 +50,7 @@ function HomePage() {
               </div>
             ))}
           </div>
-
         </section>
-
       </main>
     </div>
   );
