@@ -29,7 +29,7 @@ public class User {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false, unique = true)

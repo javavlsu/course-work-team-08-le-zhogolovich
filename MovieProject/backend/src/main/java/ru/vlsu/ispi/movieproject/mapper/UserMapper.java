@@ -6,6 +6,9 @@ import ru.vlsu.ispi.movieproject.model.User;
 
 @Component
 public class UserMapper {
+
+
+//    toUserDto стоит просто переименовать на mapToDto и просто заменить в первом методе в сервисе
     public static UserDto toUserDto(User user) {
         return new UserDto(
             user.getId(),

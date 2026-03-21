@@ -5,7 +5,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.vlsu.ispi.movieproject.dto.auth.AuthRequest;
+import ru.vlsu.ispi.movieproject.dto.auth.LoginRequest;
+import ru.vlsu.ispi.movieproject.dto.auth.RegisterRequest;
 import ru.vlsu.ispi.movieproject.dto.auth.JwtAuthenticationDto;
 import ru.vlsu.ispi.movieproject.dto.auth.RefreshTokenDto;
 import ru.vlsu.ispi.movieproject.exception.InvalidTokenException;
@@ -26,36 +27,37 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public void register(AuthRequest authRequest) {
-        if (userRepository.existsByEmail(authRequest.getEmail())) {
+    public void register(RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new UserAlreadyExistsException();
         }
 
         User user = new User();
-        user.setEmail(authRequest.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(authRequest.getPassword()));
+        user.setUsername(registerRequest.getUsername());
+        user.setEmail(registerRequest.getEmail());
+        user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
         user.setRole(Role.USER);
 
         userRepository.save(user);
     }
 
     @Override
-    public JwtAuthenticationDto login(AuthRequest authRequest) {
+    public JwtAuthenticationDto login(LoginRequest loginRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        authRequest.getEmail(),
-                        authRequest.getPassword()
+                        loginRequest.getLogin(),
+                        loginRequest.getPassword()
                 )
         );
 
-        User user = userRepository.findByEmail(authRequest.getEmail())
+        User user = userRepository.findByEmail(loginRequest.getLogin())
+                .or(() -> userRepository.findByUsername(loginRequest.getLogin()))
                 .orElseThrow(() ->
-                        new UserNotFoundException(authRequest.getEmail()));
+                        new UserNotFoundException(loginRequest.getLogin()));
 
         return jwtService.generateAuthToken(
                 user.getId(),
-                user.getEmail(),
-                user.getRole().name()
+                user.getRole().toString()
         );
     }
 
@@ -75,8 +77,7 @@ public class AuthServiceImpl implements AuthService {
 
         return jwtService.generateAuthToken(
                 user.getId(),
-                user.getEmail(),
-                user.getRole().name()
+                user.getRole().toString()
         );
     }
 }

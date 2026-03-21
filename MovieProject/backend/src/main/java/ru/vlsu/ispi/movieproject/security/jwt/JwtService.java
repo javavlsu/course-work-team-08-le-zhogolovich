@@ -26,23 +26,23 @@ public class JwtService {
     @Value("${jwt.refresh-exp}")
     private long refreshExp;
 
-    public JwtAuthenticationDto generateAuthToken(Long id, String email, String role) {
+    public JwtAuthenticationDto generateAuthToken(Long id, String role) {
         JwtAuthenticationDto jwtDto = new JwtAuthenticationDto();
-        jwtDto.setToken(generateJwtToken(id, email, role));
-        jwtDto.setRefreshToken(generateRefreshToken(email));
+        jwtDto.setToken(generateJwtToken(id, role));
+        jwtDto.setRefreshToken(generateRefreshToken(id));
 
         return jwtDto;
     }
 
-    public JwtAuthenticationDto refreshAuthToken(Long id, String email, String refreshToken) {
+    public JwtAuthenticationDto refreshAuthToken(Long id, String refreshToken) {
         JwtAuthenticationDto jwtDto = new JwtAuthenticationDto();
-        jwtDto.setToken(generateJwtToken(id, email, extractRole(refreshToken)));
+        jwtDto.setToken(generateJwtToken(id, extractRole(refreshToken)));
         jwtDto.setRefreshToken(refreshToken);
 
         return jwtDto;
     }
 
-    private String generateJwtToken(Long id, String email, String role) {
+    private String generateJwtToken(Long id, String role) {
         Date date = Date.from(LocalDateTime.now().plusHours(accessExp).atZone(ZoneId.systemDefault()).toInstant());
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
@@ -50,17 +50,18 @@ public class JwtService {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
                 .setExpiration(date)
                 .signWith(getSignKey())
                 .compact();
     }
 
-    private String generateRefreshToken(String email) {
+    private String generateRefreshToken(Long id) {
         Date date = Date.from(LocalDateTime.now().plusHours(refreshExp).atZone(ZoneId.systemDefault()).toInstant());
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", id);
 
-        return Jwts.builder().
-                setSubject(email)
+        return Jwts.builder()
+                .setClaims(claims)
                 .setExpiration(date)
                 .signWith(getSignKey())
                 .compact();

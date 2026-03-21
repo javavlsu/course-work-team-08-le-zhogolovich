@@ -3,7 +3,7 @@ package ru.vlsu.ispi.movieproject.dto.auth;
 import lombok.Data;
 
 @Data
-public class AuthRequest {
-    private String email;
+public class LoginRequest {
+    private String login;
     private String password;
 }

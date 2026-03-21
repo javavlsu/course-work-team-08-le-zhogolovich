@@ -12,9 +12,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public CustomUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
+    public CustomUserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        return userRepository.findByEmail(login)
+                .or(() -> userRepository.findByUsername(login))
                 .map(CustomUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+                .orElseThrow(() -> new UsernameNotFoundException(login));
     }
 }
