@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.movieproject.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +34,7 @@ public class Movie {
     @Column(name = "kinopoisk_id", nullable = false)
     private Integer kinopoiskId;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "original_name")
@@ -46,6 +48,21 @@ public class Movie {
 
     @Column(columnDefinition = "TEXT")
     private String overview;
+
+    @Column(name = "avg_rating")
+    private Double avgRating;
+
+    @Column(name = "ratings_count")
+    private Integer ratingsCount;
+
+    @Column(name = "rating_kinopoisk")
+    private Double ratingKinopoisk;
+
+    @Column(name = "rating_imdb")
+    private Double ratingImdb;
+
+    @Column(name = "details_loaded_at")
+    private LocalDateTime detailsLoadedAt;
 
     @ManyToMany
     @JoinTable(
@@ -73,4 +90,7 @@ public class Movie {
 
     @OneToMany(mappedBy = "movie")
     private Set<Review> reviews = new HashSet<>();
+
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ExternalSource> externalSources = new HashSet<>();
 }

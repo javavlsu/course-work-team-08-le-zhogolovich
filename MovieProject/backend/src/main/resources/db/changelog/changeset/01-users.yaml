@@ -26,6 +26,9 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: about_me
+                  type: TEXT
+              - column:
                   name: role
                   type: VARCHAR(20)
                   constraints:

@@ -12,11 +12,13 @@ import java.util.List;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
+    private final Long id;
     private final String email;
     private final String passwordHash;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(User user) {
+        this.id = user.getId();
         this.email = user.getEmail();
         this.passwordHash = user.getPasswordHash();
         this.authorities = List.of(

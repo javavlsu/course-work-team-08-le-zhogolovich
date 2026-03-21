@@ -26,26 +26,27 @@ public class JwtService {
     @Value("${jwt.refresh-exp}")
     private long refreshExp;
 
-    public JwtAuthenticationDto generateAuthToken(String email, String role) {
+    public JwtAuthenticationDto generateAuthToken(Long id, String email, String role) {
         JwtAuthenticationDto jwtDto = new JwtAuthenticationDto();
-        jwtDto.setToken(generateJwtToken(email, role));
+        jwtDto.setToken(generateJwtToken(id, email, role));
         jwtDto.setRefreshToken(generateRefreshToken(email));
 
         return jwtDto;
     }
 
-    public JwtAuthenticationDto refreshAuthToken(String email, String refreshToken) {
+    public JwtAuthenticationDto refreshAuthToken(Long id, String email, String refreshToken) {
         JwtAuthenticationDto jwtDto = new JwtAuthenticationDto();
-        jwtDto.setToken(generateJwtToken(email, extractRole(refreshToken)));
+        jwtDto.setToken(generateJwtToken(id, email, extractRole(refreshToken)));
         jwtDto.setRefreshToken(refreshToken);
 
         return jwtDto;
     }
 
-    private String generateJwtToken(String email, String role) {
+    private String generateJwtToken(Long id, String email, String role) {
         Date date = Date.from(LocalDateTime.now().plusHours(accessExp).atZone(ZoneId.systemDefault()).toInstant());
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
+        claims.put("userId", id);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -76,6 +77,10 @@ public class JwtService {
 
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
+    }
+
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
     }
 
     public boolean isTokenValid(String token) {

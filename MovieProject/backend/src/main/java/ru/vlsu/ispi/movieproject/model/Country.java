@@ -23,9 +23,6 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "kinopoisk_id")
-    private Integer kinopoiskId;
-
     @Column(nullable = false, unique = true)
     private String name;
 

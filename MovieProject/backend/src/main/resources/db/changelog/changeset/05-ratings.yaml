@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column: { name: user_id, type: BIGINT }
               - column: { name: movie_id, type: BIGINT }
-              - column: { name: rating, type: INT }
+              - column: { name: rating, type: FLOAT }
               - column: { name: created_at, type: DATETIME }
         - addPrimaryKey:
             tableName: movie_rating

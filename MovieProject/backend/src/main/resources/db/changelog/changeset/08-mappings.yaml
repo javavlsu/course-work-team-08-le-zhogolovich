@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-genre-mapping
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: genre_mapping
+            columns:
+              - column: { name: id, type: BIGINT AUTO_INCREMENT, constraints: { primaryKey: true } }
+              - column: { name: external_name, type: VARCHAR(100), constraints: { nullable: false, unique: true } }
+              - column: { name: genre_id, type: BIGINT, constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: genre_mapping
+            baseColumnNames: genre_id
+            referencedTableName: genre
+            referencedColumnNames: id
+            constraintName: fk_genre_mapping_genre
+        - createIndex:
+            tableName: genre_mapping
+            indexName: idx_genre_mapping_external_name
+            columns:
+              - column:
+                  name: external_name
+
+  - changeSet:
+      id: add-country-mapping
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: country_mapping
+            columns:
+              - column: { name: id, type: BIGINT AUTO_INCREMENT, constraints: { primaryKey: true } }
+              - column: { name: external_name, type: VARCHAR(100), constraints: { nullable: false, unique: true } }
+              - column: { name: country_id, type: BIGINT, constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            baseTableName: country_mapping
+            baseColumnNames: country_id
+            referencedTableName: country
+            referencedColumnNames: id
+            constraintName: fk_country_mapping_country
+
+        - createIndex:
+            tableName: country_mapping
+            indexName: idx_country_mapping_external_name
+            columns:
+              - column:
+                  name: external_name

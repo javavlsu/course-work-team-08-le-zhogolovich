@@ -53,4 +53,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCountryMapException (CountryMapException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse(ex.getMessage()));
     }
+
+    @ExceptionHandler(MovieNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleMovieNotFoundException (MovieNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
+    }
 }
