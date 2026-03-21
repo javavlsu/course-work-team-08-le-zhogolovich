@@ -29,5 +29,5 @@ public class MovieRating extends AuditableEntity {
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
-    private Integer rating;
+    private Double rating;
 }

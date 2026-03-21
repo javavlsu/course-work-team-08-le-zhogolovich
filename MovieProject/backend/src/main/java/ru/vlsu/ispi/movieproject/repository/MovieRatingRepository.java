@@ -1,10 +1,12 @@
 package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.MovieRating;
 import ru.vlsu.ispi.movieproject.model.MovieRatingId;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Репозиторий для работы с сущностью {@link MovieRating}
@@ -35,8 +37,7 @@ import java.util.List;
  *  * Дополнительно содержит методы поиска по внешним идентификаторам
  *  * </p>
  */
-public interface MovieRatingRepository
-        extends JpaRepository<MovieRating, MovieRatingId> {
+public interface MovieRatingRepository extends JpaRepository<MovieRating, MovieRatingId> {
 
     /**
      * Возвращает все оценки конкретного фильма
@@ -46,4 +47,25 @@ public interface MovieRatingRepository
      */
     List<MovieRating> findByIdMovieId(Long movieId);
 
+
+    @Query("""
+        SELECT AVG(r.rating)
+        FROM MovieRating r
+        WHERE r.movie.id = :movieId
+    """)
+    Double getAverageRating(Long movieId);
+
+    @Query("""
+        SELECT COUNT(r)
+        FROM MovieRating r
+        WHERE r.movie.id = :movieId
+    """)
+    Integer getRatingsCount(Long movieId);
+
+    @Query("""
+        SELECT r.rating
+        FROM MovieRating r
+        WHERE r.movie.id = :movieId AND r.user.id = :userId
+    """)
+    Optional<Integer> getUserRating(Long movieId, Long userId);
 }

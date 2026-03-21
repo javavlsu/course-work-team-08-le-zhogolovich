@@ -1,0 +1,31 @@
+package ru.vlsu.ispi.movieproject.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name = "country_mapping")
+@Getter
+@Setter
+@NoArgsConstructor
+public class CountryMapping {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "external_name", unique = true)
+    private String externalName;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
+}

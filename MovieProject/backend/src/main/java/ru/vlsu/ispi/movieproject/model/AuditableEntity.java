@@ -7,15 +7,15 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditableEntity {
     @CreatedDate
     @Column(updatable = false, nullable = false)
-    protected Date createdAt;
+    protected LocalDateTime createdAt;
 
     @LastModifiedDate
-    protected Date updatedAt;
+    protected LocalDateTime updatedAt;
 }

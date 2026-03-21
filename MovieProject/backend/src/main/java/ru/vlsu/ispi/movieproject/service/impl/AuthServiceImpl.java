@@ -53,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
                         new UserNotFoundException(authRequest.getEmail()));
 
         return jwtService.generateAuthToken(
+                user.getId(),
                 user.getEmail(),
                 user.getRole().name()
         );
@@ -73,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
                         new RuntimeException("Пользователь с таким email не найден."));
 
         return jwtService.generateAuthToken(
+                user.getId(),
                 user.getEmail(),
                 user.getRole().name()
         );

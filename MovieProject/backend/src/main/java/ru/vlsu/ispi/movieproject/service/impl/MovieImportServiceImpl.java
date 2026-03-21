@@ -4,8 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.imports.ImportResult;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieListResponseDto;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
+import ru.vlsu.ispi.movieproject.dto.imports.MovieListResponseDto;
 import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
 import ru.vlsu.ispi.movieproject.model.Movie;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;
@@ -29,21 +29,30 @@ public class MovieImportServiceImpl implements MovieImportService {
         int imported = 0;
         int skipped = 0;
 
-        MovieListResponseDto response = kinopoiskApiService.getMovieList();
-
         Set<Integer> existingIds = movieRepository.findAllKinopoiskId();
         List<Movie> moviesToSave = new ArrayList<>();
 
-        for (MovieDto movie : response.getItems()){
-            if (existingIds.contains(movie.getKinopoiskId())) {
-                skipped++;
-                continue;
-            }
-            Movie newMovie = movieMapper.fromMovieDto(movie);
+        int page = 1;
+        int totalPages;
 
-            moviesToSave.add(newMovie);
-            imported++;
-        }
+        do{
+            MovieListResponseDto response = kinopoiskApiService.getMovieList(page);
+            totalPages = response.getTotalPages();
+
+            for (MovieImportDto movie : response.getItems()){
+                if (existingIds.contains(movie.getKinopoiskId())) {
+                    skipped++;
+                    continue;
+                }
+                Movie newMovie = movieMapper.fromMovieImportDto(movie);
+
+                moviesToSave.add(newMovie);
+                existingIds.add(movie.getKinopoiskId());
+                imported++;
+            }
+            page++;
+        }while(page <= totalPages);
+
         movieRepository.saveAll(moviesToSave);
         return new ImportResult(imported, skipped);
     }

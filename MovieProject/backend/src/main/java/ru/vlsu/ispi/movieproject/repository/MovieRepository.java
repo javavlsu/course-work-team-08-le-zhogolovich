@@ -1,9 +1,12 @@
 package ru.vlsu.ispi.movieproject.repository;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Movie;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -31,4 +34,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query("SELECT m.kinopoiskId from Movie m")
     Set<Integer> findAllKinopoiskId();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select m from Movie m where m.id = :id")
+    Optional<Movie> findByIdForUpdate(Long id);
 }

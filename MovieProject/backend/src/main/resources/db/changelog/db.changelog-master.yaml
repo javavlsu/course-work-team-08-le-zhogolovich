@@ -11,3 +11,7 @@ databaseChangeLog:
       file: db/changelog/changeset/05-ratings.yaml
   - include:
       file: db/changelog/changeset/06-social.yaml
+  - include:
+      file: db/changelog/changeset/07-enrichment.yaml
+  - include:
+      file: db/changelog/changeset/08-mappings.yaml
