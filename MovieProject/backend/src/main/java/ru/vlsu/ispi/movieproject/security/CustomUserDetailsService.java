@@ -16,6 +16,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         return userRepository.findByEmail(login)
                 .or(() -> userRepository.findByUsername(login))
                 .map(CustomUserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException(login));
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь" + login + "не найден."));
+    }
+
+    public CustomUserDetails loadUserById(Long id) {
+        return userRepository.findById(id)
+                .map(CustomUserDetails::new)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с ID " + id + " не найден"));
     }
 }

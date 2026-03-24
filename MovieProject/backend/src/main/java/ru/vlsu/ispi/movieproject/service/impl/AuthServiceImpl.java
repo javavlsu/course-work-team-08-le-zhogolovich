@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.auth.LoginRequest;
@@ -53,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(loginRequest.getLogin())
                 .or(() -> userRepository.findByUsername(loginRequest.getLogin()))
                 .orElseThrow(() ->
-                        new UserNotFoundException(loginRequest.getLogin()));
+                        new UserNotFoundException("Пользователь" + loginRequest.getLogin() + "не найден."));
 
         return jwtService.generateAuthToken(
                 user.getId(),
@@ -69,11 +70,10 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException();
         }
 
-        String email = jwtService.extractEmail(refreshToken);
+        Long userId = jwtService.extractUserId(refreshToken);
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Пользователь с таким email не найден."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь с ID " + userId + " не найден"));
 
         return jwtService.generateAuthToken(
                 user.getId(),

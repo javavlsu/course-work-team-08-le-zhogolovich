@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserService {
     List<UserDto> getAllUsers();
 
-    UserDto getUserByEmail(String name);
+    UserDto getUserById(Long id);
 
-    UserDto updateAvatar(String email, MultipartFile file);
+    UserDto updateAvatar(Long id, MultipartFile file);
 }

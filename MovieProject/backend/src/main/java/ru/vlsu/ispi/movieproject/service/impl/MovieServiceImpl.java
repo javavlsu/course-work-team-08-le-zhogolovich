@@ -2,12 +2,14 @@ package ru.vlsu.ispi.movieproject.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourceDto;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourcesResponseDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDetailsDto;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
 import ru.vlsu.ispi.movieproject.exception.MovieNotFoundException;
 import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
 import ru.vlsu.ispi.movieproject.model.ExternalSource;
@@ -19,7 +21,6 @@ import ru.vlsu.ispi.movieproject.service.MovieService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -32,9 +33,8 @@ public class MovieServiceImpl implements MovieService {
     private final Duration DETAILS_DURATION = Duration.ofDays(30);
 
     @Override
-    public List<MovieImportDto> getAllMovies() {
-        return null;
-//                movieRepository.findAll().stream().map(MovieMapper::toDto).toList();
+    public Page<MovieDto> getAllMovies(Pageable pageable) {
+        return movieRepository.findAll(pageable).map(movieMapper::toMovieDto);
     }
 
     @Override

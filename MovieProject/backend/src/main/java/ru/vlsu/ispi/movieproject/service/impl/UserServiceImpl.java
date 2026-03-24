@@ -22,16 +22,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserByEmail(String email) {
-        User user = userRepository.findByEmail(email)
+    public UserDto getUserById(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         return UserMapper.mapToDto(user);
     }
 
     @Override
-    public UserDto updateAvatar(String email, MultipartFile file) {
-        User user = userRepository.findByEmail(email)
+    public UserDto updateAvatar(Long id, MultipartFile file) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
         if (file.isEmpty()) {

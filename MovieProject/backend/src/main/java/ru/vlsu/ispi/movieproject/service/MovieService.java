@@ -1,15 +1,13 @@
 package ru.vlsu.ispi.movieproject.service;
 
-import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourcesResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
 import ru.vlsu.ispi.movieproject.model.Movie;
-import ru.vlsu.ispi.movieproject.security.CustomUserDetails;
-
-import java.util.List;
 
 public interface MovieService {
-    List<MovieImportDto> getAllMovies();
+    Page<MovieDto> getAllMovies(Pageable pageable);
     MovieFullDto getMovie(Long id, Long userId);
     void enrichMovie(Movie movie);
     void loadExternalSources(Movie movie);

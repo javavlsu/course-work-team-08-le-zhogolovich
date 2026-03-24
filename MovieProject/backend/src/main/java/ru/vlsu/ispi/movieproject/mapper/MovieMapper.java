@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourceDto;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
 import ru.vlsu.ispi.movieproject.exception.CountryMapException;
@@ -84,6 +85,17 @@ public class MovieMapper {
 
     private String normalize(String value) {
         return value.trim().toLowerCase();
+    }
+
+    public MovieDto toMovieDto(Movie movie) {
+        return new MovieDto(
+                movie.getId(),
+                movie.getKinopoiskId(),
+                movie.getName(),
+                movie.getPosterUrl(),
+                movie.getReleaseYear(),
+                movie.getAvgRating()
+        );
     }
 
     public MovieFullDto toFullDto(Movie movie) {
