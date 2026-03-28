@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.user.UserDto;
+import ru.vlsu.ispi.movieproject.exception.FilesException;
+import ru.vlsu.ispi.movieproject.exception.UserNotFoundException;
 import ru.vlsu.ispi.movieproject.mapper.UserMapper;
 import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.service.UserService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -24,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new UserNotFoundException("Некорректный id пользователя"));
 
         return UserMapper.mapToDto(user);
     }
@@ -32,10 +35,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateAvatar(Long id, MultipartFile file) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new UserNotFoundException("Некорректный id пользователя"));
 
-        if (file.isEmpty()) {
-            throw new RuntimeException("Файл пуст");
+        if (file == null || file.isEmpty()) {
+            throw new FilesException("Файл пуст");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new FilesException("Файл должен быть изображением");
         }
 
         try {
@@ -54,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
                 try {
                     java.nio.file.Files.deleteIfExists(oldFilePath);
-                } catch (java.io.IOException e) {
+                } catch (IOException e) {
                     System.err.println("Не удалось удалить старый файл: " + e.getMessage());
                 }
             }
@@ -69,8 +77,8 @@ public class UserServiceImpl implements UserService {
 
             return UserMapper.mapToDto(user);
 
-        } catch (java.io.IOException e) {
-            throw new RuntimeException("Ошибка при работе с файлами", e);
+        } catch (IOException e) {
+            throw new FilesException("Ошибка при сохранении файла: " + e.getMessage());
         }
     }
 }

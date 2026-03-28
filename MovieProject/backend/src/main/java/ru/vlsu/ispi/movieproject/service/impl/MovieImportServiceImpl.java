@@ -40,15 +40,19 @@ public class MovieImportServiceImpl implements MovieImportService {
             totalPages = response.getTotalPages();
 
             for (MovieImportDto movie : response.getItems()){
-                if (existingIds.contains(movie.getKinopoiskId())) {
-                    skipped++;
-                    continue;
-                }
-                Movie newMovie = movieMapper.fromMovieImportDto(movie);
+                try {
+                    if (existingIds.contains(movie.getKinopoiskId())) {
+                        skipped++;
+                        continue;
+                    }
+                    Movie newMovie = movieMapper.fromMovieImportDto(movie);
 
-                moviesToSave.add(newMovie);
-                existingIds.add(movie.getKinopoiskId());
-                imported++;
+                    moviesToSave.add(newMovie);
+                    existingIds.add(movie.getKinopoiskId());
+                    imported++;
+                }catch (Exception e){
+                    skipped++;
+                }
             }
             page++;
         }while(page <= totalPages);

@@ -40,6 +40,9 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public MovieFullDto getMovie(Long id, Long userId) {
+        if (id == null) {
+            throw new IllegalArgumentException("Id фильма не может быть пустым");
+        }
         Movie movie = movieRepository.findByIdForUpdate(id).orElseThrow(() -> new MovieNotFoundException(id));
 
         if (movie.getDetailsLoadedAt() == null || movie.getDetailsLoadedAt().isBefore(LocalDateTime.now().minus(DETAILS_DURATION))) {
@@ -71,6 +74,9 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public void loadExternalSources(Movie movie) {
         ExternalSourcesResponseDto sources = kinopoiskApiService.getExternalSources(movie.getKinopoiskId());
+        if (sources == null || sources.getItems() == null) {
+            return;
+        }
         movie.getExternalSources().clear();
 
         for (ExternalSourceDto dto : sources.getItems()){

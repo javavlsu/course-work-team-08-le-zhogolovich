@@ -1,7 +1,9 @@
 package ru.vlsu.ispi.movieproject.exception;
 
-public class MovieImportException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class MovieImportException extends BaseException {
     public MovieImportException(String message) {
-        super(message);
+        super(message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

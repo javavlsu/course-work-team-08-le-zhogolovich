@@ -1,7 +1,9 @@
 package ru.vlsu.ispi.movieproject.exception;
 
-public class CountryMapException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class CountryMapException extends BaseException {
     public CountryMapException(String country) {
-        super("Ошибка маппинга жанра: " + country);
+        super("Ошибка маппинга жанра: " + country, HttpStatus.BAD_REQUEST);
     }
 }

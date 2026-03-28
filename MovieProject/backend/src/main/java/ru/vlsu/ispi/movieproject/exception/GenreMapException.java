@@ -1,7 +1,9 @@
 package ru.vlsu.ispi.movieproject.exception;
 
-public class GenreMapException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class GenreMapException extends BaseException {
   public GenreMapException(String genre) {
-    super("Ошибка маппинга жанра: " + genre);
+    super("Ошибка маппинга жанра: " + genre, HttpStatus.BAD_REQUEST);
   }
 }

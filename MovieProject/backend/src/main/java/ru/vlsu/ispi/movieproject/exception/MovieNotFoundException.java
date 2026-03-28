@@ -1,7 +1,9 @@
 package ru.vlsu.ispi.movieproject.exception;
 
-public class MovieNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class MovieNotFoundException extends BaseException {
     public MovieNotFoundException(Long id) {
-        super("Фильм c id: " + id + " не найден");
+        super("Фильм c id: " + id + " не найден", HttpStatus.NOT_FOUND);
     }
 }

@@ -1,7 +1,14 @@
 package ru.vlsu.ispi.movieproject.exception;
 
-public class KinopoiskApiException extends RuntimeException {
-    public KinopoiskApiException(String message) {
-        super(message);
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+public class KinopoiskApiException extends BaseException {
+    private final int apiStatusCode;
+    public KinopoiskApiException(String message, int apiStatusCode) {
+        super(message, HttpStatus.BAD_GATEWAY);
+        this.apiStatusCode = apiStatusCode;
     }
+
 }
