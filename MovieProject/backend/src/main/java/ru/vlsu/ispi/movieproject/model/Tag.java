@@ -12,6 +12,7 @@ import jakarta.persistence.EnumType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.vlsu.ispi.movieproject.enums.TagType;
 
 import java.util.HashSet;
 import java.util.Set;

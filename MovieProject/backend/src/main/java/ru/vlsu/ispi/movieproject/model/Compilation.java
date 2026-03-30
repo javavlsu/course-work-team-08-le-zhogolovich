@@ -39,10 +39,13 @@ public class Compilation extends AuditableEntity{
     @Column(name = "is_public", nullable = false)
     private Boolean isPublic;
 
+    @Column(name = "cover_url")
+    private String coverUrl;
+
     @ManyToMany
     @JoinTable(
-            name = "collection_movie",
-            joinColumns = @JoinColumn(name = "collection_id"),
+            name = "compilation_movie",
+            joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "movie_id")
     )
     private Set<Movie> movies = new HashSet<>();

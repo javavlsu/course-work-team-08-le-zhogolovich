@@ -38,16 +38,6 @@ import java.util.Optional;
  *  * </p>
  */
 public interface MovieRatingRepository extends JpaRepository<MovieRating, MovieRatingId> {
-
-    /**
-     * Возвращает все оценки конкретного фильма
-     *
-     * @param movieId идентификатор фильма
-     * @return список оценок фильма
-     */
-    List<MovieRating> findByIdMovieId(Long movieId);
-
-
     @Query("""
         SELECT AVG(r.rating)
         FROM MovieRating r

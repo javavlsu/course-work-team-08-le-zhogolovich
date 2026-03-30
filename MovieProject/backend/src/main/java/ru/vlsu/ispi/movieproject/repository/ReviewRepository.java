@@ -2,7 +2,6 @@ package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.vlsu.ispi.movieproject.model.Review;
-import ru.vlsu.ispi.movieproject.model.ReviewStatus;
 
 import java.util.List;
 

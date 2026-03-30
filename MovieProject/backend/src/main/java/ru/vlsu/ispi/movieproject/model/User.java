@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.vlsu.ispi.movieproject.enums.Role;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -58,5 +59,5 @@ public class User {
     private Set<MovieRating> movieRatings = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<CompilationRating> compilationRatings = new HashSet<>();
+    private Set<CompilationLike> compilationLikes = new HashSet<>();
 }

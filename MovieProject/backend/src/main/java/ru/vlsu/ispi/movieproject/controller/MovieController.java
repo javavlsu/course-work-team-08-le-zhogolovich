@@ -18,7 +18,6 @@ import ru.vlsu.ispi.movieproject.service.MovieService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/movies")
-@CrossOrigin(origins = "http://localhost:3000")
 public class MovieController {
     private final MovieService movieService;
 

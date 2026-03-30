@@ -17,7 +17,7 @@ import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.security.jwt.JwtService;
 import ru.vlsu.ispi.movieproject.service.AuthService;
-import ru.vlsu.ispi.movieproject.model.Role;
+import ru.vlsu.ispi.movieproject.enums.Role;
 
 @Service
 @AllArgsConstructor

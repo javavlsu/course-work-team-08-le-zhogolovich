@@ -1,4 +1,4 @@
-package ru.vlsu.ispi.movieproject.model;
+package ru.vlsu.ispi.movieproject.enums;
 
 public enum Role {
     USER,

@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "compilation_rating")
+@Table(name = "compilation_like")
 @Getter
 @Setter
 @NoArgsConstructor
-public class CompilationRating extends AuditableEntity{
+public class CompilationLike extends AuditableEntity{
     @EmbeddedId
-    private CompilationRatingId id;
+    private CompilationLikeId id;
 
     @ManyToOne
     @MapsId("userId")
@@ -25,9 +25,7 @@ public class CompilationRating extends AuditableEntity{
     private User user;
 
     @ManyToOne
-    @MapsId("collectionId")
-    @JoinColumn(name = "collection_id")
-    private Compilation movie;
-
-    private Integer rating;
+    @MapsId("compilationId")
+    @JoinColumn(name = "compilation_id")
+    private Compilation compilation;
 }

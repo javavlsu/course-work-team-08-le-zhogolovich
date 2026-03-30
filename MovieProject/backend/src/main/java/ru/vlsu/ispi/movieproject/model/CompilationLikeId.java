@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompilationRatingId implements Serializable {
+public class CompilationLikeId implements Serializable {
     private Long userId;
-    private Long collectionId;
+    private Long compilationId;
 }

@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/changeset/08-mappings.yaml
   - include:
       file: db/changelog/changeset/09-user-changes.yaml
+  - include:
+      file: db/changelog/changeset/10-compilation-changes.yaml

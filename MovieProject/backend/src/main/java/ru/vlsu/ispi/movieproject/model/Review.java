@@ -13,6 +13,7 @@ import jakarta.persistence.EnumType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.vlsu.ispi.movieproject.enums.ReviewStatus;
 
 @Entity
 @Table(name = "review")

@@ -2,7 +2,7 @@ package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.vlsu.ispi.movieproject.model.Tag;
-import ru.vlsu.ispi.movieproject.model.TagType;
+import ru.vlsu.ispi.movieproject.enums.TagType;
 
 import java.util.List;
 import java.util.Optional;
