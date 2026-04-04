@@ -29,7 +29,7 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public MovieFullDto getMovie(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails user) {
-        return movieService.getMovie(id, user != null ? user.getId() : null);
+    public MovieFullDto getMovie(@PathVariable Long id) {
+        return movieService.getMovie(id);
     }
 }

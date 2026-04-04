@@ -8,6 +8,7 @@ import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
 import ru.vlsu.ispi.movieproject.projection.CompilationStatsProjection;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -90,4 +91,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
     WHERE c.isPublic = true
     """)
     Page<CompilationProjection> findAllWithLikes(Pageable pageable, Long userId);
+
+    List<Compilation> findAllByAuthorId(Long userId);
 }

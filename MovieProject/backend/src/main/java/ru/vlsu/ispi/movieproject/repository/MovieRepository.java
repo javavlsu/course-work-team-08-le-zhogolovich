@@ -30,8 +30,6 @@ import java.util.Set;
  * </p>
  */
 public interface MovieRepository extends JpaRepository<Movie, Long> {
-    boolean existsByKinopoiskId(Integer kinopoiskId);
-
     @Query("SELECT m.kinopoiskId from Movie m")
     Set<Integer> findAllKinopoiskId();
 

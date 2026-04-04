@@ -8,7 +8,6 @@ import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
 import ru.vlsu.ispi.movieproject.enums.FileDirectory;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
-import ru.vlsu.ispi.movieproject.repository.MovieRepository;
 import ru.vlsu.ispi.movieproject.service.FileStorageService;
 
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CompilationMapper {
     private final MovieMapper movieMapper;
-    private final MovieRepository movieRepository;
     private final FileStorageService fileStorageService;
 
     public CompilationDto toDto(Compilation c, Long likesCount, boolean likedByUser) {

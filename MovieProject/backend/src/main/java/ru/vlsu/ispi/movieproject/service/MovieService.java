@@ -8,7 +8,7 @@ import ru.vlsu.ispi.movieproject.model.Movie;
 
 public interface MovieService {
     Page<MovieDto> getAllMovies(Pageable pageable);
-    MovieFullDto getMovie(Long id, Long userId);
+    MovieFullDto getMovie(Long id);
     void enrichMovie(Movie movie);
     void loadExternalSources(Movie movie);
 }

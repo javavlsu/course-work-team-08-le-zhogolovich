@@ -17,7 +17,6 @@ import ru.vlsu.ispi.movieproject.service.AuthService;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
     private final AuthService authService;
 

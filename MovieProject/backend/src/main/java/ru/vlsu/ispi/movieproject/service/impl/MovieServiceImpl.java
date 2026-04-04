@@ -1,7 +1,8 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import ru.vlsu.ispi.movieproject.model.ExternalSource;
 import ru.vlsu.ispi.movieproject.model.Movie;
 import ru.vlsu.ispi.movieproject.repository.MovieRatingRepository;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;
+import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.KinopoiskApiService;
 import ru.vlsu.ispi.movieproject.service.MovieService;
 
@@ -23,14 +25,16 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final KinopoiskApiService kinopoiskApiService;
     private final MovieRatingRepository movieRatingRepository;
     private final MovieMapper movieMapper;
+    private final CurrentUserService currentUserService;
 
-    private final Duration DETAILS_DURATION = Duration.ofDays(30);
+    @Value("${movie.details.duration}")
+    private Duration detailsDuration;
 
     @Override
     public Page<MovieDto> getAllMovies(Pageable pageable) {
@@ -39,13 +43,15 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public MovieFullDto getMovie(Long id, Long userId) {
+    public MovieFullDto getMovie(Long id) {
+        Long userId = currentUserService.getCurrentUserID();
+
         if (id == null) {
             throw new IllegalArgumentException("Id фильма не может быть пустым");
         }
         Movie movie = movieRepository.findByIdForUpdate(id).orElseThrow(() -> new MovieNotFoundException(id));
 
-        if (movie.getDetailsLoadedAt() == null || movie.getDetailsLoadedAt().isBefore(LocalDateTime.now().minus(DETAILS_DURATION))) {
+        if (movie.getDetailsLoadedAt() == null || movie.getDetailsLoadedAt().isBefore(LocalDateTime.now().minus(detailsDuration))) {
             enrichMovie(movie);
         }
 
