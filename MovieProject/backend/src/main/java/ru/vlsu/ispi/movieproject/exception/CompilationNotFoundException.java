@@ -7,4 +7,7 @@ public class CompilationNotFoundException extends BaseException{
         super("Подборка c id: " + id + " не найдена", HttpStatus.NOT_FOUND);
     }
 
+    public CompilationNotFoundException() {
+        super("Одна или несколько подборок не найдены", HttpStatus.NOT_FOUND);
+    }
 }

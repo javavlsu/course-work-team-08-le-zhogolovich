@@ -16,7 +16,6 @@ public interface CompilationService {
     void unlike(Long compilationId);
     CompilationDto getById(Long id);
     Page<CompilationDto> getAll(Pageable pageable);
-    void addMovie (Long compilationId, Long movieId);
     CompilationDto removeMovie(Long compilationId, Long movieId);
     List<CompilationDto> getUserCompilations();
 }

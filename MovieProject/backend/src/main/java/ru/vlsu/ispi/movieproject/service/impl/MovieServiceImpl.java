@@ -1,20 +1,25 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourceDto;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourcesResponseDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDetailsDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
+import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.MovieNotFoundException;
 import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
+import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.model.ExternalSource;
 import ru.vlsu.ispi.movieproject.model.Movie;
+import ru.vlsu.ispi.movieproject.repository.CompilationRepository;
 import ru.vlsu.ispi.movieproject.repository.MovieRatingRepository;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
@@ -23,6 +28,7 @@ import ru.vlsu.ispi.movieproject.service.MovieService;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +38,9 @@ public class MovieServiceImpl implements MovieService {
     private final MovieRatingRepository movieRatingRepository;
     private final MovieMapper movieMapper;
     private final CurrentUserService currentUserService;
+    private final EntityManager entityManager;
+    private final CompilationRepository compilationRepository;
+
 
     @Value("${movie.details.duration}")
     private Duration detailsDuration;
@@ -97,5 +106,28 @@ public class MovieServiceImpl implements MovieService {
         }
     }
 
+    @Override
+    @Transactional
+    public void addMovieToCompilations(Long id, List<Long> compilationIds) {
+        Long userId = currentUserService.getCurrentUserID();
 
+        Movie movie = entityManager.getReference(Movie.class, id);
+
+        List<Compilation> compilations = compilationRepository.findAllById(compilationIds);
+
+        if (compilations.size() != compilationIds.size()) {
+            throw new CompilationNotFoundException();
+        }
+
+        for (Compilation compilation : compilations) {
+            if (!compilation.getAuthor().getId().equals(userId)) {
+                throw new AccessDeniedException("Нет доступа к одной из подборок");
+            }
+            if (compilation.getMovies().contains(movie)) {
+                continue;
+            }
+
+            compilation.getMovies().add(movie);
+        }
+    }
 }

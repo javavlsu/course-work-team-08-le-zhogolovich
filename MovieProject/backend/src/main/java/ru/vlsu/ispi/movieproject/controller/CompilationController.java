@@ -75,13 +75,8 @@ public class CompilationController {
         return compilationService.getUserCompilations();
     }
 
-    @PostMapping("/{compilationId}/movie/{movieId}")
-    public void addMovieToCompilation(@PathVariable Long compilationId, @PathVariable Long movieId) {
-        compilationService.addMovie(compilationId, movieId);
-    }
-
     @DeleteMapping("/{compilationId}/movie/{movieId}")
-    public void removeMovieFromCompilation(@PathVariable Long compilationId, @PathVariable Long movieId) {
-        compilationService.removeMovie(compilationId, movieId);
+    public CompilationDto removeMovieFromCompilation(@PathVariable Long compilationId, @PathVariable Long movieId) {
+        return compilationService.removeMovie(compilationId, movieId);
     }
 }

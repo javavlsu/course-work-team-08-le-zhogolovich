@@ -13,14 +13,12 @@ import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.compilation.UpdateCompilationRequest;
 import ru.vlsu.ispi.movieproject.enums.FileDirectory;
 import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
-import ru.vlsu.ispi.movieproject.exception.MovieAlreadyInCompilationException;
 import ru.vlsu.ispi.movieproject.exception.MovieIsNotInCompilationException;
 import ru.vlsu.ispi.movieproject.exception.UserNotFoundException;
 import ru.vlsu.ispi.movieproject.mapper.CompilationMapper;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.model.CompilationLike;
 import ru.vlsu.ispi.movieproject.model.CompilationLikeId;
-import ru.vlsu.ispi.movieproject.model.Movie;
 import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
 import ru.vlsu.ispi.movieproject.projection.CompilationStatsProjection;
@@ -142,23 +140,6 @@ public class CompilationServiceImpl implements CompilationService {
 
         Page<CompilationProjection> page = compilationRepository.findAllWithLikes(pageable, userId);
         return page.map(compilationMapper::fromProjection);
-    }
-
-    @Override
-    public void addMovie(Long compilationId, Long movieId) {
-        Long userId = currentUserService.getCurrentUserID();
-
-        Compilation compilation = compilationRepository.findById(compilationId)
-                .orElseThrow(() -> new CompilationNotFoundException(compilationId));
-        if (!compilation.getAuthor().getId().equals(userId)) {
-            throw new AccessDeniedException("Вы не являетесь владельцем подборки");
-        }
-
-        Movie movie = entityManager.getReference(Movie.class, movieId);
-        if (compilation.getMovies().contains(movie)) {
-            throw new MovieAlreadyInCompilationException();
-        }
-        compilation.getMovies().add(movie);
     }
 
     @Override
