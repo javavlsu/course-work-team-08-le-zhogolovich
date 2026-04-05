@@ -10,8 +10,10 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import EditProfile from "./pages/EditProfile";
+import MoviePage from "./pages/MoviePage";
+import CreateCompilationPage from "./pages/CreateCompilationPage";
 
-// Простой компонент для защищённых роутов
+
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" />;
@@ -45,6 +47,8 @@ function App() {
         />
 
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/movies/:id" element={<MoviePage />} />
+        <Route path="/create-compilation" element={<CreateCompilationPage />} />
       </Routes>
     </Router>
   );
