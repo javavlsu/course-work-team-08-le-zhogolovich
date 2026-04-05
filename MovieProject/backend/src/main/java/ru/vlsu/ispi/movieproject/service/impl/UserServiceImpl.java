@@ -46,4 +46,28 @@ public class UserServiceImpl implements UserService {
 
         return UserMapper.mapToDto(user);
     }
+
+    @Override
+    @Transactional
+    public UserDto updateProfile(Long id, UserDto userDto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        if (userDto.getUsername() != null && !userDto.getUsername().isBlank()) {
+            user.setUsername(userDto.getUsername());
+        }
+
+        user.setAboutMe(userDto.getAboutMe());
+
+        User savedUser = userRepository.save(user);
+
+        return new UserDto(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getEmail(),
+                savedUser.getRole().name(),
+                savedUser.getAvatarUrl(),
+                savedUser.getAboutMe()
+        );
+    }
 }

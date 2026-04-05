@@ -9,7 +9,7 @@ const API_BASE_URL = "http://localhost:8080/movie-project/backend";
 function ProfilePage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [compilations, setCompilations] = useState([]); // Состояние для подборок
+  const [compilations, setCompilations] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   
@@ -24,7 +24,6 @@ function ProfilePage() {
 
     const fetchProfileData = async () => {
       try {
-        // Загружаем данные пользователя и его подборки параллельно
         const [userRes, compRes] = await Promise.all([
           axios.get("http://localhost:8080/movie-project/users/me", {
             headers: { Authorization: `Bearer ${token}` },
@@ -35,7 +34,7 @@ function ProfilePage() {
         ]);
 
         setUser(userRes.data);
-        setCompilations(compRes.data); // Сохраняем список подборок
+        setCompilations(compRes.data);
       } catch (error) {
         console.error("Ошибка загрузки данных", error);
         if (error.response?.status === 403) {
@@ -51,6 +50,12 @@ function ProfilePage() {
 
     fetchProfileData();
   }, [navigate]);
+  const handleLogout = () => {
+  
+    localStorage.removeItem("token");
+
+    navigate("/login");
+};
 
   if (loading) return <div className="text-white text-center mt-5">Загрузка...</div>;
   if (errorMsg) return <div className="text-danger text-center mt-5">{errorMsg}</div>;
@@ -64,6 +69,13 @@ function ProfilePage() {
           <Link to="/collections" className="nav-btn">Подборки</Link>
           <Link to="/reviews" className="nav-btn">Рецензии</Link>
           <Link to="/profile" className="nav-btn">Моя страница</Link>
+
+          <button 
+    onClick={handleLogout} 
+    className="nav-btn border-0 bg-transparent text-danger fw-bold"
+  >
+    Выйти
+  </button>
         </nav>
       </header>
 
@@ -88,16 +100,15 @@ function ProfilePage() {
             <div className="col ps-md-5 pt-1">
               <span className="text-white fs-3">@{user.username || "user"}</span>
               <div className="ms-1 mt-1" style={{ height: "2px", backgroundColor: "white", width: "100%" }}></div>
-              <p className="text-white fs-5 mt-3">Email: {user.email}</p>
+              <p className="text-white fs-5 mt-3"> {user.aboutMe}</p>
             </div>
           </div>
 
-          {/* Секция подборок */}
           <section className="mb-5 text-center section-divider">
             <h2 className="section-title fw-light mb-2 pt-4 d-inline-block w-75 text-white">Мои подборки</h2>
 
             <div className="text-center w-100 mt-4 mb-5"> 
-        {/* Важно: путь в 'to' должен быть таким же, как в App.js */}
+ 
         <Link 
             to="/create-compilation"
             className="custom-btn user-pill py-3 px-5 text-decoration-none text-center d-inline-block"
@@ -114,8 +125,7 @@ function ProfilePage() {
                   <div className="col" key={comp.id}>
                     <Link to={`/compilations/${comp.id}`} className="coll-card d-block text-decoration-none">
                       <div className="img-box rounded-4 overflow-hidden mb-3 shadow-sm" style={{ aspectRatio: '1/1' }}>
-                        {/* Иконка замка, если подборка приватная (если есть такое поле) */}
-                        {comp.isPrivate && (
+                        {!comp.isPublic && (
                           <div className="card-badge" style={{ position: 'absolute', top: '10px', left: '10px', color: 'white' }}>
                             <i className="fa-solid fa-lock"></i>
                           </div>
@@ -127,7 +137,7 @@ function ProfilePage() {
                         />
                       </div>
                       <p className="text-light m-0 fw-bold">{comp.title}</p>
-                      <small className="text-white-50">{comp.moviesCount || 0} фильмов</small>
+                      
                     </Link>
                   </div>
                 ))

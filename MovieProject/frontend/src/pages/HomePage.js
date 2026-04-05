@@ -53,10 +53,14 @@ function HomePage() {
 
           <div className="movie-grid">
             {movies.map((movie) => (
-              <Link to={`/movies/${movie.id}`} key={movie.id} className="movie-card text-decoration-none">
-  <img src={movie.posterUrl} alt={movie.name} />
-  <p className="text-white mt-2 text-center">{movie.name}</p>
-</Link>
+              <Link
+                to={`/movies/${movie.id}`}
+                key={movie.id}
+                className="movie-card text-decoration-none"
+              >
+                <img src={movie.posterUrl} alt={movie.name} />
+                <p className="text-white mt-2 text-center">{movie.name}</p>
+              </Link>
             ))}
           </div>
         </section>

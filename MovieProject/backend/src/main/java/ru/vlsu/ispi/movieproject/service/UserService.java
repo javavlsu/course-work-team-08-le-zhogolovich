@@ -12,4 +12,4 @@ public interface UserService {
     UserDto getUserById(Long id);
 
     UserDto updateAvatar(Long id, MultipartFile file);
-}
+    UserDto updateProfile(Long id, UserDto userDto);}

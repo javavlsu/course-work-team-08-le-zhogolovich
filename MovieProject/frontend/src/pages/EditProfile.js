@@ -7,7 +7,7 @@ const EditProfile = () => {
         username: '',
         email: '',
         avatarUrl: '', 
-        bio: ''
+        aboutMe: ''
     });
     
     const [selectedFile, setSelectedFile] = useState(null);
@@ -75,12 +75,20 @@ const EditProfile = () => {
                 });
             }
 
-            // место под никнейм и описание профиля
-            
-            navigate('/my-profile'); 
+            await axios.patch(
+              `${API_BASE_URL}/users/me`,
+              {
+                username: user.username,
+                aboutMe: user.aboutMe,
+              },
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            );
+            navigate('/profile'); 
         } catch (error) {
             console.error("Ошибка при сохранении", error);
-            alert("Не удалось сохранить изменения.");
+            alert("Не удалось сохранить изменения. Вероятно такой пользоваетль уже существует");
         } finally {
             setLoading(false);
         }
@@ -160,8 +168,8 @@ const EditProfile = () => {
                                     <textarea 
                                         className="form-control bg-transparent text-white border-white rounded-3 py-2 px-3 fs-5" 
                                         rows="4" 
-                                        value={user.bio || ''}
-                                        onChange={(e) => setUser({...user, bio: e.target.value})}
+                                        value={user.aboutMe || ''}
+                                        onChange={(e) => setUser({...user, aboutMe: e.target.value})}
                                         style={{ maxWidth: '600px', borderWidth: '2px', resize: 'none' }}
                                     />
                                 </div>

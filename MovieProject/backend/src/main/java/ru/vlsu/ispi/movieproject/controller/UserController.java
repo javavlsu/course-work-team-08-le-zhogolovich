@@ -4,11 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.user.UserDto;
 import ru.vlsu.ispi.movieproject.security.CustomUserDetails;
@@ -32,6 +28,12 @@ public class UserController {
     @GetMapping("/me")
     public UserDto getCurrentUser(@AuthenticationPrincipal CustomUserDetails user) {
         return userService.getUserById(user.getId());
+    }
+    @PatchMapping("/me")
+    public UserDto updateProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                 @RequestBody UserDto userDto) {
+        // Вызываем сервис, передавая ID из токена и данные из тела запроса
+        return userService.updateProfile(userDetails.getId(), userDto);
     }
 
     @PatchMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
