@@ -30,10 +30,7 @@ const MoviePage = () => {
     const token = localStorage.getItem('token');
 
     useEffect(() => {
-        if (!token) {
-            navigate("/login");
-            return;
-        }
+        if (token) {
         try {
             const decoded = jwtDecode(token);
             if (decoded.role === 'ADMIN' || decoded.roles?.includes('ROLE_ADMIN')) {
@@ -42,26 +39,30 @@ const MoviePage = () => {
         } catch (e) {
             console.error("Ошибка декодирования токена", e);
         }
+    }
 
         const fetchData = async () => {
             try {
-                const [movieRes, userRes] = await Promise.all([
-                    axios.get(`http://localhost:8080/movie-project/movies/${id}`, {
-                        headers: { Authorization: `Bearer ${token}` }
-                    }),
-                    axios.get("http://localhost:8080/movie-project/users/me", {
-                        headers: { Authorization: `Bearer ${token}` }
-                    })
-                ]);
+              // Запрос фильма (без токена или с ним)
+              const movieRes = await axios.get(`${API_BASE_URL}/movies/${id}`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+              });
+              setMovie(movieRes.data);
+              setUserRating(movieRes.data.rating || 0);
 
-                setMovie(movieRes.data);
-                setUserRating(movieRes.data.rating || 0);
+              // Запрос профиля (ТОЛЬКО если есть токен)
+              if (token) {
+                const userRes = await axios.get(`${API_BASE_URL}/users/me`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
                 setCurrentUser(userRes.data);
-                setLoading(false);
+              }
             } catch (error) {
-                console.error("Ошибка при загрузке данных", error);
-                if (error.response?.status === 401) navigate('/login');
-                setLoading(false);
+              console.error("Ошибка при загрузке данных", error);
+              if (error.response?.status === 401) navigate("/login");
+              setLoading(false);
+            } finally {
+              setLoading(false);
             }
         };
 
@@ -119,6 +120,20 @@ const MoviePage = () => {
         if (!voted) {
             setVoted(true);
         }
+    };
+
+    const checkAuth = () => {
+      if (!token) {
+        if (
+          window.confirm(
+            "Чтобы выполнить это действие, нужно войти. Перейти на страницу входа?",
+          )
+        ) {
+          navigate("/login");
+        }
+        return false;
+      }
+      return true;
     };
 
     if (loading) return <div className="text-white text-center mt-5">Загрузка...</div>;
@@ -237,7 +252,7 @@ const MoviePage = () => {
                     background: "transparent",
                     border: "1px solid white",
                   }}
-                  onClick={handleOpenModal}
+                  onClick={() => checkAuth() && handleOpenModal()}
                 >
                   <i className="fa-solid fa-folder-plus me-2"></i> В подборку
                 </button>
@@ -261,7 +276,7 @@ const MoviePage = () => {
 
                     <input
                       type="text"
-                      className="form-control custom-input mb-4"
+                      className=" form-control custom-input2 mb-4 "
                       placeholder="Поиск подборки..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -300,9 +315,6 @@ const MoviePage = () => {
                                 <div className="text-white fw-bold">
                                   {comp.title}
                                 </div>
-                                <div className="text-white-50 small">
-                                  {comp.moviesCount || 0} фильмов
-                                </div>
                               </div>
                             </div>
                             <button
@@ -327,15 +339,14 @@ const MoviePage = () => {
               {/* Рейтинг  */}
               <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
                 <div className="star-rating-interactive">
-               
                   <input
                     type="range"
                     className="star-range-input"
                     min="0"
                     max="5"
-                    step="0.5" 
+                    step="0.5"
                     value={userRating}
-                    onChange={handleRatingChange}
+                    onChange={(e) => checkAuth() && handleRatingChange(e)}
                   />
                   <div className="stars-display">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -371,33 +382,64 @@ const MoviePage = () => {
             </h2>
 
             {/* Форма нового комментария  */}
-            <div className="p-4 mb-5 mx-auto" style={{ maxWidth: "800px" }}>
-              <div className="d-flex align-items-center gap-3 mb-3">
-                <img
-                  src={
-                    currentUser.avatarUrl
-                      ? `${API_BASE_URL}${currentUser.avatarUrl}`
-                      : avatarDefault
-                  }
-                  className="rounded-circle"
-                  width="40"
-                  height="40"
-                  alt="My Avatar"
-                  style={{ objectFit: "cover" }}
-                />
-                <Link to="/profile" className="text-decoration-none text-white">
-                  @{currentUser.username || "loading..."}
-                </Link>
+            {token ? (
+              <div className="p-4 mb-5 mx-auto" style={{ maxWidth: "800px" }}>
+                <div className="d-flex align-items-center gap-3 mb-3">
+                  <img
+                    src={
+                      currentUser.avatarUrl
+                        ? `${API_BASE_URL}${currentUser.avatarUrl}`
+                        : avatarDefault
+                    }
+                    className="rounded-circle"
+                    width="40"
+                    height="40"
+                    alt="My Avatar"
+                    style={{ objectFit: "cover" }}
+                  />
+                  <Link
+                    to="/profile"
+                    className="text-decoration-none text-white"
+                  >
+                    @{currentUser.username || "loading..."}
+                  </Link>
+                </div>
+                <textarea
+                  className="form-control text-white custom-input mb-3"
+                  style={{ minHeight: "100px" }}
+                  placeholder="Введите текст..."
+                ></textarea>
+                <div className="d-flex justify-content-end">
+                  <button className="custom-btn py-2 px-4">Отправить</button>
+                </div>
               </div>
-              <textarea
-                className="form-control text-white custom-input mb-3"
-                style={{ minHeight: "100px" }}
-                placeholder="Введите текст..."
-              ></textarea>
-              <div className="d-flex justify-content-end">
-                <button className="custom-btn py-2 px-4">Отправить</button>
+            ) : (
+              <div
+                className="p-5 mb-5 mx-auto text-center border border-secondary rounded-4"
+                style={{
+                  maxWidth: "800px",
+                  background: "rgba(255,255,255,0.05)",
+                }}
+              >
+                <p className="text-white-50 fs-5 mb-4">
+                  Вы пока не можете оставлять комментарии
+                </p>
+                <div className="d-flex justify-content-center gap-3">
+                  <Link
+                    to="/register"
+                    className="custom-btn py-2 px-4 text-decoration-none"
+                  >
+                    Зарегистрироваться
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="btn btn-outline-light rounded-pill py-2 px-4"
+                  >
+                    Войти
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Список всех комментариев */}
             <div

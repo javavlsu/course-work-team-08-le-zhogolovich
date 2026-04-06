@@ -14,42 +14,62 @@ const CompilationPage = () => {
     const [isLiked, setIsLiked] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            navigate("/login");
-            return;
-        }
-
-        const fetchData = async () => {
-    try {
-        const [compRes, userRes] = await Promise.all([
-            axios.get(`${API_BASE_URL}/compilations/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            }),
-            axios.get(`${API_BASE_URL}/users/me`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-        ]);
-
-        setCompilation(compRes.data);
-        setCurrentUser(userRes.data);
-        
-        if (compRes.data.likedByCurrentUser !== undefined) {
-            setIsLiked(compRes.data.likedByCurrentUser);
-        }
-    } catch (error) {
-        console.error("Ошибка загрузки:", error);
-    } finally {
-        setLoading(false);
-    }
-};
-        fetchData();
-    }, [id, navigate]);
-
-    const handleLike = async () => {
     const token = localStorage.getItem("token");
-    const previousIsLiked = isLiked;
-    const previousLikesCount = compilation.likesCount;
+  
+
+    const fetchData = async () => {
+        try {
+            const compRes = await axios.get(`${API_BASE_URL}/compilations/${id}`, {
+                headers: token ? { Authorization: `Bearer ${token}` } : {}
+            });
+            setCompilation(compRes.data);
+            
+            if (compRes.data.likedByCurrentUser !== undefined) {
+                setIsLiked(compRes.data.likedByCurrentUser);
+            }
+
+            if (token) {
+                try {
+                    const userRes = await axios.get(`${API_BASE_URL}/users/me`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    setCurrentUser(userRes.data);
+                } catch (e) {
+                    console.error("Не удалось загрузить данные пользователя", e);
+                }
+            }
+        } catch (error) {
+            console.error("Ошибка загрузки подборки:", error);
+            if (error.response?.status === 401) {
+                localStorage.removeItem("token");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchData();
+}, [id]);
+
+    const checkAuth = () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        if (
+          window.confirm(
+            "Войдите в аккаунт, чтобы взаимодействовать с подборками. Перейти к входу?",
+          )
+        ) {
+          navigate("/login");
+        }
+        return false;
+      }
+      return true;
+    };
+
+      const handleLike = async () => {
+        if (!checkAuth()) return;
+      const token = localStorage.getItem("token");
+      const previousIsLiked = isLiked;
+      const previousLikesCount = compilation.likesCount;
 
     
     setIsLiked(!previousIsLiked);
@@ -76,6 +96,7 @@ const CompilationPage = () => {
     }
 };
     const handleDelete = async () => {
+      if (!checkAuth()) return;
     if (!window.confirm("Вы уверены, что хотите удалить эту подборку?")) {
         return;
     }
@@ -157,7 +178,7 @@ const CompilationPage = () => {
                     {compilation.likesCount || 0}
                   </span>
                   <button
-                    onClick={handleLike}
+                    onClick={handleLike} 
                     className={`like-btn ${isLiked ? "active" : ""}`}
                     style={{
                       background: "none",

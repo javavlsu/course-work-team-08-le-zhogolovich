@@ -9,15 +9,13 @@ function HomePage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+    const headers = {};
+  if (token) {
+    headers["Authorization"] = "Bearer " + token;
+  }
 
     fetch(`http://localhost:8080/movie-project/movies?page=${page}&size=20`, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
+      headers,
     })
       .then((response) => response.json())
       .then((data) => setMovies(data.content))

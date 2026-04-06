@@ -23,14 +23,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <HomePage />
-            </PrivateRoute>
-          }
-        />
+        <Route path="/" element={<HomePage />} />
 
         <Route path="/login" element={<LoginPage />} />
 
@@ -46,11 +39,12 @@ function App() {
           }
         />
 
-        <Route path="*" element={<Navigate to="/" />} />
+        
         <Route path="/movies/:id" element={<MoviePage />} />
         <Route path="/create-compilation" element={<CreateCompilationPage />} />
         <Route path="/compilations/:id" element={<CompilationPage />} />
         <Route path="/compilations/:id/edit" element={<EditCompilation />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
