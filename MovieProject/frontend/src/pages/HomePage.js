@@ -5,6 +5,8 @@ function HomePage() {
   const [movies, setMovies] = useState([]);
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -18,7 +20,13 @@ function HomePage() {
       headers,
     })
       .then((response) => response.json())
-      .then((data) => setMovies(data.content))
+      .then((data) => {
+      console.log("Данные с сервера:", data); 
+      setMovies(data.content || []);
+      
+      setTotalPages(data.page.totalPages || 0);
+    setPage(data.page.number);
+    })
       .catch((error) => console.error("Ошибка загрузки фильмов:", error));
   }, [page, navigate]);
 
@@ -61,6 +69,30 @@ function HomePage() {
               </Link>
             ))}
           </div>
+
+
+          {/* Блок пагинации */}
+    <div className="d-flex justify-content-center align-items-center gap-3 mt-5 mb-5">
+      <button 
+        className="custom-btn" 
+        onClick={() => setPage(prev => Math.max(0, prev - 1))}
+        disabled={page === 0}
+      >
+        <i className="fa-solid fa-chevron-left me-2"></i> Назад
+      </button>
+
+      <span className="text-white fs-5">
+        Страница <strong>{page + 1}</strong> из {totalPages}
+      </span>
+
+      <button 
+        className="custom-btn" 
+        onClick={() => setPage(prev => prev + 1)}
+        disabled={page >= totalPages - 1}
+      >
+        Вперед <i className="fa-solid fa-chevron-right ms-2"></i>
+      </button>
+    </div>
         </section>
       </main>
     </div>

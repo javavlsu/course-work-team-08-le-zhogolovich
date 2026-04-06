@@ -68,19 +68,40 @@ const MoviePage = () => {
 
         fetchData();
     }, [id, navigate, token]);
+
+    useEffect(() => {
+  if (showModal) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'unset';
+  }
+}, [showModal]);
+
     const handleOpenModal = async () => {
-        setShowModal(true);
-        setModalLoading(true);
-        try {
-            const res = await axios.get(`${API_BASE_URL}/compilations/my`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUserCompilations(res.data);
-        } catch (e) {
-            console.error("Ошибка загрузки подборок", e);
-        } finally {
-            setModalLoading(false);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        if (
+          window.confirm(
+            "Чтобы добавить фильм в подборку, нужно войти в аккаунт. Перейти к входу?",
+          )
+        ) {
+          navigate("/login");
         }
+        return;
+      }
+
+      setShowModal(true);
+      setModalLoading(true);
+      try {
+        const res = await axios.get(`${API_BASE_URL}/compilations/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserCompilations(res.data);
+      } catch (e) {
+        console.error("Ошибка загрузки подборок", e);
+      } finally {
+        setModalLoading(false);
+      }
     };
 
     const handleAddToCompilation = async (compilationId) => {
