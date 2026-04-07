@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../api/apiClient";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const CreateCompilationPage = () => {
   const navigate = useNavigate();
@@ -14,26 +15,24 @@ const CreateCompilationPage = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setPreviewUrl(event.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    setImageFile(file);
+
+    const reader = new FileReader();
+    reader.onload = (event) => setPreviewUrl(event.target.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!title.trim()) {
-      alert("Пожалуйста, введите название подборки");
+      alert("Введите название");
       return;
     }
 
     setLoading(true);
-    const token = localStorage.getItem("token");
 
     const formData = new FormData();
     formData.append("title", title);
@@ -45,23 +44,11 @@ const CreateCompilationPage = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/movie-project/compilations",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      console.log("Успешно создано:", response.data);
-      navigate("/profile"); 
+      await apiClient.post("/compilations", formData);
+      navigate("/profile");
     } catch (error) {
-      console.error("Ошибка при создании подборки:", error);
-      const errorMsg =
-        error.response?.data?.message || "Не удалось сохранить подборку";
-      alert("Ошибка: " + errorMsg);
+      const msg = error.response?.data?.message || "Ошибка";
+      alert(msg);
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import apiClient from "../api/apiClient";
 import taksaLogo from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -15,22 +15,19 @@ function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:8080/movie-project/auth/login",
-        {
-          login: email,
-          password: password,
-        },
-      );
+      const res = await apiClient.post("/auth/login", {
+        login: email.trim(),
+        password,
+      });
 
-      const data = response.data;
-      console.log(response.data);
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
+      const { token, refreshToken } = res.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("refreshToken", refreshToken);
 
       navigate("/");
     } catch (err) {
-      setError("Неверный логин или пароль");
+      setError(err.response?.data?.message || "Ошибка входа");
     }
   };
 

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import apiClient from "../api/apiClient";
+import "bootstrap/dist/css/bootstrap.min.css";
+
+const API_BASE_URL = "http://localhost:8080/movie-project";
 
 const EditCompilation = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const navigate = useNavigate();
-  const API_BASE_URL = "http://localhost:8080/movie-project";
 
   const [compilation, setCompilation] = useState({
     title: "",
     description: "",
     coverUrl: "",
-    isPublic: true, 
+    isPublic: true,
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -21,31 +23,29 @@ const EditCompilation = () => {
   useEffect(() => {
     const fetchCompilation = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_BASE_URL}/compilations/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiClient.get(`/compilations/${id}`);
         setCompilation(response.data);
       } catch (error) {
-        console.error("Ошибка при загрузке подборки", error);
-        alert("Не удалось загрузить данные подборки");
+        console.error("Ошибка загрузки", error);
+        alert("Не удалось загрузить подборку");
       }
     };
+
     fetchCompilation();
   }, [id]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
+    if (!file) return;
+
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const getCoverImage = () => {
     if (previewUrl) return previewUrl;
     if (compilation.coverUrl) return `${API_BASE_URL}${compilation.coverUrl}`;
-    return "/images/default-collection.png"; // Заглушка, если нет фото
+    return "/images/default-collection.png";
   };
 
   const handleSubmit = async (e) => {
@@ -53,8 +53,6 @@ const EditCompilation = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-
       const formData = new FormData();
 
       formData.append("title", compilation.title);
@@ -62,25 +60,19 @@ const EditCompilation = () => {
       formData.append("isPublic", compilation.isPublic);
 
       if (selectedFile) {
-        formData.append("cover", selectedFile); 
+        formData.append("cover", selectedFile);
       }
 
-      await axios.patch(`${API_BASE_URL}/compilations/${id}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-         
-        },
-      });
+      await apiClient.patch(`/compilations/${id}`, formData);
 
-      alert("Подборка успешно обновлена!");
       navigate(`/compilations/${id}`);
     } catch (error) {
-      console.error("Ошибка при сохранении", error);
-      alert(
-        error.response?.data?.message +
-          " Вероятно файл обложки слишком тяжелый, попробуйте снова с файлом меньшего размера (лимит 1 мб). " ||
-          "Не удалось сохранить изменения.",
-      );
+      console.error("Ошибка сохранения", error);
+
+      const msg =
+        error.response?.data?.message || "Файл слишком большой (лимит ~1MB)";
+
+      alert(msg);
     } finally {
       setLoading(false);
     }

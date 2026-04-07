@@ -1,34 +1,30 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import apiClient from "../api/apiClient";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function HomePage() {
   const [movies, setMovies] = useState([]);
-  const navigate = useNavigate();
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const fetchMovies = async () => {
+      try {
+        const res = await apiClient.get(`/movies?page=${page}&size=20`);
 
-    const headers = {};
-  if (token) {
-    headers["Authorization"] = "Bearer " + token;
-  }
+        setMovies(res.data.content || []);
+        setTotalPages(res.data.page?.totalPages || 0);
+        if (res.page?.number !== page) {
+          setPage(res.page.number);
+        }
+      } catch (error) {
+        console.error("Ошибка загрузки фильмов:", error);
+      }
+    };
 
-    fetch(`http://localhost:8080/movie-project/movies?page=${page}&size=20`, {
-      headers,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-      console.log("Данные с сервера:", data); 
-      setMovies(data.content || []);
-      
-      setTotalPages(data.page.totalPages || 0);
-    setPage(data.page.number);
-    })
-      .catch((error) => console.error("Ошибка загрузки фильмов:", error));
-  }, [page, navigate]);
+    fetchMovies();
+  }, [page]);
 
   return (
     <div className="wrapper">
@@ -70,29 +66,28 @@ function HomePage() {
             ))}
           </div>
 
-
           {/* Блок пагинации */}
-    <div className="d-flex justify-content-center align-items-center gap-3 mt-5 mb-5">
-      <button 
-        className="custom-btn" 
-        onClick={() => setPage(prev => Math.max(0, prev - 1))}
-        disabled={page === 0}
-      >
-        <i className="fa-solid fa-chevron-left me-2"></i> Назад
-      </button>
+          <div className="d-flex justify-content-center align-items-center gap-3 mt-5 mb-5">
+            <button
+              className="custom-btn"
+              onClick={() => setPage((prev) => Math.max(0, prev - 1))}
+              disabled={page === 0}
+            >
+              <i className="fa-solid fa-chevron-left me-2"></i> Назад
+            </button>
 
-      <span className="text-white fs-5">
-        Страница <strong>{page + 1}</strong> из {totalPages}
-      </span>
+            <span className="text-white fs-5">
+              Страница <strong>{page + 1}</strong> из {totalPages}
+            </span>
 
-      <button 
-        className="custom-btn" 
-        onClick={() => setPage(prev => prev + 1)}
-        disabled={page >= totalPages - 1}
-      >
-        Вперед <i className="fa-solid fa-chevron-right ms-2"></i>
-      </button>
-    </div>
+            <button
+              className="custom-btn"
+              onClick={() => setPage((prev) => prev + 1)}
+              disabled={page >= totalPages - 1}
+            >
+              Вперед <i className="fa-solid fa-chevron-right ms-2"></i>
+            </button>
+          </div>
         </section>
       </main>
     </div>

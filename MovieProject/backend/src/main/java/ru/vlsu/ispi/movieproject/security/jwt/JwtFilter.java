@@ -33,13 +33,19 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = getTokenFromRequest(request);
-        if (token != null && jwtService.isTokenValid(token)) {
-            Long userId = jwtService.extractUserId(token);
-            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                setCustomUserDetailsToSecurityContextHolder(userId);
+        try{
+            String token = getTokenFromRequest(request);
+            if (token != null && jwtService.isTokenValid(token)) {
+                Long userId = jwtService.extractUserId(token);
+                if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    setCustomUserDetailsToSecurityContextHolder(userId);
+                }
             }
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
+
         filterChain.doFilter(request, response);
     }
 

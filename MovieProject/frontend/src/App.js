@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -21,7 +16,7 @@ function PrivateRoute({ children }) {
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
 
@@ -39,14 +34,13 @@ function App() {
           }
         />
 
-        
         <Route path="/movies/:id" element={<MoviePage />} />
         <Route path="/create-compilation" element={<CreateCompilationPage />} />
         <Route path="/compilations/:id" element={<CompilationPage />} />
         <Route path="/compilations/:id/edit" element={<EditCompilation />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
