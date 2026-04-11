@@ -4,6 +4,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -49,4 +50,19 @@ public class Compilation extends AuditableEntity{
             inverseJoinColumns = @JoinColumn(name = "movie_id")
     )
     private Set<Movie> movies = new HashSet<>();
+
+    @OneToMany(mappedBy = "compilation")
+    private Set<CompilationSubscription> subscribers = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Compilation compilation)) return false;
+        return id != null && id.equals(compilation.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

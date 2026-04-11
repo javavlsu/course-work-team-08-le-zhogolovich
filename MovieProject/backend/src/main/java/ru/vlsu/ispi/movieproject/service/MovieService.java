@@ -14,4 +14,5 @@ public interface MovieService {
     void enrichMovie(Movie movie);
     void loadExternalSources(Movie movie);
     void addMovieToCompilations(Long id, List<Long> compilationIds);
+    void rateMovie(Long id, Double rating);
 }

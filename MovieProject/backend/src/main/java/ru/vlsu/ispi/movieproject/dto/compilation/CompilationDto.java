@@ -20,5 +20,7 @@ public class CompilationDto {
     private String coverUrl;
     private Long likesCount;
     private Boolean likedByCurrentUser;
+    private Boolean isSubscribed;
+    private Long subscribersCount;
     private List<MovieDto> movies;
 }

@@ -24,11 +24,9 @@ import java.util.Set;
 @Table(name = "movie")
 @Getter @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Movie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(name = "kinopoisk_id", nullable = false)

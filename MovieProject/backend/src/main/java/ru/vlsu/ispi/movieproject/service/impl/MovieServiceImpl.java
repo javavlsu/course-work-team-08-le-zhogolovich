@@ -19,6 +19,9 @@ import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.model.ExternalSource;
 import ru.vlsu.ispi.movieproject.model.Movie;
+import ru.vlsu.ispi.movieproject.model.MovieRating;
+import ru.vlsu.ispi.movieproject.model.MovieRatingId;
+import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.CompilationRepository;
 import ru.vlsu.ispi.movieproject.repository.MovieRatingRepository;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;
@@ -40,7 +43,6 @@ public class MovieServiceImpl implements MovieService {
     private final CurrentUserService currentUserService;
     private final EntityManager entityManager;
     private final CompilationRepository compilationRepository;
-
 
     @Value("${movie.details.duration}")
     private Duration detailsDuration;
@@ -130,4 +132,43 @@ public class MovieServiceImpl implements MovieService {
             compilation.getMovies().add(movie);
         }
     }
+
+    @Override
+    @Transactional
+    public void rateMovie(Long id, Double rating) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        if (rating == null || rating < 1 || rating > 10) {
+            throw new IllegalArgumentException("Рейтинг должен быть от 1 до 10");
+        }
+
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+
+        MovieRatingId movieRatingId = new MovieRatingId(userId, id);
+        MovieRating movieRating = movieRatingRepository.findById(movieRatingId).orElse(null);
+
+        if (movieRating == null) {
+            movieRating = new MovieRating();
+            movieRating.setId(movieRatingId);
+            movieRating.setMovie(movie);
+            movieRating.setUser(entityManager.getReference(User.class, userId));
+        }
+        movieRating.setRating(rating);
+        movieRatingRepository.save(movieRating);
+
+        updateMovieRating(movie);
+    }
+
+    private void updateMovieRating(Movie movie) {
+        Double avg = movieRatingRepository.getAverageRating(movie.getId());
+        Integer count = movieRatingRepository.getRatingsCount(movie.getId());
+
+        movie.setAvgRating(avg != null ? avg : 0.0);
+        movie.setRatingsCount(count != null ? count : 0);
+
+        movieRepository.save(movie);
+    }
+
+
 }

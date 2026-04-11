@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.vlsu.ispi.movieproject.dto.movie.AddMovieToCompilationsRequest;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
+import ru.vlsu.ispi.movieproject.dto.movie.RateMovieRequest;
 import ru.vlsu.ispi.movieproject.service.MovieService;
 
 @RestController
@@ -36,5 +38,11 @@ public class MovieController {
     @PostMapping("/{id}/compilations")
     public void addMovieToCompilation(@PathVariable Long id, @RequestBody AddMovieToCompilationsRequest request) {
         movieService.addMovieToCompilations(id, request.getCompilationIds());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{id}/rating")
+    public void rateMovie(@PathVariable Long id, @RequestBody RateMovieRequest request) {
+        movieService.rateMovie(id, request.getRating());
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.enums.FileDirectory;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
@@ -15,25 +16,7 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class CompilationMapper {
-    private final MovieMapper movieMapper;
     private final FileStorageService fileStorageService;
-
-    public CompilationDto toDto(Compilation c, Long likesCount, boolean likedByUser) {
-        return new CompilationDto(
-                c.getId(),
-                c.getTitle(),
-                c.getDescription(),
-                c.getAuthor().getId(),
-                c.getAuthor().getUsername(),
-                c.getIsPublic(),
-                c.getCoverUrl(),
-                likesCount,
-                likedByUser,
-                c.getMovies().stream().
-                        map(movieMapper::toMovieDto)
-                        .toList()
-        );
-    }
 
     public Compilation fromRequest(CreateCompilationRequest request) {
         Compilation c = new Compilation();
@@ -52,7 +35,7 @@ public class CompilationMapper {
         return c;
     }
 
-    public CompilationDto fromProjection(CompilationProjection p) {
+    public CompilationDto fromView(CompilationProjection p, List<MovieDto> movies) {
         return new CompilationDto(
                 p.getId(),
                 p.getTitle(),
@@ -63,7 +46,9 @@ public class CompilationMapper {
                 p.getCoverUrl(),
                 p.getLikesCount(),
                 p.getLikedByUser(),
-                List.of()
+                p.getIsSubscribed(),
+                p.getSubscribersCount(),
+                movies
         );
     }
 }

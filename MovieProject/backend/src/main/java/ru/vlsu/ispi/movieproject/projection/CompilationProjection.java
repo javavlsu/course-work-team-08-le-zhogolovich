@@ -10,4 +10,6 @@ public interface CompilationProjection {
     String getAuthorName();
     Long getLikesCount();
     Boolean getLikedByUser();
+    Long getSubscribersCount();
+    Boolean getIsSubscribed();
 }

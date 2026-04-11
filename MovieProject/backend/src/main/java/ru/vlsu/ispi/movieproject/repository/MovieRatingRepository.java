@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.MovieRating;
 import ru.vlsu.ispi.movieproject.model.MovieRatingId;
 
-import java.util.List;
 import java.util.Optional;
 
 /**

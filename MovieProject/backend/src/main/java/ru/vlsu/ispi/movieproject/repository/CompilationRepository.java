@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
-import ru.vlsu.ispi.movieproject.projection.CompilationStatsProjection;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,20 +45,49 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
 
     @Query("""
     SELECT 
-        COUNT(cl.id) as likesCount,
+        c.id as id,
+        c.title as title,
+        c.description as description,
+        c.isPublic as isPublic,
+        c.coverUrl as coverUrl,
+    
+        c.author.id as authorId,
+        c.author.username as authorName,
+    
+        (SELECT COUNT(cl) 
+         FROM CompilationLike cl 
+         WHERE cl.compilation.id = c.id) as likesCount,
+    
         CASE 
-            WHEN :userId IS NULL THEN false
-            WHEN SUM(CASE WHEN cl.user.id = :userId THEN 1 ELSE 0 END) > 0 
-            THEN true 
-            ELSE false 
-        END as likedByUser
+            WHEN :currentUserId IS NULL THEN false
+            WHEN EXISTS (
+                SELECT 1 
+                FROM CompilationLike cl2 
+                WHERE cl2.compilation.id = c.id 
+                  AND cl2.user.id = :currentUserId
+            )
+            THEN true ELSE false
+        END as likedByUser,
+    
+        (SELECT COUNT(cs) 
+         FROM CompilationSubscription cs 
+         WHERE cs.compilation.id = c.id) as subscribersCount,
+    
+        CASE 
+            WHEN :currentUserId IS NULL THEN false
+            WHEN EXISTS (
+                SELECT 1 
+                FROM CompilationSubscription cs2 
+                WHERE cs2.compilation.id = c.id 
+                  AND cs2.user.id = :currentUserId
+            )
+            THEN true ELSE false
+        END as isSubscribed
     
     FROM Compilation c
-    LEFT JOIN CompilationLike cl ON cl.compilation.id = c.id
-    
-    WHERE c.id = :id
+    WHERE c.author.id = :authorId
     """)
-    CompilationStatsProjection getStats(Long id, Long userId);
+    List<CompilationProjection> findAllByAuthorId(Long authorId, Long currentUserId);
 
     @Query("""
     SELECT 
@@ -68,6 +96,7 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         c.description as description,
         c.isPublic as isPublic,
         c.coverUrl as coverUrl,
+    
         c.author.id as authorId,
         c.author.username as authorName,
     
@@ -83,14 +112,72 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
                 WHERE cl2.compilation.id = c.id 
                   AND cl2.user.id = :userId
             )
-            THEN true 
-            ELSE false 
-        END as likedByUser
+            THEN true ELSE false
+        END as likedByUser,
+    
+        (SELECT COUNT(cs) 
+         FROM CompilationSubscription cs 
+         WHERE cs.compilation.id = c.id) as subscribersCount,
+    
+        CASE 
+            WHEN :userId IS NULL THEN false
+            WHEN EXISTS (
+                SELECT 1 
+                FROM CompilationSubscription cs2 
+                WHERE cs2.compilation.id = c.id 
+                  AND cs2.user.id = :userId
+            )
+            THEN true ELSE false
+        END as isSubscribed
     
     FROM Compilation c
     WHERE c.isPublic = true
     """)
-    Page<CompilationProjection> findAllWithLikes(Pageable pageable, Long userId);
+    Page<CompilationProjection> findAllView(Pageable pageable, Long userId);
 
-    List<Compilation> findAllByAuthorId(Long userId);
+    @Query("""
+    SELECT 
+        c.id as id,
+        c.title as title,
+        c.description as description,
+        c.isPublic as isPublic,
+        c.coverUrl as coverUrl,
+    
+        c.author.id as authorId,
+        c.author.username as authorName,
+    
+        (SELECT COUNT(cl) 
+         FROM CompilationLike cl 
+         WHERE cl.compilation.id = c.id) as likesCount,
+    
+        CASE 
+            WHEN :userId IS NULL THEN false
+            WHEN EXISTS (
+                SELECT 1 
+                FROM CompilationLike cl2 
+                WHERE cl2.compilation.id = c.id 
+                  AND cl2.user.id = :userId
+            )
+            THEN true ELSE false
+        END as likedByUser,
+    
+        (SELECT COUNT(cs) 
+         FROM CompilationSubscription cs 
+         WHERE cs.compilation.id = c.id) as subscribersCount,
+    
+        CASE 
+            WHEN :userId IS NULL THEN false
+            WHEN EXISTS (
+                SELECT 1 
+                FROM CompilationSubscription cs2 
+                WHERE cs2.compilation.id = c.id 
+                  AND cs2.user.id = :userId
+            )
+            THEN true ELSE false
+        END as isSubscribed
+    
+    FROM Compilation c
+    WHERE c.id = :id
+    """)
+    Optional<CompilationProjection> findViewById(Long id, Long userId);
 }

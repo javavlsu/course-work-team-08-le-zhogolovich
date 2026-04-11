@@ -34,8 +34,7 @@ public class CompilationController {
     @GetMapping()
     public Page<CompilationDto> getCompilations(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @AuthenticationPrincipal CustomUserDetails user) {
+            @RequestParam(defaultValue = "20") int size) {
         return compilationService.getAll(PageRequest.of(page, size));
     }
 
@@ -78,5 +77,15 @@ public class CompilationController {
     @DeleteMapping("/{compilationId}/movie/{movieId}")
     public CompilationDto removeMovieFromCompilation(@PathVariable Long compilationId, @PathVariable Long movieId) {
         return compilationService.removeMovie(compilationId, movieId);
+    }
+
+    @PostMapping("/{id}/subscribe")
+    public void subscribeCompilation(@PathVariable Long id) {
+        compilationService.subscribe(id);
+    }
+
+    @DeleteMapping("/{id}/subscribe")
+    public void unsubscribeCompilation(@PathVariable Long id) {
+        compilationService.unsubscribe(id);
     }
 }

@@ -16,14 +16,16 @@ import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.MovieIsNotInCompilationException;
 import ru.vlsu.ispi.movieproject.exception.UserNotFoundException;
 import ru.vlsu.ispi.movieproject.mapper.CompilationMapper;
+import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.model.CompilationLike;
 import ru.vlsu.ispi.movieproject.model.CompilationLikeId;
+import ru.vlsu.ispi.movieproject.model.CompilationSubscription;
 import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
-import ru.vlsu.ispi.movieproject.projection.CompilationStatsProjection;
 import ru.vlsu.ispi.movieproject.repository.CompilationLikeRepository;
 import ru.vlsu.ispi.movieproject.repository.CompilationRepository;
+import ru.vlsu.ispi.movieproject.repository.CompilationSubscriptionRepository;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.service.CompilationService;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
@@ -42,6 +44,8 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationLikeRepository compilationLikeRepository;
     private final FileStorageService fileStorageService;
     private final CurrentUserService currentUserService;
+    private final CompilationSubscriptionRepository compilationSubscriptionRepository;
+    private final MovieMapper movieMapper;
 
     @Override
     public CompilationDto createCompilation(CreateCompilationRequest request) {
@@ -53,7 +57,9 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationMapper.fromRequest(request);
         compilation.setAuthor(user);
 
-        return compilationMapper.toDto(compilationRepository.save(compilation), 0L, false);
+        CompilationProjection projection = getView(compilation.getId(), userId);
+
+        return compilationMapper.fromView(projection, List.of());
     }
 
     @Override
@@ -81,9 +87,11 @@ public class CompilationServiceImpl implements CompilationService {
             compilation.setCoverUrl(coverUrl);
         }
 
-        CompilationStatsProjection projection = compilationRepository.getStats(id, userId);
+        compilationRepository.save(compilation);
+        CompilationProjection projection = getView(id, userId);
 
-        return compilationMapper.toDto(compilationRepository.save(compilation), projection.getLikesCount(), projection.getLikedByUser());
+        return compilationMapper.fromView(projection,
+                compilation.getMovies().stream().map(movieMapper::toMovieDto).toList());
     }
 
     @Override
@@ -126,20 +134,21 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getById(Long id) {
         Long userId = currentUserService.getCurrentUserID();
 
+        CompilationProjection projection = getView(id, userId);
+
         Compilation compilation = compilationRepository.findByIdWithMovies(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
 
-        CompilationStatsProjection projection = compilationRepository.getStats(id, userId);
-
-        return compilationMapper.toDto(compilation, projection.getLikesCount(), projection.getLikedByUser());
+        return compilationMapper.fromView(projection,
+                compilation.getMovies().stream().map(movieMapper::toMovieDto).toList());
     }
 
     @Override
     public Page<CompilationDto> getAll(Pageable pageable) {
         Long userId = currentUserService.getCurrentUserID();
 
-        Page<CompilationProjection> page = compilationRepository.findAllWithLikes(pageable, userId);
-        return page.map(compilationMapper::fromProjection);
+        return compilationRepository.findAllView(pageable, userId)
+                .map(p -> compilationMapper.fromView(p, List.of()));
     }
 
     @Override
@@ -157,18 +166,57 @@ public class CompilationServiceImpl implements CompilationService {
             throw new MovieIsNotInCompilationException();
         }
 
-        CompilationStatsProjection stats = compilationRepository.getStats(compilationId, userId);
+        CompilationProjection projection = getView(compilationId, userId);
 
-        return compilationMapper.toDto(compilation, stats.getLikesCount(), stats.getLikedByUser());
+        return compilationMapper.fromView(projection,
+                compilation.getMovies().stream().map(movieMapper::toMovieDto).toList());
     }
 
     @Override
     public List<CompilationDto> getUserCompilations() {
         Long userId = currentUserService.getCurrentUserID();
 
-        return compilationRepository.findAllByAuthorId(userId)
+        return compilationRepository.findAllByAuthorId(userId, userId)
                 .stream()
-                .map(c -> compilationMapper.toDto(c, 0L, true))
+                .map(p -> compilationMapper.fromView(p, List.of()))
                 .toList();
+    }
+
+    @Override
+    public void subscribe(Long compilationId) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        Compilation compilation = compilationRepository.findById(compilationId)
+                .orElseThrow(() -> new CompilationNotFoundException(compilationId));
+
+        if (compilation.getAuthor().getId().equals(userId)) {
+            throw new IllegalStateException("Нельзя подписать на свою подборку");
+        }
+
+        boolean exists = compilationSubscriptionRepository.existsByUserIdAndCompilationId(userId, compilationId);
+        if (exists) {
+            throw new IllegalStateException("Уже подписан");
+        }
+
+        CompilationSubscription compilationSubscription = new CompilationSubscription();
+        compilationSubscription.setUser(entityManager.getReference(User.class, userId));
+        compilationSubscription.setCompilation(entityManager.getReference(Compilation.class, compilationId));
+        compilationSubscriptionRepository.save(compilationSubscription);
+    }
+
+    @Override
+    public void unsubscribe(Long compilationId) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        CompilationSubscription compilationSubscription = compilationSubscriptionRepository
+                .findByUserIdAndCompilationId(userId, compilationId)
+                .orElseThrow(() -> new IllegalStateException("Вы не подписаны на эту подборку"));
+
+        compilationSubscriptionRepository.delete(compilationSubscription);
+    }
+
+    private CompilationProjection getView(Long id, Long userId) {
+        return compilationRepository.findViewById(id, userId)
+                .orElseThrow(() -> new CompilationNotFoundException(id));
     }
 }

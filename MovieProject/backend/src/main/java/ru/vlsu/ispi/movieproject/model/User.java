@@ -60,4 +60,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<CompilationLike> compilationLikes = new HashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<CompilationSubscription> compilationSubscriptions = new HashSet<>();
 }
