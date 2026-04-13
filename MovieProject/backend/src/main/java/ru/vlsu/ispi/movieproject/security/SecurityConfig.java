@@ -39,6 +39,7 @@ public class SecurityConfig {
                             .requestMatchers("/uploads/**", "/backend/uploads/**").permitAll()
                             .requestMatchers("/auth/**", "/movies/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/compilations/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/comment/**").permitAll()
                             .anyRequest().authenticated()
                     )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,11 +1,11 @@
 package ru.vlsu.ispi.movieproject.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.compilation.UpdateCompilationRequest;
-import ru.vlsu.ispi.movieproject.security.CustomUserDetails;
 import ru.vlsu.ispi.movieproject.service.CompilationService;
 
 import java.util.List;
@@ -45,12 +44,12 @@ public class CompilationController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CompilationDto createCompilation(@ModelAttribute CreateCompilationRequest request) {
+    public CompilationDto createCompilation(@ModelAttribute @Valid CreateCompilationRequest request) {
         return compilationService.createCompilation(request);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CompilationDto updateCompilation(@PathVariable Long id, @ModelAttribute UpdateCompilationRequest request) {
+    public CompilationDto updateCompilation(@PathVariable Long id, @ModelAttribute @Valid UpdateCompilationRequest request) {
         return compilationService.editCompilation(id, request);
     }
 

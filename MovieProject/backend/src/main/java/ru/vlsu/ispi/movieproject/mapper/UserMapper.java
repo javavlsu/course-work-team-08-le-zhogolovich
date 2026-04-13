@@ -6,7 +6,7 @@ import ru.vlsu.ispi.movieproject.model.User;
 
 @Component
 public class UserMapper {
-    public static UserDto mapToDto(User user) {
+    public UserDto mapToDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getUsername(),

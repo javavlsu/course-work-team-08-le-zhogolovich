@@ -52,7 +52,7 @@ public class CompilationServiceImpl implements CompilationService {
         Long userId = currentUserService.getCurrentUserID();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new UserNotFoundException());
 
         Compilation compilation = compilationMapper.fromRequest(request);
         compilation.setAuthor(user);

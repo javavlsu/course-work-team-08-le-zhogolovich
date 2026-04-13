@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.movieproject.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,13 +37,13 @@ public class MovieController {
     }
 
     @PostMapping("/{id}/compilations")
-    public void addMovieToCompilation(@PathVariable Long id, @RequestBody AddMovieToCompilationsRequest request) {
+    public void addMovieToCompilation(@PathVariable Long id, @RequestBody @Valid AddMovieToCompilationsRequest request) {
         movieService.addMovieToCompilations(id, request.getCompilationIds());
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{id}/rating")
-    public void rateMovie(@PathVariable Long id, @RequestBody RateMovieRequest request) {
+    public void rateMovie(@PathVariable Long id, @RequestBody @Valid RateMovieRequest request) {
         movieService.rateMovie(id, request.getRating());
     }
 }

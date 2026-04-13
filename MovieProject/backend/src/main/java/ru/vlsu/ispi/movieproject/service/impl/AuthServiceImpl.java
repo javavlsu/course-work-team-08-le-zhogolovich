@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(loginRequest.getLogin())
                 .or(() -> userRepository.findByUsername(loginRequest.getLogin()))
                 .orElseThrow(() ->
-                        new UserNotFoundException("Некорректный логин"));
+                        new UserNotFoundException());
 
         return jwtService.generateAuthToken(
                 user.getId(),
