@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.compilation.UpdateCompilationRequest;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.enums.FileDirectory;
 import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.MovieIsNotInCompilationException;
@@ -56,10 +57,9 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = compilationMapper.fromRequest(request);
         compilation.setAuthor(user);
+        compilationRepository.save(compilation);
 
-        CompilationProjection projection = getView(compilation.getId(), userId);
-
-        return compilationMapper.fromView(projection, List.of());
+        return buildDto(compilation, userId);
     }
 
     @Override
@@ -68,9 +68,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
-        if (!compilation.getAuthor().getId().equals(userId)) {
-            throw new AccessDeniedException("Вы не являетесь владельцем подборки");
-        }
+        checkOwner(compilation, userId);
 
         if (request.getTitle() != null) {
             compilation.setTitle(request.getTitle());
@@ -81,17 +79,24 @@ public class CompilationServiceImpl implements CompilationService {
         if (request.getIsPublic() != null) {
             compilation.setIsPublic(request.getIsPublic());
         }
-        MultipartFile cover = request.getCover();
-        if (cover != null && !cover.isEmpty()) {
-            String coverUrl = fileStorageService.upload(cover, FileDirectory.COMPILATIONS.getFolder());
-            compilation.setCoverUrl(coverUrl);
-        }
 
-        compilationRepository.save(compilation);
-        CompilationProjection projection = getView(id, userId);
+        return buildDto(compilation, userId);
+    }
 
-        return compilationMapper.fromView(projection,
-                compilation.getMovies().stream().map(movieMapper::toMovieDto).toList());
+    @Override
+    public CompilationDto updateCover(Long id, MultipartFile cover) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        Compilation compilation = compilationRepository.findById(id)
+                .orElseThrow(() -> new CompilationNotFoundException(id));
+        checkOwner(compilation, userId);
+
+        String coverUrl = fileStorageService.upload(cover, FileDirectory.COMPILATIONS.getFolder());
+
+        fileStorageService.delete(compilation.getCoverUrl());
+        compilation.setCoverUrl(coverUrl);
+
+        return buildDto(compilation, userId);
     }
 
     @Override
@@ -134,13 +139,10 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getById(Long id) {
         Long userId = currentUserService.getCurrentUserID();
 
-        CompilationProjection projection = getView(id, userId);
-
         Compilation compilation = compilationRepository.findByIdWithMovies(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
 
-        return compilationMapper.fromView(projection,
-                compilation.getMovies().stream().map(movieMapper::toMovieDto).toList());
+        return buildDto(compilation, userId);
     }
 
     @Override
@@ -157,19 +159,14 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
-        if (!compilation.getAuthor().getId().equals(userId)) {
-            throw new AccessDeniedException("Вы не являетесь владельцем подборки");
-        }
+        checkOwner(compilation, userId);
 
         boolean removed = compilation.getMovies().removeIf(movie -> movie.getId().equals(movieId));
         if (!removed) {
             throw new MovieIsNotInCompilationException();
         }
 
-        CompilationProjection projection = getView(compilationId, userId);
-
-        return compilationMapper.fromView(projection,
-                compilation.getMovies().stream().map(movieMapper::toMovieDto).toList());
+        return buildDto(compilation, userId);
     }
 
     @Override
@@ -218,5 +215,18 @@ public class CompilationServiceImpl implements CompilationService {
     private CompilationProjection getView(Long id, Long userId) {
         return compilationRepository.findViewById(id, userId)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
+    }
+
+    private void checkOwner(Compilation compilation, Long userId) {
+        if (!compilation.getAuthor().getId().equals(userId)) {
+            throw new AccessDeniedException("Вы не являетесь владельцем подборки");
+        }
+    }
+
+    private CompilationDto buildDto(Compilation compilation, Long userId) {
+        CompilationProjection projection = getView(compilation.getId(), userId);
+
+        List<MovieDto> movies = compilation.getMovies().stream().map(movieMapper::toMovieDto).toList();
+        return compilationMapper.fromView(projection, movies);
     }
 }

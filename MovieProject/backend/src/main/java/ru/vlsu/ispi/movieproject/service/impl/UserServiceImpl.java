@@ -56,8 +56,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
 
-        fileStorageService.delete(user.getAvatarUrl());
         String avatarUrl = fileStorageService.upload(file, FileDirectory.AVATARS.getFolder());
+        fileStorageService.delete(user.getAvatarUrl());
         user.setAvatarUrl(avatarUrl);
 
         return userMapper.mapToDto(user);

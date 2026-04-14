@@ -13,7 +13,5 @@ public class UpdateCompilationRequest {
     private String description;
 
     private Boolean isPublic;
-
-    private MultipartFile cover;
 }
 

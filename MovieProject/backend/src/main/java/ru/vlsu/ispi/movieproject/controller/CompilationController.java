@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.compilation.UpdateCompilationRequest;
@@ -48,9 +50,14 @@ public class CompilationController {
         return compilationService.createCompilation(request);
     }
 
-    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CompilationDto updateCompilation(@PathVariable Long id, @ModelAttribute @Valid UpdateCompilationRequest request) {
+    @PatchMapping(value = "/{id}")
+    public CompilationDto updateCompilation(@PathVariable Long id, @RequestBody @Valid UpdateCompilationRequest request) {
         return compilationService.editCompilation(id, request);
+    }
+
+    @PatchMapping(value = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CompilationDto updateCompilationCover(@PathVariable Long id, @RequestParam("file") MultipartFile cover) {
+        return compilationService.updateCover(id, cover);
     }
 
     @DeleteMapping("/{id}")
