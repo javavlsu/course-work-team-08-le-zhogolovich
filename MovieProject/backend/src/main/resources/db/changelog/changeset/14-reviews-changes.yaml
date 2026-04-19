@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-review-remove-rating
+      author: Hiraeth
+      changes:
+        - dropColumn:
+            tableName: review
+            columnName: rating
+
+  - changeSet:
+      id: create-review-like-table
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: review_like
+            columns:
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: review_id, type: BIGINT, constraints: { nullable: false } }
+
+        - addPrimaryKey:
+            tableName: review_like
+            columnNames: user_id, review_id
+
+        - addForeignKeyConstraint:
+            baseTableName: review_like
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_review_like_user
+
+        - addForeignKeyConstraint:
+            baseTableName: review_like
+            baseColumnNames: review_id
+            referencedTableName: review
+            referencedColumnNames: id
+            constraintName: fk_review_like_review

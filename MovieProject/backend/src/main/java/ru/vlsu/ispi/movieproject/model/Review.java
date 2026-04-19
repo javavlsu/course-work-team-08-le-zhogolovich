@@ -38,8 +38,6 @@ public class Review extends AuditableEntity{
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    private Integer rating;
-
     @Enumerated(EnumType.STRING)
     private ReviewStatus status;
 }

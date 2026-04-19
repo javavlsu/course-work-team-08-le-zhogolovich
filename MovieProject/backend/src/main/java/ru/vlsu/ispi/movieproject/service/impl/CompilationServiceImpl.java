@@ -106,9 +106,8 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
 
-        if (!compilation.getAuthor().getId().equals(userId)) {
-            throw new AccessDeniedException("Доступ запрещён");
-        }
+        checkOwner(compilation, userId);
+
         compilationRepository.delete(compilation);
     }
 

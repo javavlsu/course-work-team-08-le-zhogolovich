@@ -40,6 +40,7 @@ public class SecurityConfig {
                             .requestMatchers("/auth/**", "/movies/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/compilations/**").permitAll()
                             .requestMatchers(HttpMethod.GET, "/comment/**").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
                             .anyRequest().authenticated()
                     )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
