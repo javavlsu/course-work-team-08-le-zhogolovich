@@ -13,7 +13,6 @@ import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourcesResponseDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDetailsDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
-import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.MovieNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.TagNotFoundException;
@@ -37,7 +36,6 @@ import ru.vlsu.ispi.movieproject.service.MovieService;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,7 +50,6 @@ public class MovieServiceImpl implements MovieService {
     private final EntityManager entityManager;
     private final CompilationRepository compilationRepository;
     private final TagRepository tagRepository;
-    private final TagMapper tagMapper;
 
     @Value("${movie.details.duration}")
     private Duration detailsDuration;

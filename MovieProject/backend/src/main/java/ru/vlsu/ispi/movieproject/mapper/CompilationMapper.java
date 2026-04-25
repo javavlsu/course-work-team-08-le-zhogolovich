@@ -24,14 +24,6 @@ public class CompilationMapper {
         c.setDescription(request.getDescription());
         c.setIsPublic(request.getIsPublic());
 
-        MultipartFile cover = request.getCover();
-        if (cover != null && !cover.isEmpty()) {
-            c.setCoverUrl(fileStorageService.upload(cover, FileDirectory.COMPILATIONS.getFolder()));
-        }
-        else{
-            c.setCoverUrl(null);
-        }
-
         return c;
     }
 
