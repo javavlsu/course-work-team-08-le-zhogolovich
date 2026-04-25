@@ -132,6 +132,8 @@ const MoviePage = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editText, setEditText] = useState("");
 
+  const [hoverRating, setHoverRating] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const fetchData = async () => {
     try {
       const movieRes = await apiClient.get(`/movies/${id}`);
@@ -245,7 +247,7 @@ const MoviePage = () => {
     try {
       await apiClient.patch(`/comment/${commentId}`, { content: newContent });
       setEditingCommentId(null);
-      fetchComments(); 
+      fetchComments();
     } catch (e) {
       console.error("Ошибка при сохранении:", e);
       alert("Ошибка при сохранении");
@@ -518,7 +520,7 @@ const MoviePage = () => {
                               src={
                                 comp.coverUrl
                                   ? `http://localhost:8080/movie-project/backend${comp.coverUrl}`
-                                  : "/images/default_coll.jpg"
+                                  : avatarDefault
                               }
                               alt="cover"
                               style={{
@@ -553,47 +555,110 @@ const MoviePage = () => {
               </div>
             )}
 
-            {/* Рейтинг  */}
-            <div className="d-flex  flex-column align-items-center justify-content-start gap-1 mt-3">
+            {/* Рейтинг */}
+            <div className="d-flex flex-column align-items-center justify-content-start gap-1 mt-3">
               <p
                 className="text-white text-center m-0 fs-5 fw-light"
                 style={{ letterSpacing: "1px" }}
               >
                 РЕЙТИНГ НА НАШЕМ САЙТЕ{" "}
-                <span className="fw-bold text-warning">{movie.avgRating}</span>
+                <span className="fw-bold text-warning">
+                  {movie.avgRating?.toFixed(1) || "—"}
+                </span>
               </p>
 
               <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
-                <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
-                  <div className="stars-display-interactive d-flex gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <i
-                        key={star}
-                        // Если рейтинг больше или равен номеру звезды — она закрашена
-                        className={`fa-star fs-3 ${userRating >= star ? "fa-solid" : "fa-regular"}`}
-                        style={{
-                          color: userRating >= star ? "#FFD700" : "#444",
-                          cursor: "pointer",
-                          transition: "transform 0.1s",
-                        }}
-                        onClick={() => handleStarClick(star)}
-                        onMouseEnter={(e) =>
-                          (e.target.style.transform = "scale(1.2)")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.transform = "scale(1.0)")
-                        }
-                      ></i>
-                    ))}
-                  </div>
+                <div className="stars-display-interactive d-flex gap-1">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((starValue) => {
+                    const isHoveredFull = hoverRating >= starValue;
+                    const isHoveredHalf =
+                      hoverRating >= starValue - 0.5 && hoverRating < starValue;
 
-                  <div className="text-secondary fs-4">
-                    <strong className="text-white">{userRating}</strong>
-                    <span className="ms-2" style={{ opacity: 0.6 }}>
-                      ({movie.ratingsCount} оценили)
-                    </span>
-                  </div>
-                </div>{" "}
+                    const isSelectedFull = userRating >= starValue;
+                    const isSelectedHalf =
+                      userRating >= starValue - 0.5 && userRating < starValue;
+
+                    const showFull = isHovered ? isHoveredFull : isSelectedFull;
+                    const showHalf = isHovered ? isHoveredHalf : isSelectedHalf;
+
+                    return (
+                      <div
+                        key={starValue}
+                        className="star-container"
+                        style={{
+                          position: "relative",
+                          display: "inline-block",
+                        }}
+                        onMouseMove={(e) => {
+                          if (!isAuth) return;
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const mouseX = e.clientX - rect.left;
+                          const halfWidth = rect.width / 2;
+
+                          let newHoverRating;
+                          if (mouseX < halfWidth) {
+                            newHoverRating = starValue - 0.5;
+                          } else {
+                            newHoverRating = starValue;
+                          }
+                          setHoverRating(newHoverRating);
+                          setIsHovered(true);
+                        }}
+                        onMouseLeave={() => {
+                          setIsHovered(false);
+                          setHoverRating(0);
+                        }}
+                        onClick={(e) => {
+                          if (!isAuth) {
+                            if (
+                              window.confirm(
+                                "Чтобы поставить оценку, нужно войти. Перейти?",
+                              )
+                            ) {
+                              navigate("/login");
+                            }
+                            return;
+                          }
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const mouseX = e.clientX - rect.left;
+                          const halfWidth = rect.width / 2;
+
+                          let newRating;
+                          if (mouseX < halfWidth) {
+                            newRating = starValue - 0.5;
+                          } else {
+                            newRating = starValue;
+                          }
+
+                          if (newRating !== userRating) {
+                            setUserRating(newRating);
+                            handleRateMovie(newRating);
+                          }
+                        }}
+                      >
+                        <i
+                          className={`fa-star fs-3 ${showFull ? "fa-solid" : showHalf ? "fa-solid fa-star-half-stroke" : "fa-regular"}`}
+                          style={{
+                            color: showFull || showHalf ? "#FFD700" : "#444",
+                            cursor: isAuth ? "pointer" : "default",
+                            transition: "all 0.2s ease-in-out",
+                            transform:
+                              isHovered && isAuth ? "scale(1.15)" : "scale(1)",
+                          }}
+                        ></i>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="text-secondary fs-4">
+                  <strong className="text-white">
+                    {userRating > 0 ? userRating.toFixed(1) : "—"}
+                  </strong>
+                  <span className="ms-2" style={{ opacity: 0.6 }}>
+                    ({movie.ratingsCount || 0} оценили)
+                  </span>
+                </div>
               </div>
             </div>
           </div>

@@ -19,6 +19,7 @@ const EditCompilation = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   useEffect(() => {
     const fetchCompilation = async () => {
@@ -32,12 +33,23 @@ const EditCompilation = () => {
     };
 
     fetchCompilation();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+     // Проверка типа файла
+    if (!file.type.startsWith("image/")) {
+      alert("Можно загружать только изображения");
+      return;
+    }
+
+    // Проверка размера (макс 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Файл не должен превышать 5MB");
+      return;
+    }
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   };
@@ -48,33 +60,60 @@ const EditCompilation = () => {
     return "/images/default-collection.png";
   };
 
+  const updateCompilationInfo = async () => {
+    const updateData = {
+      title: compilation.title,
+      description: compilation.description,
+      isPublic: compilation.isPublic,
+    };
+
+    await apiClient.patch(`/compilations/${id}`, updateData);
+  };
+
+  const updateCompilationCover = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile); // ВАЖНО: поле должно называться "file"
+
+    await apiClient.patch(`/compilations/${id}/cover`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const formData = new FormData();
+      // Сначала обновляем текстовую информацию
+      await updateCompilationInfo();
 
-      formData.append("title", compilation.title);
-      formData.append("description", compilation.description);
-      formData.append("isPublic", compilation.isPublic);
-
+      // Если есть новый файл, обновляем обложку
       if (selectedFile) {
-        formData.append("cover", selectedFile);
+        setUploadingCover(true);
+        await updateCompilationCover();
       }
 
-      await apiClient.patch(`/compilations/${id}`, formData);
-
+      alert("Подборка успешно обновлена!");
       navigate(`/compilations/${id}`);
     } catch (error) {
       console.error("Ошибка сохранения", error);
 
-      const msg =
-        error.response?.data?.message || "Файл слишком большой (лимит ~1MB)";
+      let errorMessage = "Не удалось сохранить изменения";
+      
+      if (error.response?.status === 413) {
+        errorMessage = "Файл слишком большой";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
 
-      alert(msg);
+      alert(errorMessage);
     } finally {
       setLoading(false);
+      setUploadingCover(false);
     }
   };
 
