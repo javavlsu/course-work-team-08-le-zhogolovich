@@ -5,5 +5,13 @@ public enum TagType {
     TROPE,
     STYLE,
     MOOD,
-    CHARACTER
+    CHARACTER;
+
+    public static TagType fromString(String s) {
+        try{
+            return TagType.valueOf(s.toUpperCase());
+        } catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("Неправильный тип тега: " + s);
+        }
+    }
 }

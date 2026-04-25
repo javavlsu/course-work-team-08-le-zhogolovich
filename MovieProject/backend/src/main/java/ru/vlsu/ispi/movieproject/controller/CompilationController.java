@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,11 +26,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/compilations")
-@PreAuthorize("isAuthenticated()")
 public class CompilationController {
     private final CompilationService compilationService;
 
-    @PreAuthorize("permitAll()")
     @GetMapping()
     public Page<CompilationDto> getCompilations(
             @RequestParam(defaultValue = "0") int page,
@@ -39,7 +36,6 @@ public class CompilationController {
         return compilationService.getAll(PageRequest.of(page, size));
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/{id}")
     public CompilationDto getCompilation(@PathVariable Long id) {
         return compilationService.getById(id);

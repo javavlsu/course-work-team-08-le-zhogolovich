@@ -3,7 +3,6 @@ package ru.vlsu.ispi.movieproject.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,18 +20,15 @@ import ru.vlsu.ispi.movieproject.service.ReviewService;
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
-@PreAuthorize("isAuthenticated()")
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @PreAuthorize("permitAll()")
     @GetMapping
     public Page<ReviewDto> getReviews(@RequestParam(defaultValue = "0") int page,
                                       @RequestParam(defaultValue = "20") int size) {
         return reviewService.getReviews(PageRequest.of(page, size));
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/{id}")
     public ReviewDto getReview(@PathVariable long id) {
         return reviewService.getReview(id);

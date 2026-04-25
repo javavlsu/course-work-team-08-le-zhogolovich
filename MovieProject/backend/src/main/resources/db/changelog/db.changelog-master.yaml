@@ -29,3 +29,5 @@ databaseChangeLog:
       file: db/changelog/changeset/14-reviews-changes.yaml
   - include:
       file: db/changelog/changeset/15-review-like-changes.yaml
+  - include:
+      file: db/changelog/changeset/16-add-index-to-tag.yaml

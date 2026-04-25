@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,16 +34,39 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(org.springframework.security.config.Customizer.withDefaults())
-                    .authorizeHttpRequests(auth -> auth
-                            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                            .requestMatchers("/uploads/**", "/backend/uploads/**").permitAll()
-                            .requestMatchers("/auth/**", "/movies/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/compilations/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/comment/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
-                            .anyRequest().authenticated()
-                    )
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        // preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // публичные ресурсы
+                        .requestMatchers("/uploads/**", "/backend/uploads/**").permitAll()
+                        // документация
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        // auth
+                        .requestMatchers("/auth/**").permitAll()
+                        // movies
+                        .requestMatchers(HttpMethod.GET, "/movies/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/movies/*/rating").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/movies/*/tags/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/movies/*/tags/*").hasRole("ADMIN")
+                        // tags
+                        .requestMatchers(HttpMethod.GET, "/tags/search").permitAll()
+                        .requestMatchers("/tags/**").hasRole("ADMIN")
+                        // compilations
+                        .requestMatchers(HttpMethod.GET, "/compilations/**").permitAll()
+                        // comments
+                        .requestMatchers(HttpMethod.GET, "/comment/**").permitAll()
+                        // reviews
+                        .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
+                        // import
+                        .requestMatchers("/api/import/**").hasRole("ADMIN")
+                        // user
+                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                        .requestMatchers("/users/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/users/{username}").permitAll()
+
+                        .anyRequest().authenticated()
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

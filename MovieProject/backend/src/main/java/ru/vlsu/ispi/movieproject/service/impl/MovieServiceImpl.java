@@ -13,18 +13,23 @@ import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourcesResponseDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDetailsDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
+import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.MovieNotFoundException;
+import ru.vlsu.ispi.movieproject.exception.TagNotFoundException;
 import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
+import ru.vlsu.ispi.movieproject.mapper.TagMapper;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.model.ExternalSource;
 import ru.vlsu.ispi.movieproject.model.Movie;
 import ru.vlsu.ispi.movieproject.model.MovieRating;
 import ru.vlsu.ispi.movieproject.model.MovieRatingId;
+import ru.vlsu.ispi.movieproject.model.Tag;
 import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.CompilationRepository;
 import ru.vlsu.ispi.movieproject.repository.MovieRatingRepository;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;
+import ru.vlsu.ispi.movieproject.repository.TagRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.KinopoiskApiService;
 import ru.vlsu.ispi.movieproject.service.MovieService;
@@ -32,9 +37,12 @@ import ru.vlsu.ispi.movieproject.service.MovieService;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final KinopoiskApiService kinopoiskApiService;
@@ -43,6 +51,8 @@ public class MovieServiceImpl implements MovieService {
     private final CurrentUserService currentUserService;
     private final EntityManager entityManager;
     private final CompilationRepository compilationRepository;
+    private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
 
     @Value("${movie.details.duration}")
     private Duration detailsDuration;
@@ -53,7 +63,6 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    @Transactional
     public MovieFullDto getMovie(Long id) {
         Long userId = currentUserService.getCurrentUserID();
 
@@ -76,19 +85,15 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    @Transactional
     public void enrichMovie(Movie movie) {
         MovieDetailsDto details = kinopoiskApiService.getMovieDetails(movie.getKinopoiskId());
 
         movie.setOverview(details.getDescription());
         loadExternalSources(movie);
         movie.setDetailsLoadedAt(LocalDateTime.now());
-
-        movieRepository.save(movie);
     }
 
     @Override
-    @Transactional
     public void loadExternalSources(Movie movie) {
         ExternalSourcesResponseDto sources = kinopoiskApiService.getExternalSources(movie.getKinopoiskId());
         if (sources == null || sources.getItems() == null) {
@@ -109,7 +114,6 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    @Transactional
     public void addMovieToCompilations(Long id, List<Long> compilationIds) {
         Long userId = currentUserService.getCurrentUserID();
 
@@ -134,7 +138,6 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    @Transactional
     public void rateMovie(Long id, Double rating) {
         Long userId = currentUserService.getCurrentUserID();
 
@@ -160,14 +163,38 @@ public class MovieServiceImpl implements MovieService {
         updateMovieRating(movie);
     }
 
+    @Override
+    public void addTag(Long id, Long tagId) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new TagNotFoundException(tagId));
+
+        movie.getTags().add(tag);
+    }
+
+    @Override
+    public void removeTag(Long id, Long tagId) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+
+        movie.getTags().removeIf(tag -> tag.getId().equals(tagId));
+    }
+
+    @Override
+    public List<String> getMovieTags(Long id) {
+        Movie movie = movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+
+        return movie.getTags().stream().map(Tag::getName).collect(Collectors.toList());
+    }
+
     private void updateMovieRating(Movie movie) {
         Double avg = movieRatingRepository.getAverageRating(movie.getId());
         Integer count = movieRatingRepository.getRatingsCount(movie.getId());
 
         movie.setAvgRating(avg != null ? avg : 0.0);
         movie.setRatingsCount(count != null ? count : 0);
-
-        movieRepository.save(movie);
     }
 
 

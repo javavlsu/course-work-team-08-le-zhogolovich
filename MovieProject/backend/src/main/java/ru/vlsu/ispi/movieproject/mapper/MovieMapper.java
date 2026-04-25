@@ -13,6 +13,7 @@ import ru.vlsu.ispi.movieproject.model.CountryMapping;
 import ru.vlsu.ispi.movieproject.model.Genre;
 import ru.vlsu.ispi.movieproject.model.GenreMapping;
 import ru.vlsu.ispi.movieproject.model.Movie;
+import ru.vlsu.ispi.movieproject.model.Tag;
 import ru.vlsu.ispi.movieproject.repository.CountryMappingRepository;
 import ru.vlsu.ispi.movieproject.repository.GenreMappingRepository;
 
@@ -120,6 +121,12 @@ public class MovieMapper {
         dto.setCountries(
                 movie.getCountries().stream()
                         .map(Country::getName)
+                        .collect(Collectors.toSet())
+        );
+
+        dto.setTags(
+                movie.getTags().stream()
+                        .map(Tag::getName)
                         .collect(Collectors.toSet())
         );
 

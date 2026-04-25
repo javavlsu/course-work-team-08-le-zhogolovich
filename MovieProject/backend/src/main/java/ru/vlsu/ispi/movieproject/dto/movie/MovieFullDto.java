@@ -21,5 +21,6 @@ public class MovieFullDto {
     private Integer myRating;
     private Set<String> genres;
     private Set<String> countries;
+    private Set<String> tags;
     private Set<ExternalSourceDto> externalSources;
 }

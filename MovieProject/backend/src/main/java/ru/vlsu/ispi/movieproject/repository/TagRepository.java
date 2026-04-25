@@ -1,6 +1,9 @@
 package ru.vlsu.ispi.movieproject.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.model.Tag;
 import ru.vlsu.ispi.movieproject.enums.TagType;
 
@@ -43,4 +46,8 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
      * @return true — если тег существует, иначе false
      */
     boolean existsByName(String name);
+
+    Page<Tag> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    Page<Tag> findAllByOrderByNameAsc(Pageable pageable);
 }
