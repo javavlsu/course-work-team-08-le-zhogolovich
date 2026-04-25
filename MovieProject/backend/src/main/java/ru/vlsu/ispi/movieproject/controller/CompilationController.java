@@ -73,7 +73,12 @@ public class CompilationController {
 
     @GetMapping("/my")
     public List<CompilationDto> getMyCompilations() {
-        return compilationService.getUserCompilations();
+        return compilationService.getCurrentUserCompilations();
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<CompilationDto> getUserCompilations(@PathVariable Long userId) {
+        return compilationService.getUserCompilations(userId);
     }
 
     @DeleteMapping("/{compilationId}/movie/{movieId}")
