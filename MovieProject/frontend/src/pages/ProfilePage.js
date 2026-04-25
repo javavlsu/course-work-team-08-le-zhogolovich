@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, useNavigate, useParams } from "react-router-dom"; 
-// Добавь импорт jwtDecode:
 import { jwtDecode } from "jwt-decode";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
@@ -17,66 +16,81 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [isMyProfile, setIsMyProfile] = useState(false);
-
- useEffect(() => {
-  const fetchProfileData = async () => {
-    try {
-      setLoading(true);
-
-      const userEndpoint = urlUsername ? `/users/${urlUsername}` : "/users/me";
-      const userRes = await apiClient.get(userEndpoint);
-      const userData = userRes.data;
-      setUser(userData);
-
-      let isMy = false;
-      if (!urlUsername) {
-        isMy = true;
-      } else {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const decoded = jwtDecode(token);
-          isMy = (decoded.sub === urlUsername);
-        }
-      }
-      setIsMyProfile(isMy);
-
-
-      const compEndpoint = isMy 
-        ? "/compilations/my" 
-        : `/compilations/user/${userData.id}`; 
-
-      const compRes = await apiClient.get(compEndpoint);
-      setCompilations(compRes.data);
-
-    } catch (error) {
-      console.error("Ошибка загрузки", error);
-      if (error.response?.status === 404) {
-        setErrorMsg("Пользователь не найден.");
-      } else if (error.response?.status === 401 || error.response?.status === 403) {
-        if (!urlUsername) navigate("/login");
-      } else {
-        setErrorMsg("Не удалось загрузить данные.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchProfileData();
-}, [urlUsername, navigate]);
+  
+  const isFetchingRef = useRef(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
-  if (loading)
-    return <div className="text-white text-center mt-5">Загрузка...</div>;
+  const fetchProfileData = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      let myIdFromToken = null;
 
-  if (errorMsg)
-    return <div className="text-danger text-center mt-5">{errorMsg}</div>;
+      if (token) {
+        const decoded = jwtDecode(token);
+        console.log("Содержимое JWT токена:", decoded);
+        // Достаем userId, так как username в токене нет
+        myIdFromToken = decoded.userId; 
+      }
 
- return (
+      const isDirectMyPath = !urlUsername || urlUsername === "profile";
+      const userEndpoint = isDirectMyPath ? "/users/me" : `/users/${urlUsername}`;
+      
+      const userRes = await apiClient.get(userEndpoint);
+      const userData = userRes.data;
+      setUser(userData);
+
+      // СРАВНИВАЕМ ПО ID
+      // Важно: проверяем userData.id или userData.userId (зависит от того, что вернет бэкенд)
+      const profileId = userData.id || userData.userId;
+
+      console.log("Мой ID из токена:", myIdFromToken);
+      console.log("ID профиля из БД:", profileId);
+
+      const isMy = isDirectMyPath || (
+        myIdFromToken !== null && 
+        profileId !== undefined && 
+        Number(myIdFromToken) === Number(profileId)
+      );
+
+      console.log("ИТОГ СРАВНЕНИЯ (isMyProfile):", isMy);
+      setIsMyProfile(isMy);
+
+      // Загрузка подборок (оставляем как было)
+      if (isMy) {
+        const compRes = await apiClient.get("/compilations/my");
+        setCompilations(compRes.data);
+      } else {
+        const compRes = await apiClient.get(`/compilations/user/${profileId}`);
+        const all = compRes.data.content || compRes.data;
+        setCompilations(Array.isArray(all) ? all.filter(c => c.isPublic) : []);
+      }
+
+    } catch (error) {
+      console.error("Ошибка в ProfilePage:", error);
+      setErrorMsg("Ошибка загрузки");
+    } finally {
+      setLoading(false);
+      isFetchingRef.current = false;
+    }
+  }, [urlUsername, navigate]);
+
+  useEffect(() => {
+    fetchProfileData();
+  }, [fetchProfileData]);
+
+  if (loading) return <div className="text-white text-center mt-5">Загрузка...</div>;
+  if (errorMsg) return <div className="text-danger text-center mt-5">{errorMsg}</div>;
+  if (!user) return <div className="text-white text-center mt-5">Пользователь не найден</div>;
+
+  return (
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
         <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
@@ -97,7 +111,6 @@ function ProfilePage() {
       <main className="container-xl px-4 px-md-5 mt-5">
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           
-          {/* Инфо профиля */}
           <div className="row align-items-start mb-5 g-0">
             <div className="col-auto d-flex flex-column align-items-center">
               <div className="rounded-circle overflow-hidden mb-4 shadow" style={{ width: "220px", height: "220px" }}>
@@ -105,8 +118,10 @@ function ProfilePage() {
                   src={user.avatarUrl ? `${API_BASE_URL}${user.avatarUrl}` : avatarDefault}
                   className="img-fluid w-100 h-100 object-fit-cover"
                   alt="Avatar"
+                  onError={(e) => { e.target.src = avatarDefault; }}
                 />
               </div>
+              {/* Кнопка редактирования показывается только если это твой профиль */}
               {isMyProfile && (
                 <Link to="/edit-profile" className="custom-btn user-pill py-3 px-5 text-decoration-none">
                   Редактировать
@@ -121,7 +136,6 @@ function ProfilePage() {
             </div>
           </div>
 
-          {/* Секция подборок */}
           <section className="mb-5 text-center section-divider">
             <h2 className="section-title fw-light mb-2 pt-4 d-inline-block w-75 text-white">
               {isMyProfile ? "Мои подборки" : `Подборки @${user.username}`}
@@ -147,7 +161,7 @@ function ProfilePage() {
                           </div>
                         )}
                         <img
-                          src={comp.coverUrl ? `${API_BASE_URL}${comp.coverUrl}` : "/images/default_coll.jpg"}
+                          src={comp.coverUrl ? `${API_BASE_URL}${comp.coverUrl}` : avatarDefault}
                           alt={comp.title}
                           className="w-100 h-100 object-fit-cover"
                         />
@@ -158,13 +172,14 @@ function ProfilePage() {
                 ))
               ) : (
                 <div className="w-100 text-center text-white-50 py-4">
-                  {isMyProfile ? "У вас пока нет созданных подборок." : "Пользователь еще не опубликовал ни одной подборки."}
+                  {isMyProfile 
+                    ? "У вас пока нет созданных подборок." 
+                    : `У пользователя ${user.username} нет публичных подборок.`}
                 </div>
               )}
             </div>
           </section>
 
-          {/* Статистика */}
           <div className="stats-card p-4 text-white mb-5" style={{ border: "2px solid white", borderRadius: "20px", background: "rgba(255,255,255,0.05)" }}>
             <h2>Статистика</h2>
             <p className="text-white-50 m-0">
@@ -176,6 +191,5 @@ function ProfilePage() {
     </div>
   );
 }
-
 
 export default ProfilePage;

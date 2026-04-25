@@ -28,7 +28,7 @@ const CompilationPage = () => {
           const userRes = await apiClient.get(`/users/me`);
           setCurrentUser(userRes.data);
         } catch (e) {
-          // если не авторизован — просто игнор
+        
         }
       } catch (error) {
         console.error("Ошибка загрузки подборки:", error);
@@ -57,7 +57,7 @@ const CompilationPage = () => {
     const prevLiked = isLiked;
     const prevCount = compilation.likesCount;
 
-    // 🔥 optimistic update
+
     setIsLiked(!prevLiked);
     setCompilation({
       ...compilation,
@@ -71,7 +71,7 @@ const CompilationPage = () => {
         await apiClient.post(`/compilations/${id}/like`);
       }
     } catch (e) {
-      // откат
+      
       setIsLiked(prevLiked);
       setCompilation({ ...compilation, likesCount: prevCount });
       alert("Ошибка лайка");

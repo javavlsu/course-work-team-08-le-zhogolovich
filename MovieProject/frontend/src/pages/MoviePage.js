@@ -14,14 +14,11 @@ const CommentItem = ({
   API_BASE_URL,
   avatarDefault,
 }) => {
-
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
 
   const authorName = comment.authorName || "Аноним";
   const authorAvatar = comment.authorAvatar;
-
-
 
   return (
     <div
@@ -31,12 +28,12 @@ const CommentItem = ({
       <div className="d-flex justify-content-between align-items-start mb-2">
         <div className="d-flex align-items-center gap-2">
           <Link to={authorName !== "Аноним" ? `/users/${authorName}` : "#"}>
-  <img
-    src={
-      comment.authorAvatar
-        ? `${API_BASE_URL}${comment.authorAvatar}`
-        : avatarDefault
-    }
+            <img
+              src={
+                comment.authorAvatar
+                  ? `${API_BASE_URL}${comment.authorAvatar}`
+                  : avatarDefault
+              }
               width="35"
               height="35"
               className="rounded-circle"
@@ -45,11 +42,11 @@ const CommentItem = ({
             />
           </Link>
           <Link
-  to={comment.authorName ? `/users/${comment.authorName}` : "#"}
-  className="text-decoration-none fw-bold text-info"
->
-  @{comment.authorName || "Аноним"}
-</Link>
+            to={comment.authorName ? `/users/${comment.authorName}` : "#"}
+            className="text-decoration-none fw-bold text-info"
+          >
+            @{comment.authorName || "Аноним"}
+          </Link>
         </div>
 
         {currentUser && currentUser.username === authorName && (
@@ -87,6 +84,10 @@ const CommentItem = ({
             <button
               className="custom-btn py-1 px-3"
               onClick={() => {
+                if (!editText.trim()) {
+                  alert("Комментарий не может быть пустым");
+                  return;
+                }
                 onEdit(comment.id, editText);
                 setIsEditing(false);
               }}
@@ -197,19 +198,18 @@ const MoviePage = () => {
     }
   };
 
- const fetchComments = async () => {
-  try {
-    const res = await apiClient.get(`/comment/movie/${id}`);
-    
+  const fetchComments = async () => {
+    try {
+      const res = await apiClient.get(`/comment/movie/${id}`);
 
-    const commentsData = res.data.content || res.data || [];
-    
-    setComments(commentsData);
-  } catch (e) {
-    console.error("Ошибка загрузки комментариев", e);
-    setComments([]); 
-  }
-};
+      const commentsData = res.data.content || res.data || [];
+
+      setComments(commentsData);
+    } catch (e) {
+      console.error("Ошибка загрузки комментариев", e);
+      setComments([]);
+    }
+  };
   useEffect(() => {
     fetchData();
     fetchComments();
@@ -236,12 +236,18 @@ const MoviePage = () => {
     }
   };
 
-  const handleSaveEdit = async (commentId) => {
+  const handleSaveEdit = async (commentId, newContent) => {
+    if (!newContent || !newContent.trim()) {
+      alert("Комментарий не может быть пустым");
+      return;
+    }
+
     try {
-      await apiClient.patch(`/comment/${commentId}`, { content: editText });
+      await apiClient.patch(`/comment/${commentId}`, { content: newContent });
       setEditingCommentId(null);
-      fetchComments();
+      fetchComments(); 
     } catch (e) {
+      console.error("Ошибка при сохранении:", e);
       alert("Ошибка при сохранении");
     }
   };
@@ -280,7 +286,6 @@ const MoviePage = () => {
         rating: ratingValue,
       });
 
-    
       fetchData();
     } catch (e) {
       console.error("Ошибка при выставлении рейтинга:", e);
