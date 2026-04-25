@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
                         .requestMatchers("/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users/{username}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "users/id/{id}").permitAll()
 
                         .anyRequest().authenticated()
                 )
