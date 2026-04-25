@@ -95,7 +95,9 @@ public class MovieMapper {
                 movie.getName(),
                 movie.getPosterUrl(),
                 movie.getReleaseYear(),
-                movie.getAvgRating()
+                movie.getAvgRating(),
+                movie.getRatingKinopoisk(),
+                movie.getRatingImdb()
         );
     }
 

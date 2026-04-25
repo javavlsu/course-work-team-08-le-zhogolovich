@@ -14,4 +14,6 @@ public class MovieDto {
     private String posterUrl;
     private Integer releaseYear;
     private Double avgRating;
+    private Double ratingKinopoisk;
+    private Double ratingImdb;
 }
