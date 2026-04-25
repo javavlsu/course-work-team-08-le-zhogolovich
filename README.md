@@ -97,6 +97,7 @@
 | **PATCH** | `/users/me`         | Редактировать профиль | **Body**: `username`, `email`, `aboutMe` |
 | **PATCH** | `/users/me/avatar`  | Сменить аватар        | **Multipart**: `file` (binary)           |
 | **GET**   | `/users`            | Список всех юзеров    | —                                        |
+| **GET**   | `/users/{id}`       | Профиль по id         | **Path**: `id`                           |
 | **GET**   | `/users/{username}` | Профиль по username   | **Path**: `username`                     |
 
 ---

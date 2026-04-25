@@ -33,8 +33,13 @@ public class UserController {
         return userService.getCurrentUser();
     }
 
+    @GetMapping("/{id}")
+    public UserDto getUser(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
     @GetMapping("/{username}")
-    public UserDto getUser(@PathVariable String username) {
+    public UserDto getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username);
     }
 

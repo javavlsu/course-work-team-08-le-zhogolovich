@@ -18,7 +18,7 @@ public class MovieFullDto {
     private Double ratingImdb;
     private Double avgRating;
     private Integer ratingsCount;
-    private Integer myRating;
+    private Double myRating;
     private Set<String> genres;
     private Set<String> countries;
     private Set<String> tags;

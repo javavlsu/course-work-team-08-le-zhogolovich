@@ -9,15 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class CreateCompilationRequest {
     @NotBlank
-    @Size(min = 8, max = 255)
+    @Size(min = 1, max = 255)
     private String title;
 
-    @NotBlank
     @Size(max = 2000)
     private String description;
 
     @NotNull
     private Boolean isPublic;
-
-    private MultipartFile cover;
 }
