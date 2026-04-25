@@ -1,12 +1,12 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
@@ -52,7 +52,7 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto createCompilation(CreateCompilationRequest request) {
         Long userId = currentUserService.getCurrentUserID();
 
-        User user = userRepository.findByIdAndDeletedFalse(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException());
 
         Compilation compilation = compilationMapper.fromRequest(request);
@@ -180,34 +180,11 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<CompilationDto> getUserCompilations(Long userId) {
-        Long currentUserId = currentUserService.getCurrentUserID();
-
-        return compilationRepository.findAllByAuthorId(userId, currentUserId)
+        return compilationRepository.findAllByAuthorId(userId, userId)
                 .stream()
                 .map(p -> compilationMapper.fromView(p, List.of()))
                 .toList();
     }
-
-    @Override
-    public List<CompilationDto> getCurrentUserSubscriptions() {
-        Long userId = currentUserService.getCurrentUserID();
-
-        return compilationRepository.findAllSubscribedByUserId(userId, userId)
-                .stream()
-                .map(p -> compilationMapper.fromView(p, List.of()))
-                .toList();
-    }
-
-    @Override
-    public List<CompilationDto> getUserSubscriptions(Long userId) {
-        Long currentUserId = currentUserService.getCurrentUserID();
-
-        return compilationRepository.findAllSubscribedByUserId(userId, currentUserId)
-                .stream()
-                .map(p -> compilationMapper.fromView(p, List.of()))
-                .toList();
-    }
-
 
     @Override
     public void subscribe(Long compilationId) {
@@ -216,7 +193,7 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
 
-        if (compilation.getAuthor() != null && compilation.getAuthor().getId().equals(userId)) {
+        if (compilation.getAuthor().getId().equals(userId)) {
             throw new IllegalStateException("Нельзя подписать на свою подборку");
         }
 
@@ -248,7 +225,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     private void checkOwner(Compilation compilation, Long userId) {
-        if (compilation.getAuthor() == null || !compilation.getAuthor().getId().equals(userId) ) {
+        if (!compilation.getAuthor().getId().equals(userId)) {
             throw new AccessDeniedException("Вы не являетесь владельцем подборки");
         }
     }
