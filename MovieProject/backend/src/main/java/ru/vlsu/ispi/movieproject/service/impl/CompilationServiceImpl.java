@@ -169,9 +169,17 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public List<CompilationDto> getUserCompilations() {
+    public List<CompilationDto> getCurrentUserCompilations() {
         Long userId = currentUserService.getCurrentUserID();
 
+        return compilationRepository.findAllByAuthorId(userId, userId)
+                .stream()
+                .map(p -> compilationMapper.fromView(p, List.of()))
+                .toList();
+    }
+
+    @Override
+    public List<CompilationDto> getUserCompilations(Long userId) {
         return compilationRepository.findAllByAuthorId(userId, userId)
                 .stream()
                 .map(p -> compilationMapper.fromView(p, List.of()))
