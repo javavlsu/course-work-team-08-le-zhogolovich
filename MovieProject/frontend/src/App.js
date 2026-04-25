@@ -33,6 +33,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/users/:username" element={<ProfilePage />} />
 
         <Route path="/movies/:id" element={<MoviePage />} />
         <Route path="/create-compilation" element={<CreateCompilationPage />} />

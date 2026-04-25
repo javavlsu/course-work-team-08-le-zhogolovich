@@ -14,19 +14,14 @@ const CommentItem = ({
   API_BASE_URL,
   avatarDefault,
 }) => {
-  const [author, setAuthor] = useState(null);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
 
-  useEffect(() => {
-    apiClient
-      .get(`/users/${comment.userId}`) // исправить после доработки эндпоинта
-      .then((res) => setAuthor(res.data))
-      .catch(() => setAuthor({ username: "Пользователь", avatarUrl: null }));
-  }, [comment.userId]);
+  const authorName = comment.authorName || "Аноним";
+  const authorAvatar = comment.authorAvatar;
 
-  if (!author)
-    return <div className="p-3 mb-2 text-white-50">Загрузка автора...</div>;
+
 
   return (
     <div
@@ -35,13 +30,13 @@ const CommentItem = ({
     >
       <div className="d-flex justify-content-between align-items-start mb-2">
         <div className="d-flex align-items-center gap-2">
-          <Link to={`/users/${author.username}`}>
-            <img
-              src={
-                author.avatarUrl
-                  ? `${API_BASE_URL}${author.avatarUrl}`
-                  : avatarDefault
-              }
+          <Link to={authorName !== "Аноним" ? `/users/${authorName}` : "#"}>
+  <img
+    src={
+      comment.authorAvatar
+        ? `${API_BASE_URL}${comment.authorAvatar}`
+        : avatarDefault
+    }
               width="35"
               height="35"
               className="rounded-circle"
@@ -50,14 +45,14 @@ const CommentItem = ({
             />
           </Link>
           <Link
-            to={`/users/${author.username}`}
-            className="text-decoration-none fw-bold text-info"
-          >
-            @{author.username}
-          </Link>
+  to={comment.authorName ? `/users/${comment.authorName}` : "#"}
+  className="text-decoration-none fw-bold text-info"
+>
+  @{comment.authorName || "Аноним"}
+</Link>
         </div>
 
-        {currentUser.username === author.username && (
+        {currentUser && currentUser.username === authorName && (
           <div className="d-flex gap-2">
             <button
               className="btn btn-sm btn-outline-light border-0"
@@ -202,37 +197,19 @@ const MoviePage = () => {
     }
   };
 
-  const fetchComments = async () => {
-    try {
-      const res = await apiClient.get(`/comment/movie/${id}`);
-      const commentsData = res.data.content || [];
+ const fetchComments = async () => {
+  try {
+    const res = await apiClient.get(`/comment/movie/${id}`);
+    
 
-      const userIds = [...new Set(commentsData.map((c) => c.userId))];
-
-      const userRequests = userIds.map((uid) =>
-        apiClient.get(`/users/${uid}`).catch(() => null),
-      );
-      const userResponses = await Promise.all(userRequests);
-
-      const usersMap = {};
-      userResponses.forEach((r) => {
-        if (r && r.data) usersMap[r.data.id] = r.data;
-      });
-
-      const enrichedComments = commentsData.map((c) => ({
-        ...c,
-        author: usersMap[c.userId] || {
-          username: "Удаленный пользователь",
-          avatarUrl: null,
-        },
-      }));
-
-      setComments(enrichedComments);
-    } catch (e) {
-      console.error("Ошибка загрузки комментариев", e);
-    }
-  };
-
+    const commentsData = res.data.content || res.data || [];
+    
+    setComments(commentsData);
+  } catch (e) {
+    console.error("Ошибка загрузки комментариев", e);
+    setComments([]); 
+  }
+};
   useEffect(() => {
     fetchData();
     fetchComments();
@@ -303,8 +280,7 @@ const MoviePage = () => {
         rating: ratingValue,
       });
 
-      // Удаляем alert, чтобы не мешал при клике по звездам,
-      // либо оставляем, если нужно подтверждение
+    
       fetchData();
     } catch (e) {
       console.error("Ошибка при выставлении рейтинга:", e);
@@ -314,9 +290,7 @@ const MoviePage = () => {
     }
   };
 
-  // 2. Новая функция для клика по конкретной звезде
   const handleStarClick = (value) => {
-    // value теперь всегда будет целым (1, 2, 3, 4 или 5)
     setUserRating(value);
     handleRateMovie(value);
   };
