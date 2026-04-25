@@ -60,6 +60,7 @@ function HomePage() {
                 key={movie.id}
                 className="movie-card text-decoration-none"
               >
+                <div className="badge-overlay">{movie.ratingKinopoisk}</div>
                 <img src={movie.posterUrl} alt={movie.name} />
                 <p className="text-white mt-2 text-center">{movie.name}</p>
               </Link>

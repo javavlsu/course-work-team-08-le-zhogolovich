@@ -752,4 +752,11 @@ body {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
+.stars-display-interactive i:hover {
+  filter: brightness(1.2);
+  color: #ffdb4d !important;
+}
 
+.star-range-input {
+  display: none;
+}

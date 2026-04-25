@@ -204,7 +204,7 @@ const CompilationPage = () => {
                 to={`/movies/${movie.id}`}
                 className="movie-card d-block text-decoration-none"
               >
-                <div className="badge-overlay">{movie.avgRating}</div>
+                <div className="badge-overlay">{movie.ratingKinopoisk}</div>
                 <img
                   src={movie.posterUrl}
                   alt={movie.name}

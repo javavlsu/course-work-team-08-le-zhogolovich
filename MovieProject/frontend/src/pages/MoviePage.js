@@ -140,7 +140,7 @@ const MoviePage = () => {
     try {
       const movieRes = await apiClient.get(`/movies/${id}`);
       setMovie(movieRes.data);
-      setUserRating(movieRes.data.rating || 0);
+      setUserRating(movieRes.data.myRating || 0);
 
       try {
         const userRes = await apiClient.get("/users/me");
@@ -202,7 +202,6 @@ const MoviePage = () => {
     }
   };
 
-  // Загрузка комментариев
   const fetchComments = async () => {
     try {
       const res = await apiClient.get(`/comment/movie/${id}`);
@@ -287,13 +286,50 @@ const MoviePage = () => {
   const filteredCompilations = userCompilations.filter((c) =>
     c.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+  const handleRateMovie = async (ratingValue) => {
+    if (!isAuth) {
+      if (
+        window.confirm(
+          "Чтобы поставить оценку, нужно войти. Перейти на страницу входа?",
+        )
+      ) {
+        navigate("/login");
+      }
+      return;
+    }
+
+    try {
+      await apiClient.post(`/movies/${id}/rating`, {
+        rating: ratingValue,
+      });
+
+      // Удаляем alert, чтобы не мешал при клике по звездам,
+      // либо оставляем, если нужно подтверждение
+      fetchData();
+    } catch (e) {
+      console.error("Ошибка при выставлении рейтинга:", e);
+      const errorMsg =
+        e.response?.data?.message || "Не удалось сохранить оценку";
+      alert(errorMsg);
+    }
+  };
+
+  // 2. Новая функция для клика по конкретной звезде
+  const handleStarClick = (value) => {
+    // value теперь всегда будет целым (1, 2, 3, 4 или 5)
+    setUserRating(value);
+    handleRateMovie(value);
+  };
 
   const handleRatingChange = (e) => {
+    if (voted) {
+      alert("Вы уже поставили оценку этому фильму");
+      return;
+    }
     const val = parseFloat(e.target.value);
     setUserRating(val);
-    if (!voted) {
-      setVoted(true);
-    }
+
+    handleRateMovie(val);
   };
 
   const checkAuth = () => {
@@ -342,13 +378,28 @@ const MoviePage = () => {
           <div className="col-lg-3 col-md-5 text-center">
             <div
               className="movie-card-static mb-4 mx-auto"
-              style={{ maxWidth: "300px" }}
+              style={{ maxWidth: "300px", position: "relative" }}
             >
               <img
                 src={movie.posterUrl}
                 alt={movie.name}
                 className="img-fluid rounded-3"
+                style={{ display: "block", width: "100%" }}
               />
+
+              <div
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  backgroundColor: "black",
+                  color: "gold",
+                  padding: "5px 10px",
+                  borderRadius: "20px",
+                }}
+              >
+                {movie.ratingKinopoisk}
+              </div>
             </div>
 
             <div className="dropdown">
@@ -404,16 +455,28 @@ const MoviePage = () => {
             <h1 className="text-center mb-5 text-white">{movie.name}</h1>
             <div className="article-container p-3 mt-auto">
               <p className="text-white fs-5 m-0">
-                {movie.overview || movie.description}
+                {movie.overview ? (
+                  movie.overview
+                ) : (
+                  <span className="text-white-50 italic">
+                    упс... кажется описание отсутствует
+                  </span>
+                )}
               </p>
             </div>
 
             <div className="d-flex flex-wrap justify-content-center gap-2 mt-0 mb-auto">
-              {movie.genres?.map((genre, index) => (
-                <span key={index} className="tag-pill">
-                  {genre}
+              {movie.genres && movie.genres.length > 0 ? (
+                movie.genres.map((genre, index) => (
+                  <span key={index} className="tag-pill">
+                    {genre}
+                  </span>
+                ))
+              ) : (
+                <span className="text-white-50 small italic">
+                  метки отсутствуют
                 </span>
-              ))}
+              )}
               {isAdmin && (
                 <button className="tag-pill tag-add-btn">
                   <i className="fa-solid fa-plus"></i>
@@ -512,36 +575,46 @@ const MoviePage = () => {
             )}
 
             {/* Рейтинг  */}
-            <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
-              <div className="star-rating-interactive">
-                <input
-                  type="range"
-                  className="star-range-input"
-                  min="0"
-                  max="5"
-                  step="0.5"
-                  value={userRating}
-                  onChange={(e) => checkAuth() && handleRatingChange(e)}
-                />
-                <div className="stars-display">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <i
-                      key={star}
-                      className={`fa-star ${userRating >= star ? "fa-solid" : userRating >= star - 0.5 ? "fa-solid fa-star-half-stroke" : "fa-regular"}`}
-                      style={{
-                        color: userRating >= star - 0.5 ? "#FFD700" : "#444",
-                      }}
-                    ></i>
-                  ))}
-                </div>
-              </div>
+            <div className="d-flex  flex-column align-items-center justify-content-start gap-1 mt-3">
+              <p
+                className="text-white text-center m-0 fs-5 fw-light"
+                style={{ letterSpacing: "1px" }}
+              >
+                РЕЙТИНГ НА НАШЕМ САЙТЕ{" "}
+                <span className="fw-bold text-warning">{movie.avgRating}</span>
+              </p>
 
-              <div className="text-secondary fs-4">
-                <strong className="text-white">{userRating}</strong>
-                <span className="ms-2" style={{ opacity: 0.6 }}>
-                  ({voted ? (movie.votesCount || 0) + 1 : movie.votesCount || 0}{" "}
-                  оценили)
-                </span>
+              <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
+                <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
+                  <div className="stars-display-interactive d-flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <i
+                        key={star}
+                        // Если рейтинг больше или равен номеру звезды — она закрашена
+                        className={`fa-star fs-3 ${userRating >= star ? "fa-solid" : "fa-regular"}`}
+                        style={{
+                          color: userRating >= star ? "#FFD700" : "#444",
+                          cursor: "pointer",
+                          transition: "transform 0.1s",
+                        }}
+                        onClick={() => handleStarClick(star)}
+                        onMouseEnter={(e) =>
+                          (e.target.style.transform = "scale(1.2)")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.target.style.transform = "scale(1.0)")
+                        }
+                      ></i>
+                    ))}
+                  </div>
+
+                  <div className="text-secondary fs-4">
+                    <strong className="text-white">{userRating}</strong>
+                    <span className="ms-2" style={{ opacity: 0.6 }}>
+                      ({movie.ratingsCount} оценили)
+                    </span>
+                  </div>
+                </div>{" "}
               </div>
             </div>
           </div>
