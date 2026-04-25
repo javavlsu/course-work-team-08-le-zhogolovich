@@ -81,16 +81,6 @@ public class CompilationController {
         return compilationService.getUserCompilations(userId);
     }
 
-    @GetMapping("/my/subscriptions")
-    public List<CompilationDto> getMySubscriptions() {
-        return compilationService.getCurrentUserSubscriptions();
-    }
-
-    @GetMapping("/user/{userId}/subscriptions")
-    public List<CompilationDto> getUserSubscriptions(@PathVariable Long userId) {
-        return compilationService.getUserSubscriptions(userId);
-    }
-
     @DeleteMapping("/{compilationId}/movie/{movieId}")
     public CompilationDto removeMovieFromCompilation(@PathVariable Long compilationId, @PathVariable Long movieId) {
         return compilationService.removeMovie(compilationId, movieId);
