@@ -56,5 +56,5 @@ public interface MovieRatingRepository extends JpaRepository<MovieRating, MovieR
         FROM MovieRating r
         WHERE r.movie.id = :movieId AND r.user.id = :userId
     """)
-    Optional<Integer> getUserRating(Long movieId, Long userId);
+    Optional<Double> getUserRating(Long movieId, Long userId);
 }

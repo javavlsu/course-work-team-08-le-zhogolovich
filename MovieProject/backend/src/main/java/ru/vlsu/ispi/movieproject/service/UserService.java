@@ -9,6 +9,7 @@ import java.util.List;
 public interface UserService {
     List<UserDto> getAllUsers();
     UserDto getCurrentUser();
+    UserDto getUserById(Long id);
     UserDto getUserByUsername(String username);
     UserDto updateAvatar(MultipartFile file);
     UserDto updateProfile(EditProfileRequest request);

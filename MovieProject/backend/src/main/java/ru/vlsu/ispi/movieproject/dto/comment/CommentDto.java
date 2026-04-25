@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentDto {
     private Long id;
-    private Long userId;
+    private String authorName;
+    private String authorAvatar;
     private Long movieId;
     private String content;
     private LocalDateTime createdAt;

@@ -110,6 +110,8 @@ public class MovieMapper {
         dto.setPosterUrl(movie.getPosterUrl());
         dto.setOverview(movie.getOverview());
         dto.setAvgRating(movie.getAvgRating());
+        dto.setRatingKinopoisk(movie.getRatingKinopoisk());
+        dto.setRatingImdb(movie.getRatingImdb());
         dto.setRatingsCount(movie.getRatingsCount());
 
         dto.setGenres(

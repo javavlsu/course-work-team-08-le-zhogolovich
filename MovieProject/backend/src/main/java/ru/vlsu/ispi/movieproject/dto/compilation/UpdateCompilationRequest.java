@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class UpdateCompilationRequest {
-    @Size(min = 8, max = 255)
+    @Size(min = 1, max = 255)
     private String title;
 
     @Size(max = 2000)
