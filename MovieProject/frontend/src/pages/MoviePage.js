@@ -6,7 +6,108 @@ import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
+const CommentItem = ({
+  comment,
+  currentUser,
+  onDelete,
+  onEdit,
+  API_BASE_URL,
+  avatarDefault,
+}) => {
+  const [author, setAuthor] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.content);
 
+  useEffect(() => {
+    apiClient
+      .get(`/users/${comment.userId}`) // исправить после доработки эндпоинта
+      .then((res) => setAuthor(res.data))
+      .catch(() => setAuthor({ username: "Пользователь", avatarUrl: null }));
+  }, [comment.userId]);
+
+  if (!author)
+    return <div className="p-3 mb-2 text-white-50">Загрузка автора...</div>;
+
+  return (
+    <div
+      className="p-3 rounded-4 mb-3"
+      style={{ background: "rgba(255,255,255,0.05)" }}
+    >
+      <div className="d-flex justify-content-between align-items-start mb-2">
+        <div className="d-flex align-items-center gap-2">
+          <Link to={`/users/${author.username}`}>
+            <img
+              src={
+                author.avatarUrl
+                  ? `${API_BASE_URL}${author.avatarUrl}`
+                  : avatarDefault
+              }
+              width="35"
+              height="35"
+              className="rounded-circle"
+              style={{ objectFit: "cover" }}
+              alt="avatar"
+            />
+          </Link>
+          <Link
+            to={`/users/${author.username}`}
+            className="text-decoration-none fw-bold text-info"
+          >
+            @{author.username}
+          </Link>
+        </div>
+
+        {currentUser.username === author.username && (
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-sm btn-outline-light border-0"
+              onClick={() => setIsEditing(true)}
+            >
+              <i className="fa-solid fa-pen"></i>
+            </button>
+            <button
+              className="btn btn-sm btn-outline-danger border-0"
+              onClick={() => onDelete(comment.id)}
+            >
+              <i className="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {isEditing ? (
+        <div className="mt-2">
+          <textarea
+            className="form-control custom-input text-white mb-2"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+          />
+          <div className="d-flex gap-2 justify-content-end">
+            <button
+              className="btn btn-sm btn-link text-white text-decoration-none"
+              onClick={() => setIsEditing(false)}
+            >
+              Отмена
+            </button>
+            <button
+              className="custom-btn py-1 px-3"
+              onClick={() => {
+                onEdit(comment.id, editText);
+                setIsEditing(false);
+              }}
+            >
+              Сохранить
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="m-0 ps-1" style={{ whiteSpace: "pre-wrap" }}>
+          {comment.content}
+        </p>
+      )}
+    </div>
+  );
+};
 const MoviePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -30,6 +131,28 @@ const MoviePage = () => {
 
   const [isAuth, setIsAuth] = useState(false);
 
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editText, setEditText] = useState("");
+
+  const fetchData = async () => {
+    try {
+      const movieRes = await apiClient.get(`/movies/${id}`);
+      setMovie(movieRes.data);
+      setUserRating(movieRes.data.rating || 0);
+
+      try {
+        const userRes = await apiClient.get("/users/me");
+        setCurrentUser(userRes.data);
+      } catch (e) {}
+    } catch (error) {
+      console.error("Ошибка загрузки", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuth(!!token);
@@ -44,26 +167,6 @@ const MoviePage = () => {
         console.error("Ошибка декодирования токена", e);
       }
     }
-
-    const fetchData = async () => {
-      try {
-        const movieRes = await apiClient.get(`/movies/${id}`);
-        setMovie(movieRes.data);
-        setUserRating(movieRes.data.rating || 0);
-
-        // пробуем получить пользователя (если не авторизован — просто упадёт в catch)
-        try {
-          const userRes = await apiClient.get("/users/me");
-          setCurrentUser(userRes.data);
-        } catch (e) {
-          // игнор
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchData();
   }, [id]);
@@ -96,6 +199,74 @@ const MoviePage = () => {
       console.error("Ошибка загрузки подборок", e);
     } finally {
       setModalLoading(false);
+    }
+  };
+
+  // Загрузка комментариев
+  const fetchComments = async () => {
+    try {
+      const res = await apiClient.get(`/comment/movie/${id}`);
+      const commentsData = res.data.content || [];
+
+      const userIds = [...new Set(commentsData.map((c) => c.userId))];
+
+      const userRequests = userIds.map((uid) =>
+        apiClient.get(`/users/${uid}`).catch(() => null),
+      );
+      const userResponses = await Promise.all(userRequests);
+
+      const usersMap = {};
+      userResponses.forEach((r) => {
+        if (r && r.data) usersMap[r.data.id] = r.data;
+      });
+
+      const enrichedComments = commentsData.map((c) => ({
+        ...c,
+        author: usersMap[c.userId] || {
+          username: "Удаленный пользователь",
+          avatarUrl: null,
+        },
+      }));
+
+      setComments(enrichedComments);
+    } catch (e) {
+      console.error("Ошибка загрузки комментариев", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    fetchComments();
+  }, [id]);
+
+  const handleSendComment = async () => {
+    if (!commentText.trim()) return;
+    try {
+      await apiClient.post(`/comment/movie/${id}`, { content: commentText });
+      setCommentText("");
+      fetchComments();
+    } catch (e) {
+      alert("Не удалось отправить комментарий");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Удалить комментарий?")) return;
+    try {
+      await apiClient.delete(`/comment/${commentId}`);
+      setComments((prev) => prev.filter((c) => c.id !== commentId));
+    } catch (e) {
+      alert("Ошибка при удалении");
+    }
+  };
+
+  const handleSaveEdit = async (commentId) => {
+    try {
+      await apiClient.patch(`/comment/${commentId}`, { content: editText });
+      setEditingCommentId(null);
+      fetchComments();
+    } catch (e) {
+      alert("Ошибка при сохранении");
     }
   };
 
@@ -406,9 +577,16 @@ const MoviePage = () => {
                 className="form-control text-white custom-input mb-3"
                 style={{ minHeight: "100px" }}
                 placeholder="Введите текст..."
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
               ></textarea>
               <div className="d-flex justify-content-end">
-                <button className="custom-btn py-2 px-4">Отправить</button>
+                <button
+                  onClick={handleSendComment}
+                  className="custom-btn py-2 px-4"
+                >
+                  Отправить
+                </button>
               </div>
             </div>
           ) : (
@@ -440,11 +618,26 @@ const MoviePage = () => {
           )}
 
           {/* Список всех комментариев */}
+
           <div
-            className="comment-list d-flex flex-column gap-4 mx-auto text-white"
+            className="comment-list d-flex flex-column gap-2 mx-auto text-white"
             style={{ maxWidth: "800px" }}
           >
-            <p>Комментариев пока нет</p>
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  currentUser={currentUser}
+                  API_BASE_URL={API_BASE_URL}
+                  avatarDefault={avatarDefault}
+                  onDelete={handleDeleteComment}
+                  onEdit={handleSaveEdit}
+                />
+              ))
+            ) : (
+              <p className="text-center text-white-50">Комментариев пока нет</p>
+            )}
           </div>
         </section>
       </main>
