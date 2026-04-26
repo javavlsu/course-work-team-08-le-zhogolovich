@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
+import EditCompilationMovies from "../components/EditCompilationMovies";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
@@ -39,7 +40,7 @@ const EditCompilation = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-     // Проверка типа файла
+    // Проверка типа файла
     if (!file.type.startsWith("image/")) {
       alert("Можно загружать только изображения");
       return;
@@ -88,10 +89,8 @@ const EditCompilation = () => {
     setLoading(true);
 
     try {
-      // Сначала обновляем текстовую информацию
       await updateCompilationInfo();
 
-      // Если есть новый файл, обновляем обложку
       if (selectedFile) {
         setUploadingCover(true);
         await updateCompilationCover();
@@ -103,7 +102,7 @@ const EditCompilation = () => {
       console.error("Ошибка сохранения", error);
 
       let errorMessage = "Не удалось сохранить изменения";
-      
+
       if (error.response?.status === 413) {
         errorMessage = "Файл слишком большой";
       } else if (error.response?.data?.message) {
@@ -117,6 +116,12 @@ const EditCompilation = () => {
     }
   };
 
+  const handleMovieRemoved = (movieId) => {
+    setCompilation((prev) => ({
+      ...prev,
+      movies: prev.movies.filter((m) => m.id !== movieId),
+    }));
+  };
   return (
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
@@ -252,6 +257,12 @@ const EditCompilation = () => {
               </div>
             </div>
           </form>
+
+          <EditCompilationMovies
+            compilationId={id}
+            movies={compilation.movies}
+            onMovieRemoved={handleMovieRemoved}
+          />
         </div>
       </main>
     </div>
