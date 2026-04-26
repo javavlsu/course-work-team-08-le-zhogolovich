@@ -40,13 +40,11 @@ const EditCompilation = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Проверка типа файла
     if (!file.type.startsWith("image/")) {
       alert("Можно загружать только изображения");
       return;
     }
 
-    // Проверка размера (макс 5MB)
     if (file.size > 5 * 1024 * 1024) {
       alert("Файл не должен превышать 5MB");
       return;
@@ -75,7 +73,7 @@ const EditCompilation = () => {
     if (!selectedFile) return;
 
     const formData = new FormData();
-    formData.append("file", selectedFile); // ВАЖНО: поле должно называться "file"
+    formData.append("file", selectedFile);
 
     await apiClient.patch(`/compilations/${id}/cover`, formData, {
       headers: {

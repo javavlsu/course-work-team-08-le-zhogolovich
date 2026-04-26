@@ -668,7 +668,6 @@ const MoviePage = () => {
           )}
 
           {/* Список всех комментариев */}
-
           <div
             className="comment-list d-flex flex-column gap-2 mx-auto text-white"
             style={{ maxWidth: "800px" }}

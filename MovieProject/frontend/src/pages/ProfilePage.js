@@ -36,7 +36,6 @@ function ProfilePage() {
       if (token) {
         const decoded = jwtDecode(token);
         console.log("Содержимое JWT токена:", decoded);
-        // Достаем userId, так как username в токене нет
         myIdFromToken = decoded.userId; 
       }
 
@@ -47,8 +46,7 @@ function ProfilePage() {
       const userData = userRes.data;
       setUser(userData);
 
-      // СРАВНИВАЕМ ПО ID
-      // Важно: проверяем userData.id или userData.userId (зависит от того, что вернет бэкенд)
+     
       const profileId = userData.id || userData.userId;
 
       console.log("Мой ID из токена:", myIdFromToken);
@@ -63,7 +61,6 @@ function ProfilePage() {
       console.log("ИТОГ СРАВНЕНИЯ (isMyProfile):", isMy);
       setIsMyProfile(isMy);
 
-      // Загрузка подборок (оставляем как было)
       if (isMy) {
         const compRes = await apiClient.get("/compilations/my");
         setCompilations(compRes.data);
@@ -121,7 +118,7 @@ function ProfilePage() {
                   onError={(e) => { e.target.src = avatarDefault; }}
                 />
               </div>
-              {/* Кнопка редактирования показывается только если это твой профиль */}
+
               {isMyProfile && (
                 <Link to="/edit-profile" className="custom-btn user-pill py-3 px-5 text-decoration-none">
                   Редактировать

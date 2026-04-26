@@ -71,7 +71,7 @@ const EditCompilationMovies = ({ compilationId, movies, onMovieRemoved }) => {
       </div>
     </div>
     
-    {/* Заменяем ссылку на кнопку с явным стилем */}
+
     <button 
       type="button"
       className="btn btn-danger btn-sm rounded-pill px-3"
