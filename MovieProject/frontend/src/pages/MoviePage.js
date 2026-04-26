@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
+import AddToCompilationModal from "../components/AddToCompilationModal";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 const CommentItem = ({
@@ -134,6 +135,8 @@ const MoviePage = () => {
 
   const [hoverRating, setHoverRating] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+
+  const [selectedCompIds, setSelectedCompIds] = useState([]);
   const fetchData = async () => {
     try {
       const movieRes = await apiClient.get(`/movies/${id}`);
@@ -184,9 +187,10 @@ const MoviePage = () => {
       if (window.confirm("Нужно войти. Перейти?")) {
         navigate("/login");
       }
+
       return;
     }
-
+    setSelectedCompIds([]);
     setShowModal(true);
     setModalLoading(true);
 
@@ -477,82 +481,11 @@ const MoviePage = () => {
               </button>
             </div>
             {showModal && (
-              <div
-                className="modal-overlay"
-                onClick={() => setShowModal(false)}
-              >
-                <div
-                  className="custom-modal-content"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="modal-header-custom d-flex justify-content-between align-items-center mb-4">
-                    <h4 className="text-white m-0">Выберите подборку</h4>
-                    <button
-                      className="btn-close btn-close-white"
-                      onClick={() => setShowModal(false)}
-                    ></button>
-                  </div>
-
-                  <input
-                    type="text"
-                    className=" form-control custom-input2 mb-4 "
-                    placeholder="Поиск подборки..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-
-                  <div
-                    className="compilation-list-scrollable"
-                    style={{ maxHeight: "400px", overflowY: "auto" }}
-                  >
-                    {modalLoading ? (
-                      <p className="text-center text-white-50">
-                        Загрузка ваших подборок...
-                      </p>
-                    ) : filteredCompilations.length > 0 ? (
-                      filteredCompilations.map((comp) => (
-                        <div
-                          key={comp.id}
-                          className="compilation-item-card d-flex align-items-center justify-content-between p-3 mb-2"
-                        >
-                          <div className="d-flex align-items-center gap-3">
-                            <img
-                              src={
-                                comp.coverUrl
-                                  ? `http://localhost:8080/movie-project/backend${comp.coverUrl}`
-                                  : avatarDefault
-                              }
-                              alt="cover"
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "cover",
-                                borderRadius: "8px",
-                              }}
-                            />
-                            <div>
-                              <div className="text-white fw-bold">
-                                {comp.title}
-                              </div>
-                            </div>
-                          </div>
-                          <button
-                            className="custom-btn py-1 px-3"
-                            style={{ fontSize: "0.9rem" }}
-                            onClick={() => handleAddToCompilation(comp.id)}
-                          >
-                            Выбрать
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-white-50">
-                        Подборки не найдены
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <AddToCompilationModal
+                movieId={id}
+                onClose={() => setShowModal(false)}
+                onSuccess={(count) => alert(`Добавлено в ${count} подборки!`)}
+              />
             )}
 
             {/* Рейтинг */}
