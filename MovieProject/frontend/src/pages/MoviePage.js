@@ -588,9 +588,7 @@ const MoviePage = () => {
                   <strong className="text-white">
                     {userRating > 0 ? userRating.toFixed(1) : "—"}
                   </strong>
-                  <span className="ms-2" style={{ opacity: 0.6 }}>
-                    ({movie.ratingsCount || 0} оценили)
-                  </span>
+                  
                 </div>
               </div>
             </div>
