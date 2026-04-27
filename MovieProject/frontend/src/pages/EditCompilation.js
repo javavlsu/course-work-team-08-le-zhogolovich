@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
+import EditCompilationMovies from "../components/EditCompilationMovies";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
@@ -19,6 +20,7 @@ const EditCompilation = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   useEffect(() => {
     const fetchCompilation = async () => {
@@ -32,12 +34,21 @@ const EditCompilation = () => {
     };
 
     fetchCompilation();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      alert("Можно загружать только изображения");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Файл не должен превышать 5MB");
+      return;
+    }
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
   };
@@ -48,36 +59,67 @@ const EditCompilation = () => {
     return "/images/default-collection.png";
   };
 
+  const updateCompilationInfo = async () => {
+    const updateData = {
+      title: compilation.title,
+      description: compilation.description,
+      isPublic: compilation.isPublic,
+    };
+
+    await apiClient.patch(`/compilations/${id}`, updateData);
+  };
+
+  const updateCompilationCover = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    await apiClient.patch(`/compilations/${id}/cover`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const formData = new FormData();
-
-      formData.append("title", compilation.title);
-      formData.append("description", compilation.description);
-      formData.append("isPublic", compilation.isPublic);
+      await updateCompilationInfo();
 
       if (selectedFile) {
-        formData.append("cover", selectedFile);
+        setUploadingCover(true);
+        await updateCompilationCover();
       }
 
-      await apiClient.patch(`/compilations/${id}`, formData);
-
+      alert("Подборка успешно обновлена!");
       navigate(`/compilations/${id}`);
     } catch (error) {
       console.error("Ошибка сохранения", error);
 
-      const msg =
-        error.response?.data?.message || "Файл слишком большой (лимит ~1MB)";
+      let errorMessage = "Не удалось сохранить изменения";
 
-      alert(msg);
+      if (error.response?.status === 413) {
+        errorMessage = "Файл слишком большой";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
+      setUploadingCover(false);
     }
   };
 
+  const handleMovieRemoved = (movieId) => {
+    setCompilation((prev) => ({
+      ...prev,
+      movies: prev.movies.filter((m) => m.id !== movieId),
+    }));
+  };
   return (
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
@@ -213,6 +255,12 @@ const EditCompilation = () => {
               </div>
             </div>
           </form>
+
+          <EditCompilationMovies
+            compilationId={id}
+            movies={compilation.movies}
+            onMovieRemoved={handleMovieRemoved}
+          />
         </div>
       </main>
     </div>

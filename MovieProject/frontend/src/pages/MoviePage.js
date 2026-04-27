@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
+import AddToCompilationModal from "../components/AddToCompilationModal";
+import MovieTagsModal from "../components/MovieTagsModal";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 const CommentItem = ({
@@ -14,14 +16,11 @@ const CommentItem = ({
   API_BASE_URL,
   avatarDefault,
 }) => {
-
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
 
   const authorName = comment.authorName || "Аноним";
   const authorAvatar = comment.authorAvatar;
-
-
 
   return (
     <div
@@ -31,12 +30,12 @@ const CommentItem = ({
       <div className="d-flex justify-content-between align-items-start mb-2">
         <div className="d-flex align-items-center gap-2">
           <Link to={authorName !== "Аноним" ? `/users/${authorName}` : "#"}>
-  <img
-    src={
-      comment.authorAvatar
-        ? `${API_BASE_URL}${comment.authorAvatar}`
-        : avatarDefault
-    }
+            <img
+              src={
+                comment.authorAvatar
+                  ? `${API_BASE_URL}${comment.authorAvatar}`
+                  : avatarDefault
+              }
               width="35"
               height="35"
               className="rounded-circle"
@@ -45,11 +44,11 @@ const CommentItem = ({
             />
           </Link>
           <Link
-  to={comment.authorName ? `/users/${comment.authorName}` : "#"}
-  className="text-decoration-none fw-bold text-info"
->
-  @{comment.authorName || "Аноним"}
-</Link>
+            to={comment.authorName ? `/users/${comment.authorName}` : "#"}
+            className="text-decoration-none fw-bold text-info"
+          >
+            @{comment.authorName || "Аноним"}
+          </Link>
         </div>
 
         {currentUser && currentUser.username === authorName && (
@@ -87,6 +86,10 @@ const CommentItem = ({
             <button
               className="custom-btn py-1 px-3"
               onClick={() => {
+                if (!editText.trim()) {
+                  alert("Комментарий не может быть пустым");
+                  return;
+                }
                 onEdit(comment.id, editText);
                 setIsEditing(false);
               }}
@@ -131,6 +134,20 @@ const MoviePage = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editText, setEditText] = useState("");
 
+  const [hoverRating, setHoverRating] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const [selectedCompIds, setSelectedCompIds] = useState([]);
+  const [showTagsModal, setShowTagsModal] = useState(false);
+
+  const fetchMovieData = async () => {
+    try {
+      const response = await apiClient.get(`/movies/${id}`);
+      setMovie(response.data);
+    } catch (error) {
+      console.error("Ошибка при обновлении данных фильма:", error);
+    }
+  };
   const fetchData = async () => {
     try {
       const movieRes = await apiClient.get(`/movies/${id}`);
@@ -181,9 +198,10 @@ const MoviePage = () => {
       if (window.confirm("Нужно войти. Перейти?")) {
         navigate("/login");
       }
+
       return;
     }
-
+    setSelectedCompIds([]);
     setShowModal(true);
     setModalLoading(true);
 
@@ -197,19 +215,18 @@ const MoviePage = () => {
     }
   };
 
- const fetchComments = async () => {
-  try {
-    const res = await apiClient.get(`/comment/movie/${id}`);
-    
+  const fetchComments = async () => {
+    try {
+      const res = await apiClient.get(`/comment/movie/${id}`);
 
-    const commentsData = res.data.content || res.data || [];
-    
-    setComments(commentsData);
-  } catch (e) {
-    console.error("Ошибка загрузки комментариев", e);
-    setComments([]); 
-  }
-};
+      const commentsData = res.data.content || res.data || [];
+
+      setComments(commentsData);
+    } catch (e) {
+      console.error("Ошибка загрузки комментариев", e);
+      setComments([]);
+    }
+  };
   useEffect(() => {
     fetchData();
     fetchComments();
@@ -236,12 +253,18 @@ const MoviePage = () => {
     }
   };
 
-  const handleSaveEdit = async (commentId) => {
+  const handleSaveEdit = async (commentId, newContent) => {
+    if (!newContent || !newContent.trim()) {
+      alert("Комментарий не может быть пустым");
+      return;
+    }
+
     try {
-      await apiClient.patch(`/comment/${commentId}`, { content: editText });
+      await apiClient.patch(`/comment/${commentId}`, { content: newContent });
       setEditingCommentId(null);
       fetchComments();
     } catch (e) {
+      console.error("Ошибка при сохранении:", e);
       alert("Ошибка при сохранении");
     }
   };
@@ -280,7 +303,6 @@ const MoviePage = () => {
         rating: ratingValue,
       });
 
-    
       fetchData();
     } catch (e) {
       console.error("Ошибка при выставлении рейтинга:", e);
@@ -424,7 +446,7 @@ const MoviePage = () => {
             </div>
           </div>
 
-          {/* Описание и жанры */}
+          {/* Описание, жанры и метки */}
           <div className="col-lg-6 d-flex flex-column gap-4 position-relative">
             <h1 className="text-center mb-5 text-white">{movie.name}</h1>
             <div className="article-container p-3 mt-auto">
@@ -451,11 +473,41 @@ const MoviePage = () => {
                   метки отсутствуют
                 </span>
               )}
+              <div className="d-flex flex-wrap justify-content-center gap-2 mt-0">
+                {movie.tags && movie.tags.length > 0
+                  ? movie.tags.map((tag, index) => (
+                      <span
+                        key={`tag-${index}`}
+                        className="tag-pill"
+                        style={{ borderStyle: "dashed", opacity: 0.9 }}
+                      >
+                        #{tag}
+                      </span>
+                    ))
+                  : !isAdmin && (
+                      <span className="text-white-50 small italic">
+                        метки отсутствуют
+                      </span>
+                    )}
+              </div>
               {isAdmin && (
-                <button className="tag-pill tag-add-btn">
-                  <i className="fa-solid fa-plus"></i>
+                <button
+                  onClick={() => setShowTagsModal(true)}
+                  className="btn btn-sm btn-outline-warning rounded-pill px-3 mb-3"
+                >
+                  <i className="fa-solid fa-tags me-2"></i>
+                  Редактировать теги
                 </button>
               )}
+
+              {/* Компонент модального окна */}
+              <MovieTagsModal
+                show={showTagsModal}
+                movieId={movie.id}
+                currentTags={movie.tags} // Список тегов из MovieFullDto
+                onClose={() => setShowTagsModal(false)}
+                onTagsUpdated={fetchMovieData} // Перезагрузка данных фильма
+              />
             </div>
             <div>
               <button
@@ -470,125 +522,117 @@ const MoviePage = () => {
               </button>
             </div>
             {showModal && (
-              <div
-                className="modal-overlay"
-                onClick={() => setShowModal(false)}
-              >
-                <div
-                  className="custom-modal-content"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="modal-header-custom d-flex justify-content-between align-items-center mb-4">
-                    <h4 className="text-white m-0">Выберите подборку</h4>
-                    <button
-                      className="btn-close btn-close-white"
-                      onClick={() => setShowModal(false)}
-                    ></button>
-                  </div>
-
-                  <input
-                    type="text"
-                    className=" form-control custom-input2 mb-4 "
-                    placeholder="Поиск подборки..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-
-                  <div
-                    className="compilation-list-scrollable"
-                    style={{ maxHeight: "400px", overflowY: "auto" }}
-                  >
-                    {modalLoading ? (
-                      <p className="text-center text-white-50">
-                        Загрузка ваших подборок...
-                      </p>
-                    ) : filteredCompilations.length > 0 ? (
-                      filteredCompilations.map((comp) => (
-                        <div
-                          key={comp.id}
-                          className="compilation-item-card d-flex align-items-center justify-content-between p-3 mb-2"
-                        >
-                          <div className="d-flex align-items-center gap-3">
-                            <img
-                              src={
-                                comp.coverUrl
-                                  ? `http://localhost:8080/movie-project/backend${comp.coverUrl}`
-                                  : "/images/default_coll.jpg"
-                              }
-                              alt="cover"
-                              style={{
-                                width: "50px",
-                                height: "50px",
-                                objectFit: "cover",
-                                borderRadius: "8px",
-                              }}
-                            />
-                            <div>
-                              <div className="text-white fw-bold">
-                                {comp.title}
-                              </div>
-                            </div>
-                          </div>
-                          <button
-                            className="custom-btn py-1 px-3"
-                            style={{ fontSize: "0.9rem" }}
-                            onClick={() => handleAddToCompilation(comp.id)}
-                          >
-                            Выбрать
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-white-50">
-                        Подборки не найдены
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <AddToCompilationModal
+                movieId={id}
+                onClose={() => setShowModal(false)}
+                onSuccess={(count) => alert(`Добавлено в ${count} подборки!`)}
+              />
             )}
 
-            {/* Рейтинг  */}
-            <div className="d-flex  flex-column align-items-center justify-content-start gap-1 mt-3">
+            {/* Рейтинг */}
+            <div className="d-flex flex-column align-items-center justify-content-start gap-1 mt-3">
               <p
                 className="text-white text-center m-0 fs-5 fw-light"
                 style={{ letterSpacing: "1px" }}
               >
                 РЕЙТИНГ НА НАШЕМ САЙТЕ{" "}
-                <span className="fw-bold text-warning">{movie.avgRating}</span>
+                <span className="fw-bold text-warning">
+                  {movie.avgRating?.toFixed(1) || "—"}
+                </span>
+                <span className="ms-2" style={{ opacity: 0.6 }}>
+                  ({movie.ratingsCount || 0} оценили)
+                </span>
               </p>
 
               <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
-                <div className="d-flex align-items-center justify-content-start gap-4 mt-3">
-                  <div className="stars-display-interactive d-flex gap-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <i
-                        key={star}
-                        // Если рейтинг больше или равен номеру звезды — она закрашена
-                        className={`fa-star fs-3 ${userRating >= star ? "fa-solid" : "fa-regular"}`}
-                        style={{
-                          color: userRating >= star ? "#FFD700" : "#444",
-                          cursor: "pointer",
-                          transition: "transform 0.1s",
-                        }}
-                        onClick={() => handleStarClick(star)}
-                        onMouseEnter={(e) =>
-                          (e.target.style.transform = "scale(1.2)")
-                        }
-                        onMouseLeave={(e) =>
-                          (e.target.style.transform = "scale(1.0)")
-                        }
-                      ></i>
-                    ))}
-                  </div>
+                <div className="stars-display-interactive d-flex gap-1">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((starValue) => {
+                    const isHoveredFull = hoverRating >= starValue;
+                    const isHoveredHalf =
+                      hoverRating >= starValue - 0.5 && hoverRating < starValue;
 
-                  <div className="text-secondary fs-4">
-                    <strong className="text-white">{userRating}</strong>
-                    <span className="ms-2" style={{ opacity: 0.6 }}>
-                      ({movie.ratingsCount} оценили)
-                    </span>
-                  </div>
-                </div>{" "}
+                    const isSelectedFull = userRating >= starValue;
+                    const isSelectedHalf =
+                      userRating >= starValue - 0.5 && userRating < starValue;
+
+                    const showFull = isHovered ? isHoveredFull : isSelectedFull;
+                    const showHalf = isHovered ? isHoveredHalf : isSelectedHalf;
+
+                    return (
+                      <div
+                        key={starValue}
+                        className="star-container"
+                        style={{
+                          position: "relative",
+                          display: "inline-block",
+                        }}
+                        onMouseMove={(e) => {
+                          if (!isAuth) return;
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const mouseX = e.clientX - rect.left;
+                          const halfWidth = rect.width / 2;
+
+                          let newHoverRating;
+                          if (mouseX < halfWidth) {
+                            newHoverRating = starValue - 0.5;
+                          } else {
+                            newHoverRating = starValue;
+                          }
+                          setHoverRating(newHoverRating);
+                          setIsHovered(true);
+                        }}
+                        onMouseLeave={() => {
+                          setIsHovered(false);
+                          setHoverRating(0);
+                        }}
+                        onClick={(e) => {
+                          if (!isAuth) {
+                            if (
+                              window.confirm(
+                                "Чтобы поставить оценку, нужно войти. Перейти?",
+                              )
+                            ) {
+                              navigate("/login");
+                            }
+                            return;
+                          }
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const mouseX = e.clientX - rect.left;
+                          const halfWidth = rect.width / 2;
+
+                          let newRating;
+                          if (mouseX < halfWidth) {
+                            newRating = starValue - 0.5;
+                          } else {
+                            newRating = starValue;
+                          }
+
+                          if (newRating !== userRating) {
+                            setUserRating(newRating);
+                            handleRateMovie(newRating);
+                          }
+                        }}
+                      >
+                        <i
+                          className={`fa-star fs-3 ${showFull ? "fa-solid" : showHalf ? "fa-solid fa-star-half-stroke" : "fa-regular"}`}
+                          style={{
+                            color: showFull || showHalf ? "#FFD700" : "#444",
+                            cursor: isAuth ? "pointer" : "default",
+                            transition: "all 0.2s ease-in-out",
+                            transform:
+                              isHovered && isAuth ? "scale(1.15)" : "scale(1)",
+                          }}
+                        ></i>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="text-secondary fs-4">
+                  <strong className="text-white">
+                    {userRating > 0 ? userRating.toFixed(1) : "—"}
+                  </strong>
+                </div>
               </div>
             </div>
           </div>
@@ -665,7 +709,6 @@ const MoviePage = () => {
           )}
 
           {/* Список всех комментариев */}
-
           <div
             className="comment-list d-flex flex-column gap-2 mx-auto text-white"
             style={{ maxWidth: "800px" }}
