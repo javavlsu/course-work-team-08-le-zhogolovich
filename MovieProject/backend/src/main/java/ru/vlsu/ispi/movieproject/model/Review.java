@@ -29,7 +29,7 @@ public class Review extends AuditableEntity{
     private Movie movie;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User author;
 
     @Column(length = 500)

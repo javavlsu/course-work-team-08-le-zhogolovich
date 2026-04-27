@@ -96,44 +96,36 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         c.description as description,
         c.isPublic as isPublic,
         c.coverUrl as coverUrl,
-    
+
         c.author.id as authorId,
         c.author.username as authorName,
-    
-        (SELECT COUNT(cl) 
+
+        (SELECT COUNT(cl)
          FROM CompilationLike cl 
          WHERE cl.compilation.id = c.id) as likesCount,
-    
+
         CASE 
-            WHEN :userId IS NULL THEN false
+            WHEN :currentUserId IS NULL THEN false
             WHEN EXISTS (
                 SELECT 1 
                 FROM CompilationLike cl2 
                 WHERE cl2.compilation.id = c.id 
-                  AND cl2.user.id = :userId
+                  AND cl2.user.id = :currentUserId
             )
             THEN true ELSE false
         END as likedByUser,
-    
+
         (SELECT COUNT(cs) 
          FROM CompilationSubscription cs 
          WHERE cs.compilation.id = c.id) as subscribersCount,
-    
-        CASE 
-            WHEN :userId IS NULL THEN false
-            WHEN EXISTS (
-                SELECT 1 
-                FROM CompilationSubscription cs2 
-                WHERE cs2.compilation.id = c.id 
-                  AND cs2.user.id = :userId
-            )
-            THEN true ELSE false
-        END as isSubscribed
-    
+
+        true as isSubscribed
+
     FROM Compilation c
-    WHERE c.isPublic = true
+    JOIN CompilationSubscription cs ON cs.compilation.id = c.id
+    WHERE cs.user.id = :userId
     """)
-    Page<CompilationProjection> findAllView(Pageable pageable, Long userId);
+    List<CompilationProjection> findAllSubscribedByUserId(Long userId, Long currentUserId);
 
     @Query("""
     SELECT 
@@ -177,7 +169,58 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         END as isSubscribed
     
     FROM Compilation c
-    WHERE c.id = :id
+    WHERE c.isPublic = true
+    """)
+    Page<CompilationProjection> findAllView(Pageable pageable, Long userId);
+
+    @Query("""
+        SELECT 
+            c.id as id,
+            c.title as title,
+            c.description as description,
+            c.isPublic as isPublic,
+            c.coverUrl as coverUrl,
+        
+            c.author.id as authorId,
+    
+            CASE 
+                WHEN c.author IS NULL THEN 'Удалённый пользователь'
+                WHEN c.author.deleted = true THEN 'Удалённый пользователь'
+                ELSE c.author.username
+            END as authorName,
+        
+            (SELECT COUNT(cl) 
+             FROM CompilationLike cl 
+             WHERE cl.compilation.id = c.id) as likesCount,
+        
+            CASE 
+                WHEN :userId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM CompilationLike cl2 
+                    WHERE cl2.compilation.id = c.id 
+                      AND cl2.user.id = :userId
+                )
+                THEN true ELSE false
+            END as likedByUser,
+        
+            (SELECT COUNT(cs) 
+             FROM CompilationSubscription cs 
+             WHERE cs.compilation.id = c.id) as subscribersCount,
+        
+            CASE 
+                WHEN :userId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM CompilationSubscription cs2 
+                    WHERE cs2.compilation.id = c.id 
+                      AND cs2.user.id = :userId
+                )
+                THEN true ELSE false
+            END as isSubscribed
+        
+        FROM Compilation c
+        WHERE c.id = :id
     """)
     Optional<CompilationProjection> findViewById(Long id, Long userId);
 }

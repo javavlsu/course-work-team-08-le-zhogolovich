@@ -9,8 +9,8 @@ public class CommentMapper {
     public CommentDto toDto(Comment comment) {
         return new CommentDto(
                 comment.getId(),
-                comment.getUser().getUsername(),
-                comment.getUser().getAvatarUrl(),
+                UserMapperHelper.mapUsername(comment.getUser()),
+                UserMapperHelper.mapAvatar(comment.getUser()),
                 comment.getMovie().getId(),
                 comment.getContent(),
                 comment.getCreatedAt()

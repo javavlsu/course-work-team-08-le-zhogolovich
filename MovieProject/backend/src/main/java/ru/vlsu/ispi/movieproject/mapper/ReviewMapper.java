@@ -10,8 +10,8 @@ public class ReviewMapper {
         return new ReviewDto(
                 review.getId(),
                 review.getMovie().getId(),
-                review.getAuthor().getUsername(),
-                review.getAuthor().getAvatarUrl(),
+                UserMapperHelper.mapUsername(review.getAuthor()),
+                UserMapperHelper.mapAvatar(review.getAuthor()),
                 review.getTitle(),
                 review.getContent(),
                 review.getStatus().toString(),

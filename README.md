@@ -43,19 +43,22 @@
 
 Создание и управление коллекциями фильмов.
 
-| Метод      | Путь                                            | Описание           | Параметры                 | Body / Примечания                                          |
-| :--------- | :---------------------------------------------- | :----------------- | :------------------------ | :--------------------------------------------------------- |
-| **GET**    | `/compilations`                                 | Публичные подборки | **Query**: `page`, `size` | Пагинированный список                                      |
-| **POST**   | `/compilations`                                 | Создать подборку   | —                         | **Multipart**: `title`, `description`, `isPublic`, `cover` |
-| **GET**    | `/compilations/my`                              | Мои подборки       | —                         | Список `CompilationDto`                                    |
-| **GET**    | `/compilations/{id}`                            | Страница подборки  | **Path**: `id`            | Включает список фильмов                                    |
-| **PATCH**  | `/compilations/{id}`                            | Редактировать инфо | **Path**: `id`            | **Body**: `UpdateCompilationRequest`                       |
-| **DELETE** | `/compilations/{id}`                            | Удалить подборку   | **Path**: `id`            | —                                                          |
-| **PATCH**  | `/compilations/{id}/cover`                      | Обновить обложку   | **Path**: `id`            | **Multipart**: `file` (binary)                             |
-| **POST**   | `/compilations/{id}/subscribe`                  | Подписаться        | **Path**: `id`            | —                                                          |
-| **DELETE** | `/compilations/{id}/subscribe`                  | Отписаться         | **Path**: `id`            | —                                                          |
-| **POST**   | `/compilations/{id}/like`                       | Лайкнуть           | **Path**: `id`            | —                                                          |
-| **DELETE** | `/compilations/{compilationId}/movie/{movieId}` | Убрать фильм       | **Path**: `id`, `movieId` | —                                                          |
+| Метод      | Путь                                            | Описание                                  | Параметры                 | Body / Примечания                                          |
+| :--------- | :---------------------------------------------- | :---------------------------------------- | :------------------------ | :--------------------------------------------------------- |
+| **GET**    | `/compilations`                                 | Публичные подборки                        | **Query**: `page`, `size` | Пагинированный список                                      |
+| **POST**   | `/compilations`                                 | Создать подборку                          | —                         | **Multipart**: `title`, `description`, `isPublic`, `cover` |
+| **GET**    | `/compilations/my`                              | Мои подборки                              | —                         | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/user/{userId}`                   | Подборки пользователя по id               | **Path**: `id`            | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/my/subscriptions`                | Мои отслеживаемые подборки                | —                         | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/user/{userId}/subscriptions`     | Отслеживаемые подборки пользователя по id | **Path**: `id`            | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/{id}`                            | Страница подборки                         | **Path**: `id`            | Включает список фильмов                                    |
+| **PATCH**  | `/compilations/{id}`                            | Редактировать инфо                        | **Path**: `id`            | **Body**: `UpdateCompilationRequest`                       |
+| **DELETE** | `/compilations/{id}`                            | Удалить подборку                          | **Path**: `id`            | —                                                          |
+| **PATCH**  | `/compilations/{id}/cover`                      | Обновить обложку                          | **Path**: `id`            | **Multipart**: `file` (binary)                             |
+| **POST**   | `/compilations/{id}/subscribe`                  | Подписаться                               | **Path**: `id`            | —                                                          |
+| **DELETE** | `/compilations/{id}/subscribe`                  | Отписаться                                | **Path**: `id`            | —                                                          |
+| **POST**   | `/compilations/{id}/like`                       | Лайкнуть                                  | **Path**: `id`            | —                                                          |
+| **DELETE** | `/compilations/{compilationId}/movie/{movieId}` | Убрать фильм                              | **Path**: `id`, `movieId` | —                                                          |
 
 ---
 
@@ -91,14 +94,22 @@
 
 Управление профилем и просмотр других участников.
 
-| Метод     | Путь                | Описание              | Входные данные                           |
-| :-------- | :------------------ | :-------------------- | :--------------------------------------- |
-| **GET**   | `/users/me`         | Мой профиль           | —                                        |
-| **PATCH** | `/users/me`         | Редактировать профиль | **Body**: `username`, `email`, `aboutMe` |
-| **PATCH** | `/users/me/avatar`  | Сменить аватар        | **Multipart**: `file` (binary)           |
-| **GET**   | `/users`            | Список всех юзеров    | —                                        |
-| **GET**   | `/users/id/{id}`    | Профиль по id         | **Path**: `id`                           |
-| **GET**   | `/users/{username}` | Профиль по username   | **Path**: `username`                     |
+| Метод      | Путь                            | Описание                               | Входные данные                           |
+| :--------- | :------------------------------ | :------------------------------------- | :--------------------------------------- |
+| **GET**    | `/users/me`                     | Мой профиль                            | —                                        |
+| **PATCH**  | `/users/me`                     | Редактировать профиль                  | **Body**: `username`, `email`, `aboutMe` |
+| **PATCH**  | `/users/me/avatar`              | Сменить аватар                         | **Multipart**: `file` (binary)           |
+| **GET**    | `/users`                        | Список всех юзеров                     | —                                        |
+| **GET**    | `/users/id/{id}`                | Профиль по id                          | **Path**: `id`                           |
+| **GET**    | `/users/{username}`             | Профиль по username                    | **Path**: `username`                     |
+| **GET**    | `/users/me/followers`           | Список своих подписчиков               | —                                        |
+| **GET**    | `/users/me/followings`          | Список своих подписок на пользователей | —                                        |
+| **GET**    | `/users/{username}/followers`   | Список чужих подписчиков               | —                                        |
+| **GET**    | `/users/{username}/followings`  | Список чужих подписок на пользователей | —                                        |
+| **POST**   | `/users/follow/{id}`            | Подписаться на пользователя            | **Path**: `id`                           |
+| **DELETE** | `/users/follow/{id}`            | Отписаться от пользователя             | **Path**: `id`                           |
+| **DELETE** | `/users/me/delete-profile`      | Удалить свой профиль                   | —                                        |
+| **DELETE** | `/users/id/{id}/delete-profile` | Удалить профиль по Id                  | **Path**: `id`                           |
 
 ---
 
