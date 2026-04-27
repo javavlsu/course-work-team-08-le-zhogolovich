@@ -2,23 +2,21 @@ package ru.vlsu.ispi.movieproject.mapper;
 
 import org.springframework.stereotype.Component;
 import ru.vlsu.ispi.movieproject.dto.review.ReviewDto;
-import ru.vlsu.ispi.movieproject.projection.ReviewProjection;
+import ru.vlsu.ispi.movieproject.model.Review;
 
 @Component
 public class ReviewMapper {
-    public ReviewDto toDto(ReviewProjection p) {
+    public ReviewDto toDto(Review review, int likesCount) {
         return new ReviewDto(
-                p.getId(),
-                p.getMovieId(),
-                p.getAuthorName(),
-                p.getAuthorAvatar(),
-                p.getTitle(),
-                p.getContent(),
-                p.getStatus(),
-                p.getCreatedAt(),
-                p.getLikesCount(),
-                p.getIsLikedByCurrentUser(),
-                p.getMovieCover()
+                review.getId(),
+                review.getMovie().getId(),
+                UserMapperHelper.mapUsername(review.getAuthor()),
+                UserMapperHelper.mapAvatar(review.getAuthor()),
+                review.getTitle(),
+                review.getContent(),
+                review.getStatus().toString(),
+                review.getCreatedAt(),
+                likesCount
         );
     }
 }
