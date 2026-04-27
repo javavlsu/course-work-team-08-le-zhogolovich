@@ -9,6 +9,7 @@ import MoviePage from "./pages/MoviePage";
 import CreateCompilationPage from "./pages/CreateCompilationPage";
 import CompilationPage from "./pages/CompilationPage";
 import EditCompilation from "./pages/EditCompilation";
+import FollowsPage from "./pages/FollowsPage";
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" />;
@@ -40,6 +41,9 @@ function App() {
         <Route path="/compilations/:id" element={<CompilationPage />} />
         <Route path="/compilations/:id/edit" element={<EditCompilation />} />
         <Route path="*" element={<Navigate to="/" />} />
+
+        <Route path="/users/:username/followers" element={<FollowsPage />} />
+<Route path="/users/:username/followings" element={<FollowsPage />} />
       </Routes>
     </BrowserRouter>
   );
