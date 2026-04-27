@@ -3,21 +3,22 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.vlsu.ispi.movieproject.dto.auth.LoginRequest;
-import ru.vlsu.ispi.movieproject.dto.auth.RegisterRequest;
 import ru.vlsu.ispi.movieproject.dto.auth.JwtAuthenticationDto;
+import ru.vlsu.ispi.movieproject.dto.auth.LoginRequest;
 import ru.vlsu.ispi.movieproject.dto.auth.RefreshTokenDto;
+import ru.vlsu.ispi.movieproject.dto.auth.RegisterRequest;
+import ru.vlsu.ispi.movieproject.enums.Role;
 import ru.vlsu.ispi.movieproject.exception.InvalidTokenException;
 import ru.vlsu.ispi.movieproject.exception.UserAlreadyExistsException;
-import ru.vlsu.ispi.movieproject.exception.UserNotFoundException;
 import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
+import ru.vlsu.ispi.movieproject.security.CustomUserDetails;
 import ru.vlsu.ispi.movieproject.security.jwt.JwtService;
 import ru.vlsu.ispi.movieproject.service.AuthService;
-import ru.vlsu.ispi.movieproject.enums.Role;
 
 @Service
 @AllArgsConstructor
@@ -29,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(RegisterRequest registerRequest) {
-        if (userRepository.existsByEmail(registerRequest.getEmail())) {
+        if (userRepository.existsByEmailAndDeletedFalse(registerRequest.getEmail())) {
             throw new UserAlreadyExistsException();
         }
 
@@ -44,21 +45,18 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtAuthenticationDto login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getLogin(),
                         loginRequest.getPassword()
                 )
         );
 
-        User user = userRepository.findByEmail(loginRequest.getLogin())
-                .or(() -> userRepository.findByUsername(loginRequest.getLogin()))
-                .orElseThrow(() ->
-                        new UserNotFoundException());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         return jwtService.generateAuthToken(
-                user.getId(),
-                user.getRole().toString()
+                userDetails.getId(),
+                userDetails.getRole()
         );
     }
 
@@ -72,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
 
         Long userId = jwtService.extractUserId(refreshToken);
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdAndDeletedFalse(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("Некорректный id пользователя"));
 
         return jwtService.generateAuthToken(

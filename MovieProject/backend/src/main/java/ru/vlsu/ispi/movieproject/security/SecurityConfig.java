@@ -62,9 +62,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/import/**").hasRole("ADMIN")
                         // user
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "users/id/{id}/delete-profile").hasRole("ADMIN")
                         .requestMatchers("/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users/{username}").permitAll()
                         .requestMatchers(HttpMethod.GET, "users/id/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/{username}/followers").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/{username}/followings").permitAll()
 
                         .anyRequest().authenticated()
                 )

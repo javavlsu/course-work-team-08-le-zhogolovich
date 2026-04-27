@@ -1,12 +1,12 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.review.CreateReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.EditReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.ReviewDto;

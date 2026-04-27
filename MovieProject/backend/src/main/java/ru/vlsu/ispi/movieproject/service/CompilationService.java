@@ -21,6 +21,8 @@ public interface CompilationService {
     CompilationDto removeMovie(Long compilationId, Long movieId);
     List<CompilationDto> getCurrentUserCompilations();
     List<CompilationDto> getUserCompilations(Long userId);
+    List<CompilationDto> getCurrentUserSubscriptions();
+    List<CompilationDto> getUserSubscriptions(Long userId);
     void subscribe(Long compilationId);
     void unsubscribe(Long compilationId);
 }

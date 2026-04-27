@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-indexes-to-user-follow
+      author: Hiraeth
+      changes:
+        - createIndex:
+            tableName: user_follow
+            indexName: idx_user_follow_follower
+            columns:
+              - column: { name: follower_id}
+
+        - createIndex:
+            tableName: user_follow
+            indexName: idx_user_follow-followed
+            columns:
+              - column: { name: followed_user_id}
