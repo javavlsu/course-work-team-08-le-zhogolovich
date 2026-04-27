@@ -13,4 +13,12 @@ public interface UserService {
     UserDto getUserByUsername(String username);
     UserDto updateAvatar(MultipartFile file);
     UserDto updateProfile(EditProfileRequest request);
+    void deleteProfile();
+    void deleteUserById(Long id);
+    void follow(Long followedId);
+    void unfollow(Long followedId);
+    List<UserDto> getFollowers();
+    List<UserDto> getFollowings();
+    List<UserDto> getFollowersByUsername(String username);
+    List<UserDto> getFollowingsByUsername(String username);
 }

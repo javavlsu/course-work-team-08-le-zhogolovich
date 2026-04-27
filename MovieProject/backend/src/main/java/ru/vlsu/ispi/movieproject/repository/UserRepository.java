@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.repository;
 import ru.vlsu.ispi.movieproject.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,7 +32,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email адрес электронной почты
      * @return true — если пользователь существует, иначе false
      */
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndDeletedFalse(String email);
 
     Optional<User> findByUsername(String username);
+    Optional<User> findByUsernameAndDeletedFalse(String username);
+    Optional<User> findByIdAndDeletedFalse(Long id);
+    List<User> findAllByDeletedFalse();
 }

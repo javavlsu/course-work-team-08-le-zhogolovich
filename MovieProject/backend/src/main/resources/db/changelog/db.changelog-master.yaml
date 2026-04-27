@@ -31,3 +31,7 @@ databaseChangeLog:
       file: db/changelog/changeset/15-review-like-changes.yaml
   - include:
       file: db/changelog/changeset/16-add-index-to-tag.yaml
+  - include:
+      file: db/changelog/changeset/17-add-indexes-to-user-follow.yaml
+  - include:
+      file: db/changelog/changeset/18-relations-changes.yaml

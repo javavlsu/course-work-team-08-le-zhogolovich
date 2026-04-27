@@ -1,11 +1,11 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.imports.ImportResult;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
 import ru.vlsu.ispi.movieproject.dto.imports.MovieListResponseDto;
+import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
 import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
 import ru.vlsu.ispi.movieproject.model.Movie;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;

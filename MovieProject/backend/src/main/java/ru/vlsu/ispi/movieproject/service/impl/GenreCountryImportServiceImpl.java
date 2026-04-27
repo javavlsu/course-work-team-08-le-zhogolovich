@@ -1,8 +1,8 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.imports.FiltersResponseDto;
 import ru.vlsu.ispi.movieproject.dto.movie.CountryDto;
 import ru.vlsu.ispi.movieproject.dto.movie.GenreDto;

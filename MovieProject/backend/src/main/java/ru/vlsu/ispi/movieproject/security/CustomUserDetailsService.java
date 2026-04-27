@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 
 @Service
@@ -13,15 +14,23 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public CustomUserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        return userRepository.findByEmail(login)
+        User user = userRepository.findByEmail(login)
                 .or(() -> userRepository.findByUsername(login))
-                .map(CustomUserDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь" + login + "не найден."));
+
+        if (user.getDeleted()) throw new UsernameNotFoundException("Пользователь" + login + "не найден.");
+
+        return new CustomUserDetails(user);
     }
 
     public CustomUserDetails loadUserById(Long id) {
-        return userRepository.findById(id)
-                .map(CustomUserDetails::new)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь с ID " + id + " не найден"));
+
+        if (user.getDeleted()) {
+            throw new UsernameNotFoundException("Пользователь с ID " + id + " не найден");
+        }
+
+        return new CustomUserDetails(user);
     }
 }

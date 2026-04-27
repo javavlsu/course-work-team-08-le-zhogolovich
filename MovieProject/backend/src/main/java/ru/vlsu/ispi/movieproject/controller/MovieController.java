@@ -20,7 +20,6 @@ import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.service.MovieService;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -61,7 +60,7 @@ public class MovieController {
     }
 
     @GetMapping("/{movieId}/tags")
-    public List<String> getMovieTags(@PathVariable Long movieId) {
+    public List<TagDto> getMovieTags(@PathVariable Long movieId) {
         return movieService.getMovieTags(movieId);
     }
 }

@@ -2,22 +2,17 @@ package ru.vlsu.ispi.movieproject.mapper;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
-import ru.vlsu.ispi.movieproject.enums.FileDirectory;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
-import ru.vlsu.ispi.movieproject.service.FileStorageService;
 
 import java.util.List;
 
 @Component
 @AllArgsConstructor
 public class CompilationMapper {
-    private final FileStorageService fileStorageService;
-
     public Compilation fromRequest(CreateCompilationRequest request) {
         Compilation c = new Compilation();
         c.setTitle(request.getTitle());

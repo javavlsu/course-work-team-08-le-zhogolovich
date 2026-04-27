@@ -1,10 +1,10 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.tag.CreateTagRequest;
 import ru.vlsu.ispi.movieproject.dto.tag.EditTagRequest;
 import ru.vlsu.ispi.movieproject.dto.tag.TagDto;

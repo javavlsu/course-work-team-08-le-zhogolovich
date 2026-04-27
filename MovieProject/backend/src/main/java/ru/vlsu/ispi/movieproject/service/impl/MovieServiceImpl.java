@@ -1,18 +1,19 @@
 package ru.vlsu.ispi.movieproject.service.impl;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourceDto;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourcesResponseDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDetailsDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
+import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.MovieNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.TagNotFoundException;
@@ -50,6 +51,7 @@ public class MovieServiceImpl implements MovieService {
     private final EntityManager entityManager;
     private final CompilationRepository compilationRepository;
     private final TagRepository tagRepository;
+    private final TagMapper tagMapper;
 
     @Value("${movie.details.duration}")
     private Duration detailsDuration;
@@ -179,11 +181,11 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<String> getMovieTags(Long id) {
+    public List<TagDto> getMovieTags(Long id) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
 
-        return movie.getTags().stream().map(Tag::getName).collect(Collectors.toList());
+        return movie.getTags().stream().map(tagMapper::toDto).collect(Collectors.toList());
     }
 
     private void updateMovieRating(Movie movie) {
@@ -193,6 +195,4 @@ public class MovieServiceImpl implements MovieService {
         movie.setAvgRating(avg != null ? avg : 0.0);
         movie.setRatingsCount(count != null ? count : 0);
     }
-
-
 }

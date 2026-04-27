@@ -8,7 +8,6 @@ import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.model.Movie;
 
 import java.util.List;
-import java.util.Set;
 
 public interface MovieService {
     Page<MovieDto> getAllMovies(Pageable pageable);
@@ -19,5 +18,5 @@ public interface MovieService {
     void rateMovie(Long id, Double rating);
     void addTag(Long id, Long tagId);
     void removeTag(Long id, Long tagId);
-    List<String> getMovieTags(Long id);
+    List<TagDto> getMovieTags(Long id);
 }
