@@ -13,6 +13,8 @@ function ProfilePage() {
 
   const [user, setUser] = useState(null);
   const [compilations, setCompilations] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]); 
+  const [activeTab, setActiveTab] = useState("my");
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [isMyProfile, setIsMyProfile] = useState(false);
@@ -64,6 +66,13 @@ function ProfilePage() {
       if (isMy) {
         const compRes = await apiClient.get("/compilations/my");
         setCompilations(compRes.data);
+        try {
+          const subRes = await apiClient.get(`/compilations/user/${profileId}`);
+          setSubscriptions(subRes.data.content || subRes.data || []);
+        } catch (e) {
+          console.error("Ошибка загрузки подписок", e);
+        }
+
       } else {
         const compRes = await apiClient.get(`/compilations/user/${profileId}`);
         const all = compRes.data.content || compRes.data;
@@ -82,6 +91,35 @@ function ProfilePage() {
   useEffect(() => {
     fetchProfileData();
   }, [fetchProfileData]);
+
+  const renderGrid = (items, emptyMessage) => (
+    <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 mt-2">
+      {items.length > 0 ? (
+        items.map((comp) => (
+          <div className="col" key={comp.id}>
+            <Link to={`/compilations/${comp.id}`} className="coll-card d-block text-decoration-none">
+              <div className="img-box rounded-4 overflow-hidden mb-3 shadow-sm position-relative" style={{ aspectRatio: "1/1" }}>
+                {!comp.isPublic && isMyProfile && (
+                  <div className="card-badge" style={{ position: "absolute", top: "10px", left: "10px", color: "white", zIndex: 2 }}>
+                    <i className="fa-solid fa-lock"></i>
+                  </div>
+                )}
+                <img
+                  src={comp.coverUrl ? `${API_BASE_URL}${comp.coverUrl}` : avatarDefault}
+                  alt={comp.title}
+                  className="w-100 h-100 object-fit-cover"
+                />
+              </div>
+              <p className="text-light m-0 fw-bold">{comp.title}</p>
+            </Link>
+          </div>
+        ))
+      ) : (
+        <div className="w-100 text-center text-white-50 py-4">{emptyMessage}</div>
+      )}
+    </div>
+  );
+
 
   if (loading) return <div className="text-white text-center mt-5">Загрузка...</div>;
   if (errorMsg) return <div className="text-danger text-center mt-5">{errorMsg}</div>;
@@ -132,49 +170,40 @@ function ProfilePage() {
               <p className="text-white fs-5 mt-3">{user.aboutMe || "Информация отсутствует"}</p>
             </div>
           </div>
-
-          <section className="mb-5 text-center section-divider">
-            <h2 className="section-title fw-light mb-2 pt-4 d-inline-block w-75 text-white">
-              {isMyProfile ? "Мои подборки" : `Подборки @${user.username}`}
-            </h2>
-
+          {/* табы переключения (подборки/подписки) */}
+          <div className="d-flex justify-content-center border-bottom border-secondary mb-4">
+            <button 
+              className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === 'my' ? 'border-bottom border-3 border-white fw-bold' : 'opacity-50'}`}
+              onClick={() => setActiveTab('my')}
+            >
+              {isMyProfile ? "Мои подборки" : "Подборки"}
+            </button>
             {isMyProfile && (
-              <div className="text-center w-100 mt-4 mb-5">
-                <Link to="/create-compilation" className="custom-btn user-pill py-3 px-5 text-decoration-none text-center d-inline-block">
-                  + Новая
-                </Link>
-              </div>
+              <button 
+                className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === 'subscribed' ? 'border-bottom border-3 border-white fw-bold' : 'opacity-50'}`}
+                onClick={() => setActiveTab('subscribed')}
+              >
+                Подписки
+              </button>
             )}
-
-            <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 mt-2">
-              {compilations.length > 0 ? (
-                compilations.map((comp) => (
-                  <div className="col" key={comp.id}>
-                    <Link to={`/compilations/${comp.id}`} className="coll-card d-block text-decoration-none">
-                      <div className="img-box rounded-4 overflow-hidden mb-3 shadow-sm position-relative" style={{ aspectRatio: "1/1" }}>
-                        {!comp.isPublic && isMyProfile && (
-                          <div className="card-badge" style={{ position: "absolute", top: "10px", left: "10px", color: "white", zIndex: 2 }}>
-                            <i className="fa-solid fa-lock"></i>
-                          </div>
-                        )}
-                        <img
-                          src={comp.coverUrl ? `${API_BASE_URL}${comp.coverUrl}` : avatarDefault}
-                          alt={comp.title}
-                          className="w-100 h-100 object-fit-cover"
-                        />
-                      </div>
-                      <p className="text-light m-0 fw-bold">{comp.title}</p>
+          </div>
+          <section className="mb-5">
+            {activeTab === 'my' && (
+              <>
+                {isMyProfile && (
+                  <div className="text-center mb-4">
+                    <Link to="/create-compilation" className="custom-btn py-2 px-4 text-decoration-none">
+                      + новая
                     </Link>
                   </div>
-                ))
-              ) : (
-                <div className="w-100 text-center text-white-50 py-4">
-                  {isMyProfile 
-                    ? "У вас пока нет созданных подборок." 
-                    : `У пользователя ${user.username} нет публичных подборок.`}
-                </div>
-              )}
-            </div>
+                )}
+                {renderGrid(compilations, isMyProfile ? "У вас пока нет созданных подборк." : "Нет публичных подборок.")}
+              </>
+            )}
+
+            {activeTab === 'subscribed' && (
+              renderGrid(subscriptions, "Вы еще не подписались ни на одну подборку.")
+            )}
           </section>
 
           <div className="stats-card p-4 text-white mb-5" style={{ border: "2px solid white", borderRadius: "20px", background: "rgba(255,255,255,0.05)" }}>

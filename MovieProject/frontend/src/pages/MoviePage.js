@@ -475,9 +475,7 @@ const MoviePage = () => {
 
         {/* Секция комментариев */}
         <section className="mb-5">
-          <h2 className="section-title fw-light text-center mb-5">
-            Комментарии
-          </h2>
+        
 
           <MovieComments 
           movieId={id} 
