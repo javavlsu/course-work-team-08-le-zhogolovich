@@ -165,11 +165,16 @@ const styles = {
     width: '100%', maxWidth: '450px', border: '1px solid rgba(255,255,255,0.1)',
     maxHeight: '90vh', overflowY: 'auto'
   },
-  tagsBox: { backgroundColor: '#5d5e6d', padding: '15px', borderRadius: '15px' },
+  tagsBox: { backgroundColor: '#5d5e6d', padding: '15px', borderRadius: '15px',maxHeight: '100px', 
+    overflowY: 'auto' },
   tagItem: { backgroundColor: '#fff5f5', borderRadius: '10px' },
   searchBox: { backgroundColor: '#5d5e6d', borderRadius: '15px' },
+  results: {
+    maxHeight: '150px',
+    overflowY: 'auto',
+    marginTop: '5px'
+  },
   input: { backgroundColor: '#d9d9d9', border: 'none', borderRadius: '20px', textAlign: 'center' },
-  // Добавили стиль для селекта
   select: { backgroundColor: '#d9d9d9', border: 'none', borderRadius: '20px', textAlign: 'center', cursor: 'pointer' },
   searchItem: { cursor: 'pointer', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)' }
 };
