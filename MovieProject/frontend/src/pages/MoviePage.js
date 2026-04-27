@@ -5,6 +5,7 @@ import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddToCompilationModal from "../components/AddToCompilationModal";
+import MovieTagsModal from "../components/MovieTagsModal";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 const CommentItem = ({
@@ -137,6 +138,16 @@ const MoviePage = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   const [selectedCompIds, setSelectedCompIds] = useState([]);
+  const [showTagsModal, setShowTagsModal] = useState(false);
+
+  const fetchMovieData = async () => {
+    try {
+      const response = await apiClient.get(`/movies/${id}`);
+      setMovie(response.data);
+    } catch (error) {
+      console.error("Ошибка при обновлении данных фильма:", error);
+    }
+  };
   const fetchData = async () => {
     try {
       const movieRes = await apiClient.get(`/movies/${id}`);
@@ -435,7 +446,7 @@ const MoviePage = () => {
             </div>
           </div>
 
-          {/* Описание и жанры */}
+          {/* Описание, жанры и метки */}
           <div className="col-lg-6 d-flex flex-column gap-4 position-relative">
             <h1 className="text-center mb-5 text-white">{movie.name}</h1>
             <div className="article-container p-3 mt-auto">
@@ -462,11 +473,41 @@ const MoviePage = () => {
                   метки отсутствуют
                 </span>
               )}
+              <div className="d-flex flex-wrap justify-content-center gap-2 mt-0">
+                {movie.tags && movie.tags.length > 0
+                  ? movie.tags.map((tag, index) => (
+                      <span
+                        key={`tag-${index}`}
+                        className="tag-pill"
+                        style={{ borderStyle: "dashed", opacity: 0.9 }}
+                      >
+                        #{tag}
+                      </span>
+                    ))
+                  : !isAdmin && (
+                      <span className="text-white-50 small italic">
+                        метки отсутствуют
+                      </span>
+                    )}
+              </div>
               {isAdmin && (
-                <button className="tag-pill tag-add-btn">
-                  <i className="fa-solid fa-plus"></i>
+                <button
+                  onClick={() => setShowTagsModal(true)}
+                  className="btn btn-sm btn-outline-warning rounded-pill px-3 mb-3"
+                >
+                  <i className="fa-solid fa-tags me-2"></i>
+                  Редактировать теги
                 </button>
               )}
+
+              {/* Компонент модального окна */}
+              <MovieTagsModal
+                show={showTagsModal}
+                movieId={movie.id}
+                currentTags={movie.tags} // Список тегов из MovieFullDto
+                onClose={() => setShowTagsModal(false)}
+                onTagsUpdated={fetchMovieData} // Перезагрузка данных фильма
+              />
             </div>
             <div>
               <button
@@ -497,6 +538,9 @@ const MoviePage = () => {
                 РЕЙТИНГ НА НАШЕМ САЙТЕ{" "}
                 <span className="fw-bold text-warning">
                   {movie.avgRating?.toFixed(1) || "—"}
+                </span>
+                <span className="ms-2" style={{ opacity: 0.6 }}>
+                  ({movie.ratingsCount || 0} оценили)
                 </span>
               </p>
 
@@ -588,7 +632,6 @@ const MoviePage = () => {
                   <strong className="text-white">
                     {userRating > 0 ? userRating.toFixed(1) : "—"}
                   </strong>
-                  
                 </div>
               </div>
             </div>
