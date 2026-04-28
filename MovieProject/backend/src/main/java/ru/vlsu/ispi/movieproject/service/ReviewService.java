@@ -6,6 +6,8 @@ import ru.vlsu.ispi.movieproject.dto.review.CreateReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.EditReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.ReviewDto;
 
+import java.util.List;
+
 public interface ReviewService {
     ReviewDto create(CreateReviewRequest request);
     ReviewDto edit(Long reviewId, EditReviewRequest request);
@@ -13,5 +15,7 @@ public interface ReviewService {
     void like(Long reviewId);
     void unlike(Long reviewId);
     ReviewDto getReview(Long reviewId);
+    List<ReviewDto> getCurrentUserReviews();
+    List<ReviewDto> getUserReviews(Long userId);
     Page<ReviewDto> getReviews(Pageable pageable);
 }

@@ -23,6 +23,8 @@ import ru.vlsu.ispi.movieproject.repository.ReviewRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.ReviewService;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -44,7 +46,11 @@ public class ReviewServiceImpl implements ReviewService {
         review.setMovie(entityManager.getReference(Movie.class, request.getMovieId()));
         review.setStatus(request.getIsPublish() ? ReviewStatus.PUBLISHED : ReviewStatus.DRAFT);
 
-        return reviewMapper.toDto(reviewRepository.save(review), 0);
+        Review saved = reviewRepository.save(review);
+
+        return reviewRepository.findReviewById(saved.getId(), userId)
+                .map(reviewMapper::toDto)
+                .orElseThrow(() -> new ReviewNotFoundException(saved.getId()));
     }
 
     @Override
@@ -66,9 +72,11 @@ public class ReviewServiceImpl implements ReviewService {
             review.setStatus(ReviewStatus.PUBLISHED);
         }
 
-        int likesCount = reviewLikeRepository.countByReview_Id(reviewId);
+        reviewRepository.save(review);
 
-        return reviewMapper.toDto(review, likesCount);
+        return reviewRepository.findReviewById(reviewId, userId)
+                .map(reviewMapper::toDto)
+                .orElseThrow(() -> new ReviewNotFoundException(reviewId));
     }
 
     @Override
@@ -107,16 +115,37 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDto getReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewNotFoundException(reviewId));
-        int likesCount = reviewLikeRepository.countByReview_Id(reviewId);
+        Long currentUserId = currentUserService.getCurrentUserID();
 
-        return reviewMapper.toDto(review, likesCount);
+        return reviewRepository.findReviewById(reviewId, currentUserId)
+                .map(reviewMapper::toDto)
+                .orElseThrow(() -> new ReviewNotFoundException(reviewId));
+    }
+
+    @Override
+    public List<ReviewDto> getCurrentUserReviews() {
+        Long currentUserId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findReviews(currentUserId, currentUserId).stream()
+                .map(reviewMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<ReviewDto> getUserReviews(Long userId) {
+        Long currentUserId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findReviews(userId, currentUserId).stream()
+                .map(reviewMapper::toDto)
+                .toList();
     }
 
     @Override
     public Page<ReviewDto> getReviews(Pageable pageable) {
-        return reviewRepository.findAll(pageable).map(r -> reviewMapper.toDto(r, 0));
+        Long currentUserId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findAllReviews(pageable, currentUserId)
+                .map(reviewMapper::toDto);
     }
 
     private void checkOwner(Review review, Long userId) {

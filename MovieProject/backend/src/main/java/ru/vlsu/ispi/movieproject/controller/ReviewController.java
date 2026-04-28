@@ -17,6 +17,8 @@ import ru.vlsu.ispi.movieproject.dto.review.EditReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.ReviewDto;
 import ru.vlsu.ispi.movieproject.service.ReviewService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class ReviewController {
     }
 
     @GetMapping("/{id}")
-    public ReviewDto getReview(@PathVariable long id) {
+    public ReviewDto getReview(@PathVariable Long id) {
         return reviewService.getReview(id);
     }
 
@@ -42,6 +44,16 @@ public class ReviewController {
     @PatchMapping("/{id}")
     public ReviewDto editReview(@PathVariable Long id, @RequestBody EditReviewRequest request) {
         return reviewService.edit(id, request);
+    }
+
+    @GetMapping("/my")
+    public List<ReviewDto> getMyReviews() {
+        return reviewService.getCurrentUserReviews();
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<ReviewDto> getUserReviews(@PathVariable Long userId) {
+        return reviewService.getUserReviews(userId);
     }
 
     @DeleteMapping("/{id}")
