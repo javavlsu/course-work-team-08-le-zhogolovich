@@ -17,4 +17,6 @@ public class ReviewDto {
     private String status;
     private LocalDateTime createdAt;
     private int likesCount;
+    private boolean isLikedByCurrentUser;
+    private String movieCover;
 }
