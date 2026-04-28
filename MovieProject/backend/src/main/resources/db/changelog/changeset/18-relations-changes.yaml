@@ -1,0 +1,153 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-cascade-to-review-like-review-fk
+      author: Hiraeth
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: review_like
+            constraintName: fk_review_like_review
+
+        - addForeignKeyConstraint:
+            baseTableName: review_like
+            baseColumnNames: review_id
+            referencedTableName: review
+            referencedColumnNames: id
+            constraintName: fk_review_like_review
+            onDelete: CASCADE
+
+  - changeSet:
+      id: add-cascade-to-compilation-like
+      author: Hiraeth
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: compilation_like
+            constraintName: fk_compilation_rating_compilation
+
+        - dropForeignKeyConstraint:
+            baseTableName: compilation_like
+            constraintName: fk_compilation_rating_user
+
+        - addForeignKeyConstraint:
+            baseTableName: compilation_like
+            baseColumnNames: compilation_id
+            referencedTableName: compilation
+            referencedColumnNames: id
+            constraintName: fk_compilation_like_compilation
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: compilation_like
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_compilation_like_user
+
+  - changeSet:
+      id: fix-compilation-movie-fk
+      author: Hiraeth
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: compilation_movie
+            constraintName: fk_compilation_movie_movie
+
+        - addForeignKeyConstraint:
+            baseTableName: compilation_movie
+            baseColumnNames: movie_id
+            referencedTableName: movie
+            referencedColumnNames: id
+            constraintName: fk_compilation_movie_movie
+
+  - changeSet:
+      id: fix-compilation-user-fk
+      author: Hiraeth
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: compilation
+            constraintName: fk_compilation_user
+
+        - dropNotNullConstraint:
+            tableName: compilation
+            columnName: user_id
+            columnDataType: BIGINT
+
+        - addForeignKeyConstraint:
+            baseTableName: compilation
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_compilation_user
+            onDelete: SET NULL
+
+  - changeSet:
+      id: add-deleted-to-user
+      author: Hiraeth
+      changes:
+        - addColumn:
+            tableName: user
+            columns:
+              - column:
+                  name: deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: fix-comment-user-fk
+      author: Hiraeth
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: comment
+            constraintName: fk_comment_user
+
+        - dropNotNullConstraint:
+            tableName: comment
+            columnName: user_id
+            columnDataType: BIGINT
+
+        - addForeignKeyConstraint:
+            baseTableName: comment
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_comment_user
+            onDelete: SET NULL
+
+  - changeSet:
+      id: fix-review-user-fk
+      author: Hiraeth
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: review
+            constraintName: fk_review_user
+
+        - dropNotNullConstraint:
+            tableName: review
+            columnName: user_id
+            columnDataType: BIGINT
+
+        - addForeignKeyConstraint:
+            baseTableName: review
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            constraintName: fk_review_user
+            onDelete: SET NULL
+
+  - changeSet:
+      id: change-unique-username
+      author: Hiraeth
+      changes:
+        - dropUniqueConstraint:
+            tableName: user
+            constraintName: uk_user_username
+
+        - createIndex:
+            tableName: user
+            indexName: uk_user_username_active
+            unique: true
+            columns:
+              - column:
+                  name: username
+              - column:
+                  name: deleted

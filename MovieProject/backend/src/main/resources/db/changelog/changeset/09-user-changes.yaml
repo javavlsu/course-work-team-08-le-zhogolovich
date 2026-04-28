@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-username-column
+      author: Hiraeth
+      changes:
+        - addNotNullConstraint:
+            tableName: "user"
+            columnName: username
+            columnDataType: VARCHAR(100)
+
+        - addUniqueConstraint:
+            tableName: user
+            columnNames: username
+            constraintName: uk_user_username

@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-index-to-tag
+      author: Hiraeth
+      changes:
+        - createIndex:
+            tableName: tag
+            indexName: idx_tag_name_lower
+            columns:
+              - column:
+                  name: name
+                  computed: true
+                  valueComputed: LOWER(name)

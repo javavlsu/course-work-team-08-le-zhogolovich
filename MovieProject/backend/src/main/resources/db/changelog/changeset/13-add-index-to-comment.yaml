@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-index-comment-movie-created
+      author: Hiraeth
+      changes:
+        - createIndex:
+            tableName: comment
+            indexName: idx_comment_movie_created
+            columns:
+              - column:
+                  name: movie_id
+              - column:
+                  name: created_at

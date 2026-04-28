@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-updated-at-column
+      author: Hiraeth
+      changes:
+        - addColumn:
+            tableName: movie_rating
+            columns:
+              - column: { name: updated_at, type: DATETIME }
+
+  - changeSet:
+      id: add-indexes-to-compilation-subscription
+      author: Hiraeth
+      changes:
+        - addUniqueConstraint:
+            tableName: compilation_subscription
+            columnNames: user_id, compilation_id
+            constraintName: uk_user_compilation_subscription
+
+        - createIndex:
+            tableName: compilation_subscription
+            indexName: idx_compilation_subscription_compilation
+            columns:
+              - column:
+                  name: compilation_id
+
+        - createIndex:
+            tableName: compilation_subscription
+            indexName: idx_compilation_subscription_user
+            columns:
+              - column:
+                  name: user_id
