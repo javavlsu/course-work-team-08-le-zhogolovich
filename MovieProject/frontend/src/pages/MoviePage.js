@@ -44,6 +44,8 @@ const MoviePage = () => {
   const [selectedCompIds, setSelectedCompIds] = useState([]);
   const [showTagsModal, setShowTagsModal] = useState(false);
 
+  const [isReviewer, setIsReviewer] = useState(false);
+
   const fetchMovieData = async () => {
     try {
       const response = await apiClient.get(`/movies/${id}`);
@@ -79,6 +81,12 @@ const MoviePage = () => {
         if (decoded.role === "ADMIN" || decoded.roles?.includes("ROLE_ADMIN")) {
           setIsAdmin(true);
         }
+
+        const roles = decoded.roles || [];
+      if (decoded.role === "REVIEWER" || roles.includes("REVIEWER") || roles.includes("ROLE_REVIEWER")) {
+        setIsReviewer(true);
+      }
+      
       } catch (e) {
         console.error("Ошибка декодирования токена", e);
       }
@@ -339,18 +347,14 @@ const MoviePage = () => {
               <MovieTagsModal
                 show={showTagsModal}
                 movieId={movie.id}
-                currentTags={movie.tags} // Список тегов из MovieFullDto
+                currentTags={movie.tags} 
                 onClose={() => setShowTagsModal(false)}
-                onTagsUpdated={fetchMovieData} // Перезагрузка данных фильма
+                onTagsUpdated={fetchMovieData} 
               />
             </div>
             <div>
               <button
                 className="custom-btn w-100"
-                style={{
-                  background: "transparent",
-                  border: "1px solid white",
-                }}
                 onClick={() => checkAuth() && handleOpenModal()}
               >
                 <i className="fa-solid fa-folder-plus me-2"></i> В подборку
@@ -363,6 +367,15 @@ const MoviePage = () => {
                 onSuccess={(count) => alert(`Добавлено в ${count} подборки!`)}
               />
             )}
+            
+  {isReviewer && (
+    <Link 
+      to={`/movies/${id}/write-review`} 
+      className="custom-btn w-100 text-decoration-none d-flex align-items-center justify-content-center"
+    >
+      <i className="fa-solid fa-pen-nib me-2"></i> Написать рецензию
+    </Link>
+  )}
 
             {/* Рейтинг */}
             <div className="d-flex flex-column align-items-center justify-content-start gap-1 mt-3">
