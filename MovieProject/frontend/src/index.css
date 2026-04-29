@@ -235,6 +235,9 @@ body {
   line-height: 1.5;
   color: #d1d1d1;
 }
+.article-text * {
+  color: white !important;
+}
 
 .form-control.custom-input {
   background-color: rgba(255, 255, 255, 0.07);

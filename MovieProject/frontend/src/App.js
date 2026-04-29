@@ -11,7 +11,7 @@ import CompilationPage from "./pages/CompilationPage";
 import EditCompilation from "./pages/EditCompilation";
 import FollowsPage from "./pages/FollowsPage";
 import WriteReviewPage from "./pages/WriteReviewPage";
-
+import ReviewDetailPage from "./pages/ReviewDetailPage";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -46,11 +46,13 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
 
         <Route path="/users/:username/followers" element={<FollowsPage />} />
-<Route path="/users/:username/followings" element={<FollowsPage />} />
-{/* Создание рецензии для конкретного фильма */}
-<Route path="/movies/:movieId/write-review" element={<WriteReviewPage />} />
-{/* Редактирование существующей рецензии */}
-<Route path="/reviews/edit/:reviewId" element={<WriteReviewPage />} />
+        <Route path="/users/:username/followings" element={<FollowsPage />} />
+        <Route
+          path="/movies/:movieId/write-review"
+          element={<WriteReviewPage />}
+        />
+        <Route path="/reviews/edit/:reviewId" element={<WriteReviewPage />} />
+        <Route path="/reviews/:id" element={<ReviewDetailPage />} />
       </Routes>
     </BrowserRouter>
   );
