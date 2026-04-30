@@ -678,3 +678,31 @@ body {
     pointer-events: none;
     display: block;
 }
+
+.custom-pagination .page-link {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  margin: 0 4px;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+.custom-pagination .page-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.custom-pagination .page-item.active .page-link {
+  background-color: white;
+  border-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+.custom-pagination .page-item.disabled .page-link {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.3);
+}

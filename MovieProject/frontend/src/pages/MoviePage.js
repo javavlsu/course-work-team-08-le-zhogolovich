@@ -8,6 +8,7 @@ import AddToCompilationModal from "../components/AddToCompilationModal";
 import MovieTagsModal from "../components/MovieTagsModal";
 import MovieComments from "../components/MovieComments";
 
+
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
 const MoviePage = () => {
