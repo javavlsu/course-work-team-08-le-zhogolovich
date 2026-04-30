@@ -31,7 +31,6 @@ public class MovieMapper {
         movie.setName(dto.getNameRu());
         movie.setOriginalName(dto.getNameOriginal());
         movie.setReleaseYear(dto.getYear());
-        movie.setPosterUrl(dto.getPosterUrl());
         movie.setRatingKinopoisk(dto.getRatingKinopoisk());
         movie.setRatingImdb(dto.getRatingImdb());
 

@@ -40,6 +40,7 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         SELECT c FROM Compilation c
         LEFT JOIN FETCH c.movies
         WHERE c.id = :id
+        AND c.isPublic = true
     """)
     Optional<Compilation> findByIdWithMovies(Long id);
 
@@ -86,6 +87,9 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
     
     FROM Compilation c
     WHERE c.author.id = :authorId
+    AND (
+        c.isPublic = true OR c.author.id = :currentUserId
+        )
     """)
     List<CompilationProjection> findAllByAuthorId(Long authorId, Long currentUserId);
 
@@ -124,6 +128,9 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
     FROM Compilation c
     JOIN CompilationSubscription cs ON cs.compilation.id = c.id
     WHERE cs.user.id = :userId
+    AND (
+        c.isPublic = true OR c.author.id = :currentUserId
+        )
     """)
     List<CompilationProjection> findAllSubscribedByUserId(Long userId, Long currentUserId);
 
@@ -223,4 +230,54 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         WHERE c.id = :id
     """)
     Optional<CompilationProjection> findViewById(Long id, Long userId);
+
+    @Query("""
+    SELECT 
+        c.id as id,
+        c.title as title,
+        c.description as description,
+        c.isPublic as isPublic,
+        c.coverUrl as coverUrl,
+    
+        c.author.id as authorId,
+        c.author.username as authorName,
+    
+        (SELECT COUNT(cl) 
+         FROM CompilationLike cl 
+         WHERE cl.compilation.id = c.id) as likesCount,
+    
+        CASE 
+            WHEN :currentUserId IS NULL THEN false
+            WHEN EXISTS (
+                SELECT 1 
+                FROM CompilationLike cl2 
+                WHERE cl2.compilation.id = c.id 
+                  AND cl2.user.id = :currentUserId
+            )
+            THEN true ELSE false
+        END as likedByUser,
+    
+        (SELECT COUNT(cs) 
+         FROM CompilationSubscription cs 
+         WHERE cs.compilation.id = c.id) as subscribersCount,
+    
+        CASE 
+            WHEN :currentUserId IS NULL THEN false
+            WHEN EXISTS (
+                SELECT 1 
+                FROM CompilationSubscription cs2 
+                WHERE cs2.compilation.id = c.id 
+                  AND cs2.user.id = :currentUserId
+            )
+            THEN true ELSE false
+        END as isSubscribed
+    
+    FROM Compilation c
+    JOIN CompilationLike cl ON cl.compilation.id = c.id
+    WHERE cl.user.id = :userId
+    AND (
+        c.isPublic = true OR c.author.id = :currentUserId
+        )
+    """)
+    List<CompilationProjection> findAllLikedByUserId(Long userId, Long currentUserId);
 }

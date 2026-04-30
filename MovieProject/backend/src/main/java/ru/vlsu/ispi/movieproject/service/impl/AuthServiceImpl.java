@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.auth.JwtAuthenticationDto;
 import ru.vlsu.ispi.movieproject.dto.auth.LoginRequest;
 import ru.vlsu.ispi.movieproject.dto.auth.RefreshTokenDto;
@@ -14,11 +15,15 @@ import ru.vlsu.ispi.movieproject.dto.auth.RegisterRequest;
 import ru.vlsu.ispi.movieproject.enums.Role;
 import ru.vlsu.ispi.movieproject.exception.InvalidTokenException;
 import ru.vlsu.ispi.movieproject.exception.UserAlreadyExistsException;
+import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.model.User;
+import ru.vlsu.ispi.movieproject.repository.CompilationRepository;
 import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.security.CustomUserDetails;
 import ru.vlsu.ispi.movieproject.security.jwt.JwtService;
 import ru.vlsu.ispi.movieproject.service.AuthService;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +32,9 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final CompilationRepository compilationRepository;
 
+    @Transactional
     @Override
     public void register(RegisterRequest registerRequest) {
         if (userRepository.existsByEmailAndDeletedFalse(registerRequest.getEmail())) {
@@ -41,6 +48,7 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(Role.USER);
 
         userRepository.save(user);
+        createDefaultCompilations(user);
     }
 
     @Override
@@ -77,5 +85,23 @@ public class AuthServiceImpl implements AuthService {
                 user.getId(),
                 user.getRole().toString()
         );
+    }
+
+    private void createDefaultCompilations(User user) {
+        List<Compilation> defaults = List.of(
+                createCompilation("Просмотрено", user),
+                createCompilation("Буду смотреть", user),
+                createCompilation("Избранное", user)
+        );
+
+        compilationRepository.saveAll(defaults);
+    }
+
+    private Compilation createCompilation(String title, User user) {
+        Compilation c = new Compilation();
+        c.setTitle(title);
+        c.setAuthor(user);
+        c.setIsPublic(false);
+        return c;
     }
 }
