@@ -22,6 +22,7 @@ function ProfilePage() {
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [reviews, setReviews] = useState([]);
 
   const isFetchingRef = useRef(false);
 
@@ -69,24 +70,27 @@ function ProfilePage() {
       setIsMyProfile(isMy);
 
       if (isMy) {
-        const [compRes, subRes, followersRes, followingsRes] =
+        const [compRes, subRes, followersRes, followingsRes, reviewsRes] =
           await Promise.all([
             apiClient.get("/compilations/my"),
             apiClient.get("/compilations/my/subscriptions"),
             apiClient.get("/users/me/followers"),
             apiClient.get("/users/me/followings"),
+            apiClient.get("/reviews/my"),
           ]);
         setCompilations(compRes.data);
         setSubscriptions(subRes.data.content || subRes.data || []);
         setFollowers(followersRes.data || []);
         setFollowings(followingsRes.data || []);
+        setReviews(reviewsRes.data || []);
       } else {
-        const [compRes, subRes, followersRes, followingsRes] =
+        const [compRes, subRes, followersRes, followingsRes, reviewsRes] =
           await Promise.all([
             apiClient.get(`/compilations/user/${profileId}`),
-            apiClient.get(`/compilations/user/${profileId}/subscriptions`), // Загружаем подписки чужого пользователя
+            apiClient.get(`/compilations/user/${profileId}/subscriptions`),
             apiClient.get(`/users/${userData.username}/followers`),
             apiClient.get(`/users/${userData.username}/followings`),
+            apiClient.get(`/reviews/user/${profileId}`),
           ]);
 
         const allCompilations = compRes.data.content || compRes.data;
@@ -104,6 +108,7 @@ function ProfilePage() {
         setIsFollowing(
           followersRes.data.some((f) => Number(f.id) === Number(myIdFromToken)),
         );
+        setReviews(reviewsRes.data.content || reviewsRes.data || []);
       }
     } catch (error) {
       console.error("Ошибка в ProfilePage:", error);
@@ -328,6 +333,12 @@ function ProfilePage() {
             >
               Отслеживаемые
             </button>
+            <button
+              className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === "reviews" ? "border-bottom border-3 border-white fw-bold" : "opacity-50"}`}
+              onClick={() => setActiveTab("reviews")}
+            >
+              Рецензии
+            </button>
           </div>
           <section className="mb-5">
             {activeTab === "my" && (
@@ -356,7 +367,52 @@ function ProfilePage() {
                 subscriptions,
                 "Вы еще не подписались ни на одну подборку.",
               )}
+
+            {activeTab === "reviews" && (
+              <div className="mt-3">
+                {reviews.length > 0 ? (
+                  reviews.map((rev) => (
+                    <div
+                      key={rev.id}
+                      className="stats-card p-4 text-white mb-5"
+                      style={{
+                        border: "2px solid white",
+                        borderRadius: "20px",
+                        background: "rgba(255,255,255,0.05)",
+                      }}
+                    >
+                      <div className="d-flex justify-content-between">
+                        <Link
+                          to={`/reviews/${rev.id}`}
+                          className="text-decoration-none text-white hover-opacity"
+                        >
+                          <h5 className="fw-bold m-0">
+                            {rev.title || "Название рецензии"}
+                          </h5>
+                        </Link>
+                        {/* сюда добавить ссылку на фильм */}
+
+                        <span className="badge rounded-pill  d-flex align-items-center gap-2 px-3 py-2">
+                          <i className="fa-solid fa-heart"></i>
+                          <span>{rev.likesCount || 0}</span>
+                        </span>
+                      </div>
+                      <p className="mt-2">{rev.text}</p>
+                      <small className="text-white-50">
+                        Опубликовано:{" "}
+                        {new Date(rev.createdAt).toLocaleDateString()}
+                      </small>
+                    </div>
+                  ))
+                ) : (
+                  <div className="w-100 text-center text-white-50 py-4">
+                    Рецензий пока нет.
+                  </div>
+                )}
+              </div>
+            )}
           </section>
+          <div className="border-bottom border-secondary mb-5"></div>
 
           <div
             className="stats-card p-4 text-white mb-5"

@@ -226,6 +226,27 @@ body {
     color: #d1d1d1;
 }
 
+.article-text, .article-text * {
+    color: #ffffff !important;
+}
+
+[contenteditable="true"], [contenteditable="true"] * {
+    color: #ffffff !important;
+}
+[contenteditable="true"], 
+[contenteditable="true"] * {
+    color: white !important;
+    -webkit-text-fill-color: white !important; 
+}
+
+.form-control:focus {
+    color: white !important;
+    background-color: #2b2d33 !important;
+}
+
+.article-text *, [contenteditable="true"] * {
+    background-color: transparent !important;
+}
 .form-control.custom-input {
     background-color: rgba(255, 255, 255, 0.07);
     border: 1px solid #ffffff;

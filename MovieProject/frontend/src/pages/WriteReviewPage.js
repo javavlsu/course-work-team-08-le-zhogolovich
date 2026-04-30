@@ -164,7 +164,7 @@ function WriteReviewPage() {
                 {movie?.name || movie?.title || "Название фильма"}
               </h3>
               <textarea 
-                className="form-select border-secondary" 
+                className="form-control text-white border-secondary" 
                 style={{ height: "100px", resize: "none", backgroundColor: "#2b2d33" }}
                 placeholder="Заголовок вашей рецензии"
                 value={title}
