@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 public class ReviewDto {
     private Long id;
     private Long movieId;
+    private String movieName;
     private String authorName;
     private String authorAvatar;
     private String title;

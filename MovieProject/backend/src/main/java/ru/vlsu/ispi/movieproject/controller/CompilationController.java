@@ -91,6 +91,16 @@ public class CompilationController {
         return compilationService.getUserSubscriptions(userId);
     }
 
+    @GetMapping("/my/liked")
+    public List<CompilationDto> getMyLiked() {
+        return compilationService.getCurrentUserLikedCompilations();
+    }
+
+    @GetMapping("/user/{userId}/liked")
+    public List<CompilationDto> getUserLiked(@PathVariable Long userId) {
+        return compilationService.getUserLikedCompilations(userId);
+    }
+
     @DeleteMapping("/{compilationId}/movie/{movieId}")
     public CompilationDto removeMovieFromCompilation(@PathVariable Long compilationId, @PathVariable Long movieId) {
         return compilationService.removeMovie(compilationId, movieId);

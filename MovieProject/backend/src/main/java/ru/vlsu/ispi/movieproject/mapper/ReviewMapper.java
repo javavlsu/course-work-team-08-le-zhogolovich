@@ -10,6 +10,7 @@ public class ReviewMapper {
         return new ReviewDto(
                 p.getId(),
                 p.getMovieId(),
+                p.getMovieName(),
                 p.getAuthorName(),
                 p.getAuthorAvatar(),
                 p.getTitle(),

@@ -56,6 +56,21 @@ public class ReviewController {
         return reviewService.getUserReviews(userId);
     }
 
+    @GetMapping("/my/liked")
+    public List<ReviewDto> getMyLikedReviews() {
+        return reviewService.getCurrentUserLikedReviews();
+    }
+
+    @GetMapping("/user/{userId}/liked")
+    public List<ReviewDto> getUserLikedReviews(@PathVariable Long userId) {
+        return reviewService.getUserLikedReviews(userId);
+    }
+
+    @GetMapping("/movie/{movieId}")
+    public List<ReviewDto> getMovieReviews(@PathVariable Long movieId) {
+        return reviewService.getReviewsByMovieId(movieId);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Long id) {
         reviewService.delete(id);

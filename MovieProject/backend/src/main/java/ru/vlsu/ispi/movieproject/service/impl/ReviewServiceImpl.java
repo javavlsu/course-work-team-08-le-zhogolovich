@@ -70,7 +70,7 @@ public class ReviewServiceImpl implements ReviewService {
         }
         if (Boolean.TRUE.equals(request.getIsPublish())) {
             review.setStatus(ReviewStatus.PUBLISHED);
-        }
+        } else review.setStatus(ReviewStatus.DRAFT);
 
         reviewRepository.save(review);
 
@@ -141,11 +141,41 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public List<ReviewDto> getCurrentUserLikedReviews() {
+        Long userId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findAllLikedByUserId(userId, userId)
+                .stream()
+                .map(reviewMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<ReviewDto> getUserLikedReviews(Long userId) {
+        Long currentUserId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findAllLikedByUserId(userId, currentUserId)
+                .stream()
+                .map(reviewMapper::toDto)
+                .toList();
+    }
+
+    @Override
     public Page<ReviewDto> getReviews(Pageable pageable) {
         Long currentUserId = currentUserService.getCurrentUserID();
 
         return reviewRepository.findAllReviews(pageable, currentUserId)
                 .map(reviewMapper::toDto);
+    }
+
+    @Override
+    public List<ReviewDto> getReviewsByMovieId(Long movieId) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findReviewsByMovieId(movieId, userId)
+                .stream()
+                .map(reviewMapper::toDto)
+                .toList();
     }
 
     private void checkOwner(Review review, Long userId) {

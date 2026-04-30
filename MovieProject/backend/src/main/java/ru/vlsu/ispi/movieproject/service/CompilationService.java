@@ -23,6 +23,8 @@ public interface CompilationService {
     List<CompilationDto> getUserCompilations(Long userId);
     List<CompilationDto> getCurrentUserSubscriptions();
     List<CompilationDto> getUserSubscriptions(Long userId);
+    List<CompilationDto> getCurrentUserLikedCompilations();
+    List<CompilationDto> getUserLikedCompilations(Long userId);
     void subscribe(Long compilationId);
     void unsubscribe(Long compilationId);
 }

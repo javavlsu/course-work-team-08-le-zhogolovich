@@ -8,6 +8,9 @@ import ru.vlsu.ispi.movieproject.exception.FilesException;
 import ru.vlsu.ispi.movieproject.service.FileStorageService;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,8 +20,11 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
-    @Value("${file.base-dir}")
+    @Value("${file.upload-dir}")
     private String baseUploadDir;
+
+    @Value("${file.poster-dir}")
+    private String basePosterDir;
 
     @Override
     public String upload(MultipartFile file, String directory) {
@@ -32,18 +38,18 @@ public class FileStorageServiceImpl implements FileStorageService {
         }
 
         try {
-            Path dirPath = Paths.get(baseUploadDir + directory);
+            Path dirPath = Paths.get(baseUploadDir, directory);
 
-            if (!Files.exists(dirPath)) {
-                Files.createDirectories(dirPath);
-            }
+            String extension = getExtensionFromContentType(contentType);
+            String fileName = UUID.randomUUID() + extension;
 
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             Path filePath = dirPath.resolve(fileName);
 
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            try (InputStream in = file.getInputStream()) {
+                Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
 
-            return "/" + baseUploadDir + directory + "/" + fileName;
+            return "/" + baseUploadDir + "/" + directory + "/" + fileName;
 
         } catch (IOException e) {
             throw new FilesException(e.getMessage());
@@ -65,5 +71,46 @@ public class FileStorageServiceImpl implements FileStorageService {
         } catch (IOException e) {
             log.warn("Не удалось удалить файл: {}", e.getMessage());
         }
+    }
+
+    @Override
+    public String downloadPosterAndSave(String url) {
+        if (url == null || url.isBlank() || url.contains("no-poster")) {
+            return null;
+        }
+
+        Path dirPath = Paths.get(basePosterDir);
+
+        try (InputStream in = new URL(url).openStream()){
+            String contentType = URLConnection.guessContentTypeFromStream(in);
+
+            if (contentType == null || !contentType.startsWith("image/")) {
+                return null;
+            }
+
+            String extension = getExtensionFromContentType(contentType);
+            if (extension == null) {
+                return null;
+            }
+
+            String filename = UUID.randomUUID() + extension;
+            Path target = dirPath.resolve(filename);
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+
+            return "/" + basePosterDir + filename;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String getExtensionFromContentType(String contentType) {
+        return switch (contentType) {
+            case "image/png" -> ".png";
+            case "image/jpeg" -> ".jpg";
+            case "image/jpg" -> ".jpg";
+            case "image/webp" -> ".webp";
+            case "image/gif" -> ".gif";
+            default -> ".jpg";
+        };
     }
 }
