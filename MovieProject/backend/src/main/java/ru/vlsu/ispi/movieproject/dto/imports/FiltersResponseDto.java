@@ -4,10 +4,10 @@ import lombok.Data;
 import ru.vlsu.ispi.movieproject.dto.movie.CountryDto;
 import ru.vlsu.ispi.movieproject.dto.movie.GenreDto;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 public class FiltersResponseDto {
-    private Set<GenreDto> genres;
-    private Set<CountryDto> countries;
+    private List<GenreDto> genres;
+    private List<CountryDto> countries;
 }

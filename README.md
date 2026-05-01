@@ -43,22 +43,24 @@
 
 Создание и управление коллекциями фильмов.
 
-| Метод      | Путь                                            | Описание                                  | Параметры                 | Body / Примечания                                          |
-| :--------- | :---------------------------------------------- | :---------------------------------------- | :------------------------ | :--------------------------------------------------------- |
-| **GET**    | `/compilations`                                 | Публичные подборки                        | **Query**: `page`, `size` | Пагинированный список                                      |
-| **POST**   | `/compilations`                                 | Создать подборку                          | —                         | **Multipart**: `title`, `description`, `isPublic`, `cover` |
-| **GET**    | `/compilations/my`                              | Мои подборки                              | —                         | Список `CompilationDto`                                    |
-| **GET**    | `/compilations/user/{userId}`                   | Подборки пользователя по id               | **Path**: `id`            | Список `CompilationDto`                                    |
-| **GET**    | `/compilations/my/subscriptions`                | Мои отслеживаемые подборки                | —                         | Список `CompilationDto`                                    |
-| **GET**    | `/compilations/user/{userId}/subscriptions`     | Отслеживаемые подборки пользователя по id | **Path**: `id`            | Список `CompilationDto`                                    |
-| **GET**    | `/compilations/{id}`                            | Страница подборки                         | **Path**: `id`            | Включает список фильмов                                    |
-| **PATCH**  | `/compilations/{id}`                            | Редактировать инфо                        | **Path**: `id`            | **Body**: `UpdateCompilationRequest`                       |
-| **DELETE** | `/compilations/{id}`                            | Удалить подборку                          | **Path**: `id`            | —                                                          |
-| **PATCH**  | `/compilations/{id}/cover`                      | Обновить обложку                          | **Path**: `id`            | **Multipart**: `file` (binary)                             |
-| **POST**   | `/compilations/{id}/subscribe`                  | Подписаться                               | **Path**: `id`            | —                                                          |
-| **DELETE** | `/compilations/{id}/subscribe`                  | Отписаться                                | **Path**: `id`            | —                                                          |
-| **POST**   | `/compilations/{id}/like`                       | Лайкнуть                                  | **Path**: `id`            | —                                                          |
-| **DELETE** | `/compilations/{compilationId}/movie/{movieId}` | Убрать фильм                              | **Path**: `id`, `movieId` | —                                                          |
+| Метод      | Путь                                            | Описание                            | Параметры                 | Body / Примечания                                          |
+| :--------- | :---------------------------------------------- | :---------------------------------- | :------------------------ | :--------------------------------------------------------- |
+| **GET**    | `/compilations`                                 | Публичные подборки                  | **Query**: `page`, `size` | Пагинированный список                                      |
+| **POST**   | `/compilations`                                 | Создать подборку                    | —                         | **Multipart**: `title`, `description`, `isPublic`, `cover` |
+| **GET**    | `/compilations/my`                              | Мои подборки                        | —                         | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/user/{userId}`                   | Подборки пользователя по id         | **Path**: `id`            | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/my/subscriptions`                | Мои отслеживаемые подборки          | —                         | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/my/liked`                        | Мои понравившиеся подборки          | —                         | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/user/{userId}/subscriptions`     | Отслеживаемые подборки пользователя | **Path**: `id`            | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/user/{userId}/liked`             | Понравившиеся пользователю подборки | **Path**: `id`            | Список `CompilationDto`                                    |
+| **GET**    | `/compilations/{id}`                            | Страница подборки                   | **Path**: `id`            | Включает список фильмов                                    |
+| **PATCH**  | `/compilations/{id}`                            | Редактировать инфо                  | **Path**: `id`            | **Body**: `UpdateCompilationRequest`                       |
+| **DELETE** | `/compilations/{id}`                            | Удалить подборку                    | **Path**: `id`            | —                                                          |
+| **PATCH**  | `/compilations/{id}/cover`                      | Обновить обложку                    | **Path**: `id`            | **Multipart**: `file` (binary)                             |
+| **POST**   | `/compilations/{id}/subscribe`                  | Подписаться                         | **Path**: `id`            | —                                                          |
+| **DELETE** | `/compilations/{id}/subscribe`                  | Отписаться                          | **Path**: `id`            | —                                                          |
+| **POST**   | `/compilations/{id}/like`                       | Лайкнуть                            | **Path**: `id`            | —                                                          |
+| **DELETE** | `/compilations/{compilationId}/movie/{movieId}` | Убрать фильм                        | **Path**: `id`, `movieId` | —                                                          |
 
 ---
 
@@ -66,16 +68,19 @@
 
 Управление рецензиями на фильмы.
 
-| Метод      | Путь                     | Описание                     | Параметры                 | Body / Примечания                                    |
-| :--------- | :----------------------- | :--------------------------- | :------------------------ | :--------------------------------------------------- |
-| **GET**    | `/reviews`               | Список всех рецензий         | **Query**: `page`, `size` | —                                                    |
-| **POST**   | `/reviews`               | Написать рецензию            | —                         | **Body**: `movieId`, `title`, `content`, `isPublish` |
-| **GET**    | `/reviews/{id}`          | Страница Рецензии            | **Path**: `id`            | —                                                    |
-| **PATCH**  | `/reviews/{id}`          | Редактировать                | **Path**: `id`            | **Body**: `EditReviewRequest`                        |
-| **DELETE** | `/reviews/{id}`          | Удалить                      | **Path**: `id`            | —                                                    |
-| **POST**   | `/reviews/{id}/like`     | Лайкнуть                     | **Path**: `id`            | —                                                    |
-| **GET**    | `/reviews/my`            | Список моих рецензий         | —                         | —                                                    |
-| **GET**    | `/reviews/user/{userId}` | Список рецензий пользователя | **Path**: userId          | —                                                    |
+| Метод      | Путь                           | Описание                                   | Параметры                 | Body / Примечания                                    |
+| :--------- | :----------------------------- | :----------------------------------------- | :------------------------ | :--------------------------------------------------- |
+| **GET**    | `/reviews`                     | Список всех рецензий                       | **Query**: `page`, `size` | —                                                    |
+| **POST**   | `/reviews`                     | Написать рецензию                          | —                         | **Body**: `movieId`, `title`, `content`, `isPublish` |
+| **GET**    | `/reviews/{id}`                | Страница Рецензии                          | **Path**: `id`            | —                                                    |
+| **PATCH**  | `/reviews/{id}`                | Редактировать                              | **Path**: `id`            | **Body**: `EditReviewRequest`                        |
+| **DELETE** | `/reviews/{id}`                | Удалить                                    | **Path**: `id`            | —                                                    |
+| **POST**   | `/reviews/{id}/like`           | Лайкнуть                                   | **Path**: `id`            | —                                                    |
+| **GET**    | `/reviews/my`                  | Список моих рецензий                       | —                         | —                                                    |
+| **GET**    | `/reviews/user/{userId}`       | Список рецензий пользователя               | **Path**: userId          | —                                                    |
+| **GET**    | `/reviews/my/liked`            | Список моих понравившихся рецензий         | —                         | —                                                    |
+| **GET**    | `/reviews/user/{userId}/liked` | Список рецензий понравившихся пользователю | **Path**: userId          | —                                                    |
+| **GET**    | `/reviews/movie/{movieId}`     | Список рецензий к фильму                   | **Path**: movieId         | —                                                    |
 
 ---
 
@@ -133,4 +138,5 @@
 Админские функции для наполнения базы.
 
 - **POST** `/api/import/movies`: Запуск процесса импорта фильмов.
+- **POST** `/api/import/movies/enrich`: Насыщение фильмов дополнительной информацией.
 - **POST** `/api/import/filters`: Импорт фильтров (жанров/стран).

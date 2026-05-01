@@ -208,6 +208,25 @@ public class CompilationServiceImpl implements CompilationService {
                 .toList();
     }
 
+    @Override
+    public List<CompilationDto> getCurrentUserLikedCompilations() {
+        Long userId = currentUserService.getCurrentUserID();
+
+        return compilationRepository.findAllLikedByUserId(userId, userId)
+                .stream()
+                .map(p -> compilationMapper.fromView(p, List.of()))
+                .toList();
+    }
+
+    @Override
+    public List<CompilationDto> getUserLikedCompilations(Long userId) {
+        Long currentUserId = currentUserService.getCurrentUserID();
+
+        return compilationRepository.findAllLikedByUserId(userId, currentUserId)
+                .stream()
+                .map(p -> compilationMapper.fromView(p, List.of()))
+                .toList();
+    }
 
     @Override
     public void subscribe(Long compilationId) {
