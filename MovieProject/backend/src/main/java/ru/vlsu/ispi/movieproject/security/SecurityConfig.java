@@ -39,7 +39,7 @@ public class SecurityConfig {
                         // preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // публичные ресурсы
-                        .requestMatchers("/uploads/**", "/backend/uploads/**").permitAll()
+                        .requestMatchers("/uploads/**", "/posters/**").permitAll()
                         // документация
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         // auth
