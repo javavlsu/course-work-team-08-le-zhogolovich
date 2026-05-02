@@ -49,7 +49,7 @@ public class FileStorageServiceImpl implements FileStorageService {
                 Files.copy(in, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return "/" + baseUploadDir + "/" + directory + "/" + fileName;
+            return "/" + baseUploadDir + directory + "/" + fileName;
 
         } catch (IOException e) {
             throw new FilesException(e.getMessage());
