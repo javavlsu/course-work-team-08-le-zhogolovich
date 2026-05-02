@@ -40,9 +40,9 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         SELECT c FROM Compilation c
         LEFT JOIN FETCH c.movies
         WHERE c.id = :id
-        AND c.isPublic = true
+        AND (c.isPublic = true OR c.author.id = :currentUserId)
     """)
-    Optional<Compilation> findByIdWithMovies(Long id);
+    Optional<Compilation> findByIdWithMovies(Long id, Long currentUserId);
 
     @Query("""
     SELECT 

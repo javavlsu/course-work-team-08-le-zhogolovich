@@ -138,7 +138,7 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getById(Long id) {
         Long userId = currentUserService.getCurrentUserID();
 
-        Compilation compilation = compilationRepository.findByIdWithMovies(id)
+        Compilation compilation = compilationRepository.findByIdWithMovies(id, userId)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
 
         return buildDto(compilation, userId);
