@@ -221,7 +221,7 @@ const MoviePage = () => {
               style={{ maxWidth: "300px", position: "relative" }}
             >
               <img
-                src={movie.posterUrl}
+                src={`${API_BASE_URL}${movie.posterURL}`}
                 alt={movie.name}
                 className="img-fluid rounded-3"
                 style={{ display: "block", width: "100%" }}
