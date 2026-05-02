@@ -84,6 +84,7 @@ const MoviePage = () => {
         }
 
         const roles = decoded.roles || [];
+        console.log(decoded.role)
       if (decoded.role === "REVIEWER" || roles.includes("REVIEWER") || roles.includes("ROLE_REVIEWER")) {
         setIsReviewer(true);
       }
@@ -95,7 +96,6 @@ const MoviePage = () => {
 
     fetchData();
   }, [id]);
-
   useEffect(() => {
     if (showModal) {
       document.body.style.overflow = "hidden";
@@ -185,10 +185,12 @@ const MoviePage = () => {
     return true;
   };
 
+
   if (loading)
     return <div className="text-white text-center mt-5">Загрузка...</div>;
   if (!movie)
     return <div className="text-white text-center mt-5">Фильм не найден</div>;
+  console.log("Full URL:", `${API_BASE_URL}${movie.posterUrl}`);
 
   return (
     <div className="container-wrapper">
@@ -221,7 +223,7 @@ const MoviePage = () => {
               style={{ maxWidth: "300px", position: "relative" }}
             >
               <img
-                src={`${API_BASE_URL}${movie.posterURL}`}
+                src={`${API_BASE_URL}${movie.posterUrl}`}
                 alt={movie.name}
                 className="img-fluid rounded-3"
                 style={{ display: "block", width: "100%" }}

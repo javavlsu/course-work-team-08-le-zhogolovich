@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
+const API_BASE_URL = "http://localhost:8080/movie-project";
 
 function ReviewDetailPage() {
   const { id } = useParams();
@@ -96,7 +97,7 @@ function ReviewDetailPage() {
               style={{ maxWidth: "300px", position: "relative" }}
             >
               <img
-                src={review.movieCover || avatarDefault}
+                src={`${API_BASE_URL}${review.movieCover}` || avatarDefault}
                 alt={movie?.name || movie?.title || "Постер"}
                 className="img-fluid rounded-3"
                 style={{ display: "block", width: "100%" }}

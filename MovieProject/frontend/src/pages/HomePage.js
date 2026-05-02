@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
+const API_BASE_URL = "http://localhost:8080/movie-project";
+
 
 function HomePage() {
   const [movies, setMovies] = useState([]);
@@ -61,7 +63,7 @@ function HomePage() {
                 className="movie-card text-decoration-none"
               >
                 <div className="badge-overlay">{movie.ratingKinopoisk}</div>
-                <img src={movie.posterUrl} alt={movie.name} />
+                <img src={`${API_BASE_URL}${movie.posterUrl}`} alt={movie.name} />
                 <p className="text-white mt-2 text-center">{movie.name}</p>
               </Link>
             ))}

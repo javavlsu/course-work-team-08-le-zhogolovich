@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
+const API_BASE_URL = "http://localhost:8080/movie-project";
+
 
 function WriteReviewPage() {
   const { movieId, reviewId } = useParams();
@@ -151,7 +153,7 @@ function WriteReviewPage() {
               <div className="ratio ratio-4x3">
                 <div className="cover-upload d-flex align-items-center justify-content-center border border-secondary rounded overflow-hidden bg-dark">
                   <img 
-                    src={movie?.posterUrl || avatarDefault} 
+                    src={`${API_BASE_URL}${movie.posterUrl}` || avatarDefault} 
                     className="w-100 h-100 object-fit-cover" 
                     alt="Постер" 
                   />

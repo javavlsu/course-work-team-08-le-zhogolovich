@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
+import avatarDefault from "../images/такса.svg";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
@@ -207,7 +209,7 @@ const CompilationPage = () => {
                 src={
                   compilation.coverUrl
                     ? `${API_BASE_URL}/backend${compilation.coverUrl}`
-                    : "/images/default_coll.jpg"
+                    : avatarDefault
                 }
                 alt="Обложка"
                 className="img-fluid rounded-3 shadow"
@@ -319,7 +321,7 @@ const CompilationPage = () => {
               >
                 <div className="badge-overlay">{movie.ratingKinopoisk}</div>
                 <img
-                  src={movie.posterUrl}
+                  src={`${API_BASE_URL}${movie.posterUrl}`}
                   alt={movie.name}
                   className="img-fluid rounded-3 mb-3"
                 />
