@@ -27,15 +27,16 @@
 
 Работа с каталогом фильмов, рейтингами и тегами.
 
-| Метод      | Путь                             | Описание            | Параметры                               | Body / Примечания                       |
-| :--------- | :------------------------------- | :------------------ | :-------------------------------------- | :-------------------------------------- |
-| **GET**    | `/movies`                        | Список фильмов      | **Query**: `page` (def: 0), `size` (20) | Пагинированный список                   |
-| **GET**    | `/movies/{id}`                   | Страница фильма     | **Path**: `id` (int64)                  | Возвращает `MovieFullDto`               |
-| **POST**   | `/movies/{id}/rating`            | Поставить оценку    | **Path**: `id`                          | **Body**: `rating` (double, 1.0 - 10.0) |
-| **POST**   | `/movies/{id}/compilations`      | Добавить в подборки | **Path**: `id`                          | **Body**: `compilationIds` (Array)      |
-| **GET**    | `/movies/{movieId}/tags`         | Теги фильма         | **Path**: `movieId`                     | Список названий тегов                   |
-| **POST**   | `/movies/{movieId}/tags/{tagId}` | Привязать тег       | **Path**: `movieId`, `tagId`            | —                                       |
-| **DELETE** | `/movies/{movieId}/tags/{tagId}` | Отвязать тег        | **Path**: `movieId`, `tagId`            | —                                       |
+| Метод      | Путь                             | Описание                                | Параметры                               | Body / Примечания                       |
+| :--------- | :------------------------------- | :-------------------------------------- | :-------------------------------------- | :-------------------------------------- |
+| **GET**    | `/movies`                        | Список фильмов                          | **Query**: `page` (def: 0), `size` (20) | Пагинированный список                   |
+| **GET**    | `/movies/{id}`                   | Страница фильма                         | **Path**: `id` (int64)                  | Возвращает `MovieFullDto`               |
+| **POST**   | `/movies/{id}/rating`            | Поставить оценку                        | **Path**: `id`                          | **Body**: `rating` (double, 1.0 - 10.0) |
+| **POST**   | `/movies/{id}/compilations`      | Добавить в подборки                     | **Path**: `id`                          | **Body**: `compilationIds` (Array)      |
+| **GET**    | `/movies/{movieId}/tags`         | Теги фильма                             | **Path**: `movieId`                     | Список названий тегов                   |
+| **POST**   | `/movies/{movieId}/tags/{tagId}` | Привязать тег                           | **Path**: `movieId`, `tagId`            | —                                       |
+| **DELETE** | `/movies/{movieId}/tags/{tagId}` | Отвязать тег                            | **Path**: `movieId`, `tagId`            | —                                       |
+| **GET**    | `/movies/top10`                  | Топ 10 фильмов по кол-во и ср. рейтингу | —                                       | Список фильмов                          |
 
 ---
 
@@ -61,6 +62,7 @@
 | **DELETE** | `/compilations/{id}/subscribe`                  | Отписаться                          | **Path**: `id`            | —                                                          |
 | **POST**   | `/compilations/{id}/like`                       | Лайкнуть                            | **Path**: `id`            | —                                                          |
 | **DELETE** | `/compilations/{compilationId}/movie/{movieId}` | Убрать фильм                        | **Path**: `id`, `movieId` | —                                                          |
+| **GET**    | `/compilations/top10`                           | Топ 10 подборок по кол-во лайков    | —                         | Список подборок                                            |
 
 ---
 
@@ -81,6 +83,7 @@
 | **GET**    | `/reviews/my/liked`            | Список моих понравившихся рецензий         | —                         | —                                                    |
 | **GET**    | `/reviews/user/{userId}/liked` | Список рецензий понравившихся пользователю | **Path**: userId          | —                                                    |
 | **GET**    | `/reviews/movie/{movieId}`     | Список рецензий к фильму                   | **Path**: movieId         | —                                                    |
+| **GET**    | `/reviews/top10`               | Топ 10 рецензий по кол-во лайков           | —                         | Список рецензий                                      |
 
 ---
 

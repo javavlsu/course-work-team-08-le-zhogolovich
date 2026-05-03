@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -280,4 +281,93 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         )
     """)
     List<CompilationProjection> findAllLikedByUserId(Long userId, Long currentUserId);
+
+    @Query("""
+        SELECT 
+            c.id as id,
+            c.title as title,
+            c.description as description,
+            c.isPublic as isPublic,
+            c.coverUrl as coverUrl,
+    
+            c.author.id as authorId,
+            c.author.username as authorName,
+    
+            COUNT(cl) as likesCount,
+    
+            CASE 
+                WHEN :currentUserId IS NULL THEN false
+                WHEN SUM(CASE WHEN cl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0
+                THEN true ELSE false
+            END as likedByUser,
+    
+            (SELECT COUNT(cs) 
+             FROM CompilationSubscription cs 
+             WHERE cs.compilation.id = c.id) as subscribersCount,
+    
+            false as isSubscribed
+    
+        FROM Compilation c
+        LEFT JOIN CompilationLike cl 
+            ON cl.compilation.id = c.id
+            AND cl.createdAt >= :fromDate
+    
+        WHERE c.isPublic = true
+    
+        GROUP BY 
+            c.id, c.title, c.description, c.isPublic, c.coverUrl,
+            c.author.id, c.author.username
+        HAVING COUNT(cl) > 0
+    
+        ORDER BY COUNT(cl) DESC
+    """)
+    List<CompilationProjection> findTopCompilationsLastWeek(LocalDateTime fromDate, Long currentUserId, Pageable pageable);
+
+    @Query("""
+        SELECT 
+            c.id as id,
+            c.title as title,
+            c.description as description,
+            c.isPublic as isPublic,
+            c.coverUrl as coverUrl,
+    
+            c.author.id as authorId,
+            c.author.username as authorName,
+    
+            COUNT(cl) as likesCount,
+    
+            CASE 
+                WHEN :currentUserId IS NULL THEN false
+                WHEN SUM(CASE WHEN cl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0
+                THEN true ELSE false
+            END as likedByUser,
+    
+            (SELECT COUNT(cs) 
+             FROM CompilationSubscription cs 
+             WHERE cs.compilation.id = c.id) as subscribersCount,
+    
+            CASE 
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM CompilationSubscription cs2 
+                    WHERE cs2.compilation.id = c.id 
+                      AND cs2.user.id = :currentUserId
+                )
+                THEN true ELSE false
+            END as isSubscribed
+    
+        FROM Compilation c
+        LEFT JOIN CompilationLike cl ON cl.compilation.id = c.id
+    
+        WHERE c.isPublic = true
+          AND (:excludeIds IS NULL OR c.id NOT IN :excludeIds)
+    
+        GROUP BY 
+            c.id, c.title, c.description, c.isPublic, c.coverUrl,
+            c.author.id, c.author.username
+    
+        ORDER BY c.createdAt DESC
+    """)
+    List<CompilationProjection> findLatest(List<Long> excludeIds, Long currentUserId, Pageable pageable);
 }

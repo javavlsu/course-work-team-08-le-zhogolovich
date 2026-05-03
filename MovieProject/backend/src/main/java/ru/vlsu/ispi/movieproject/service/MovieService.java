@@ -16,4 +16,5 @@ public interface MovieService {
     void addTag(Long id, Long tagId);
     void removeTag(Long id, Long tagId);
     List<TagDto> getMovieTags(Long id);
+    List<MovieDto> getTop10Movies();
 }

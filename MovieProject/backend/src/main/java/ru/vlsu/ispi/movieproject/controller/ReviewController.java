@@ -85,4 +85,9 @@ public class ReviewController {
     public void unlikeReview(@PathVariable Long id) {
         reviewService.unlike(id);
     }
+
+    @GetMapping("/top10")
+    public List<ReviewDto> getTop10Reviews() {
+        return reviewService.getTop10Reviews();
+    }
 }

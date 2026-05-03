@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,9 @@ import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.service.CompilationService;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.FileStorageService;
+import ru.vlsu.ispi.movieproject.util.FillTopUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -259,6 +262,21 @@ public class CompilationServiceImpl implements CompilationService {
                 .orElseThrow(() -> new IllegalStateException("Вы не подписаны на эту подборку"));
 
         compilationSubscriptionRepository.delete(compilationSubscription);
+    }
+
+    @Override
+    public List<CompilationDto> getTop10Compilations() {
+        Long userId = currentUserService.getCurrentUserID();
+
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(7);
+
+        List<CompilationProjection> top = compilationRepository.findTopCompilationsLastWeek(fromDate, userId, PageRequest.of(0, 10));
+
+        List<CompilationProjection> fullTop = FillTopUtil.fillTop(top, 10,
+                excludeIds -> compilationRepository.findLatest(excludeIds, userId, PageRequest.of(0, 10 - top.size())),
+                CompilationProjection::getId);
+
+        return fullTop.stream().map(p -> compilationMapper.fromView(p, List.of())).toList();
     }
 
     private CompilationProjection getView(Long id, Long userId) {

@@ -115,4 +115,9 @@ public class CompilationController {
     public void unsubscribeCompilation(@PathVariable Long id) {
         compilationService.unsubscribe(id);
     }
+
+    @GetMapping("/top10")
+    public List<CompilationDto> getTop10Compilations() {
+        return compilationService.getTop10Compilations();
+    }
 }

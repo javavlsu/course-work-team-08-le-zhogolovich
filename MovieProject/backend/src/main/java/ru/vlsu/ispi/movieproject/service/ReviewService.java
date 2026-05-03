@@ -21,4 +21,5 @@ public interface ReviewService {
     List<ReviewDto> getUserLikedReviews(Long userId);
     Page<ReviewDto> getReviews(Pageable pageable);
     List<ReviewDto> getReviewsByMovieId(Long movieId);
+    List<ReviewDto> getTop10Reviews();
 }

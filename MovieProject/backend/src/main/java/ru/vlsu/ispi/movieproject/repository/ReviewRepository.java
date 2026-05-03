@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Review;
 import ru.vlsu.ispi.movieproject.projection.ReviewProjection;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -238,4 +239,80 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             r.title, r.content, r.status, r.createdAt, m.posterUrl
     """)
     List<ReviewProjection> findReviewsByMovieId(Long movieId, Long currentUserId);
+
+    @Query("""
+        SELECT 
+            r.id as id,
+            m.id as movieId,
+            m.name as movieName,
+            u.username as authorName,
+            u.avatarUrl as authorAvatar,
+            r.title as title,
+            r.content as content,
+            r.status as status,
+            r.createdAt as createdAt,
+    
+            COUNT(rl) as likesCount,
+    
+            CASE 
+                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
+                THEN true ELSE false 
+            END as isLikedByCurrentUser,
+    
+            m.posterUrl as movieCover
+    
+        FROM Review r
+        JOIN r.author u
+        JOIN r.movie m
+        LEFT JOIN ReviewLike rl 
+            ON rl.review.id = r.id
+            AND rl.createdAt >= :fromDate
+    
+        WHERE r.status = 'PUBLISHED'
+    
+        GROUP BY 
+            r.id, m.id, m.name, u.username, u.avatarUrl,
+            r.title, r.content, r.status, r.createdAt, m.posterUrl
+        HAVING COUNT(rl) > 0
+            
+        ORDER BY COUNT(rl) DESC
+    """)
+    List<ReviewProjection> findTopReviewsLastWeek(LocalDateTime fromDate, Long currentUserId, Pageable pageable);
+
+    @Query("""
+    SELECT 
+            r.id as id,
+            m.id as movieId,
+            m.name as movieName,
+            u.username as authorName,
+            u.avatarUrl as authorAvatar,
+            r.title as title,
+            r.content as content,
+            r.status as status,
+            r.createdAt as createdAt,
+    
+            COUNT(rl) as likesCount,
+    
+            CASE 
+                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
+                THEN true ELSE false 
+            END as isLikedByCurrentUser,
+    
+            m.posterUrl as movieCover
+    
+        FROM Review r
+        JOIN r.author u
+        JOIN r.movie m
+        LEFT JOIN ReviewLike rl ON rl.review.id = r.id
+    
+        WHERE r.status = 'PUBLISHED'
+          AND (:excludeIds IS NULL OR r.id NOT IN :excludeIds)
+    
+        GROUP BY 
+            r.id, m.id, m.name, u.username, u.avatarUrl,
+            r.title, r.content, r.status, r.createdAt, m.posterUrl
+    
+        ORDER BY r.createdAt DESC
+    """)
+    List<ReviewProjection> findLatest(List<Long> excludeIds, Long currentUserId, Pageable pageable);
 }
