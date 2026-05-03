@@ -143,7 +143,7 @@ function ProfilePage() {
       }
     } catch (err) {
       console.error(err);
-      alert("Не удалось изменить статус подписки");
+      alert("Не удалось изменить статус подписки. Возможно, вы не зарегистрированны.");
     }
   };
 
@@ -365,7 +365,7 @@ function ProfilePage() {
             {activeTab === "subscribed" &&
               renderGrid(
                 subscriptions,
-                "Вы еще не подписались ни на одну подборку.",
+                "Тут пока пусто :(",
               )}
 
             {activeTab === "reviews" && (

@@ -244,7 +244,7 @@ const MoviePage = () => {
               </div>
             </div>
 
-            <div className="dropdown">
+            {/*<div className="dropdown">
               <button
                 className="custom-btn w-70 dropdown-toggle"
                 type="button"
@@ -252,6 +252,7 @@ const MoviePage = () => {
               >
                 {label}
               </button>
+                  <button
               <ul className="dropdown-menu dropdown-menu-dark custom-dropdown text-center">
                 <li>
                   <button
@@ -281,15 +282,15 @@ const MoviePage = () => {
                   <hr className="dropdown-divider border-secondary" />
                 </li>
                 <li>
-                  <button
+                 {/*<button
                     className="dropdown-item text-danger"
                     onClick={() => setLabel("Добавить метку")}
                   >
                     Убрать метку
-                  </button>
+                  </button>  сделать после 
                 </li>
               </ul>
-            </div>
+            </div>*/}
           </div>
 
           {/* Описание, жанры и метки */}

@@ -61,7 +61,7 @@ const EditCompilationMovies = ({ compilationId, movies, onMovieRemoved }) => {
   >
     <div className="d-flex align-items-center gap-3">
       <img 
-        src={movie.posterUrl ? `${movie.posterUrl}` : avatarDefault} 
+        src={movie.posterUrl ? `${API_BASE_URL}${movie.posterUrl}` : avatarDefault} 
         alt={movie.name}
         style={{ width: "45px", height: "65px", objectFit: "cover", borderRadius: "6px" }}
       />

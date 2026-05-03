@@ -45,14 +45,12 @@ function WriteReviewPage() {
 
       try {
         if (reviewId) {
-          // Режим редактирования
           const reviewRes = await apiClient.get(`/reviews/${reviewId}`);
           const reviewData = reviewRes.data;
           
           setTitle(reviewData.title);
           setInitialContent(reviewData.content);
 
-          // Загружаем данные фильма отдельно, чтобы получить название и нормальный постер
           const movieRes = await apiClient.get(`/movies/${reviewData.movieId}`);
           setMovie(movieRes.data);
         } else if (movieId) {
@@ -166,9 +164,9 @@ function WriteReviewPage() {
                 {movie?.name || movie?.title || "Название фильма"}
               </h3>
               <textarea 
-                className="form-control text-white border-secondary" 
+                className="  text-white border-secondary" 
                 style={{ height: "100px", resize: "none", backgroundColor: "#2b2d33" }}
-                placeholder="Заголовок вашей рецензии"
+                placeholder="Введите заголовок вашей рецензии"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />

@@ -21,7 +21,7 @@ const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault }) 
               style={{ objectFit: "cover" }} alt="avatar"
             />
           </Link>
-          <Link to={authorName !== "Аноним" ? `/users/${authorName}` : "#"} className="text-decoration-none fw-bold text-info">
+          <Link to={authorName !== "Аноним" ? `/users/${authorName}` : "#"} className="text-decoration-none fw-bold text-white">
             @{authorName}
           </Link>
         </div>

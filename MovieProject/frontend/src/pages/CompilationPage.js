@@ -181,7 +181,7 @@ const CompilationPage = () => {
               src={
                 authorAvatar
                   ? `${API_BASE_URL}${authorAvatar}`
-                  : "/images/default-avatar.png"
+                  : avatarDefault
               }
               alt="Author"
               style={{
@@ -208,7 +208,7 @@ const CompilationPage = () => {
               <img
                 src={
                   compilation.coverUrl
-                    ? `${API_BASE_URL}/backend${compilation.coverUrl}`
+                    ? `${API_BASE_URL}${compilation.coverUrl}`
                     : avatarDefault
                 }
                 alt="Обложка"
