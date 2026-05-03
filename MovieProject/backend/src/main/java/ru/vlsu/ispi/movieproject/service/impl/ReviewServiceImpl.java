@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,16 @@ import ru.vlsu.ispi.movieproject.model.Review;
 import ru.vlsu.ispi.movieproject.model.ReviewLike;
 import ru.vlsu.ispi.movieproject.model.ReviewLikeId;
 import ru.vlsu.ispi.movieproject.model.User;
+import ru.vlsu.ispi.movieproject.projection.ReviewProjection;
 import ru.vlsu.ispi.movieproject.repository.ReviewLikeRepository;
 import ru.vlsu.ispi.movieproject.repository.ReviewRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.ReviewService;
+import ru.vlsu.ispi.movieproject.util.FillTopUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -177,6 +182,22 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(reviewMapper::toDto)
                 .toList();
     }
+
+    @Override
+    public List<ReviewDto> getTop10Reviews() {
+        Long userId = currentUserService.getCurrentUserID();
+
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(7);
+
+        List<ReviewProjection> top = reviewRepository.findTopReviewsLastWeek(fromDate, userId, PageRequest.of(0,10));
+
+        List<ReviewProjection> fullTop = FillTopUtil.fillTop(top, 10,
+                excludeIds -> reviewRepository.findLatest(excludeIds, userId, PageRequest.of(0, 10 - top.size())),
+                ReviewProjection::getId);
+
+        return fullTop.stream().map(reviewMapper::toDto).collect(Collectors.toList());
+    }
+
 
     private void checkOwner(Review review, Long userId) {
         if (!review.getAuthor().getId().equals(userId)) {

@@ -63,4 +63,9 @@ public class MovieController {
     public List<TagDto> getMovieTags(@PathVariable Long movieId) {
         return movieService.getMovieTags(movieId);
     }
+
+    @GetMapping("/top10")
+    public List<MovieDto> getTop10Movies() {
+        return movieService.getTop10Movies();
+    }
 }

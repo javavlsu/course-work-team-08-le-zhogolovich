@@ -1,11 +1,13 @@
 package ru.vlsu.ispi.movieproject.repository;
 
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Movie;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,4 +38,26 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query("select m.id from Movie m")
     List<Long> findAllIds();
+
+    @Query("""
+    SELECT m
+    FROM Movie m
+        LEFT JOIN MovieRating mr 
+            ON mr.movie.id = m.id
+            AND mr.createdAt >= :fromDate
+    
+        GROUP BY m.id
+        HAVING AVG(mr.rating) >= :minRating
+    
+        ORDER BY COUNT(mr) DESC, AVG(mr.rating) DESC
+    """)
+    List<Movie> findTopMoviesLastWeek(LocalDateTime fromDate, Double minRating, Pageable pageable);
+
+    @Query("""
+        SELECT m
+        FROM Movie m
+        WHERE (:excludeIds IS NULL OR m.id NOT IN :excludeIds)
+        ORDER BY m.detailsLoadedAt DESC
+    """)
+    List<Movie> findLatest(List<Long> excludeIds, Pageable pageable);
 }

@@ -27,4 +27,5 @@ public interface CompilationService {
     List<CompilationDto> getUserLikedCompilations(Long userId);
     void subscribe(Long compilationId);
     void unsubscribe(Long compilationId);
+    List<CompilationDto> getTop10Compilations();
 }

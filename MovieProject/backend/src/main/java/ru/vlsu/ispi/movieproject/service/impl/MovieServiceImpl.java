@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,10 @@ import ru.vlsu.ispi.movieproject.repository.MovieRepository;
 import ru.vlsu.ispi.movieproject.repository.TagRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.MovieService;
+import ru.vlsu.ispi.movieproject.util.FillTopUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -141,7 +143,20 @@ public class MovieServiceImpl implements MovieService {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
 
-        return movie.getTags().stream().map(tagMapper::toDto).collect(Collectors.toList());
+        return movie.getTags().stream().map(tagMapper::toDto).toList();
+    }
+
+    @Override
+    public List<MovieDto> getTop10Movies() {
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(7);
+
+        List<Movie> top = movieRepository.findTopMoviesLastWeek(fromDate, 8.0, PageRequest.of(0, 10));
+
+        List<Movie> fullTop = FillTopUtil.fillTop(top, 10,
+                excludeIds -> movieRepository.findLatest(excludeIds, PageRequest.of(0, 10 - top.size())),
+                Movie::getId);
+
+        return fullTop.stream().map(movieMapper::toMovieDto).toList();
     }
 
     private void updateMovieRating(Movie movie) {
