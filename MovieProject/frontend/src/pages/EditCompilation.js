@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EditCompilationMovies from "../components/EditCompilationMovies";
+import avatarDefault from "../images/такса.svg";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
@@ -56,7 +57,7 @@ const EditCompilation = () => {
   const getCoverImage = () => {
     if (previewUrl) return previewUrl;
     if (compilation.coverUrl) return `${API_BASE_URL}${compilation.coverUrl}`;
-    return "/images/default-collection.png";
+    return avatarDefault;
   };
 
   const updateCompilationInfo = async () => {
@@ -120,6 +121,8 @@ const EditCompilation = () => {
       movies: prev.movies.filter((m) => m.id !== movieId),
     }));
   };
+                    {console.log(getCoverImage())}
+
   return (
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
@@ -150,14 +153,15 @@ const EditCompilation = () => {
                 className="shadow mb-3"
                 style={{
                   width: "100%",
-                  aspectRatio: "2/3",
+                  aspectRatio: "1/1",
                   borderRadius: "15px",
                   overflow: "hidden",
                   border: "2px solid #444",
                 }}
               >
                 <img
-                  src={getCoverImage()}
+              
+                  src= {getCoverImage()}
                   alt="Cover"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />

@@ -202,8 +202,8 @@ const CompilationPage = () => {
         <div className="row justify-content-center g-5 mb-5">
           <div className="col-lg-2 col-md-2 text-center">
             <div
-              className="movie-card-static mb-4 mx-auto"
-              style={{ maxWidth: "300px" }}
+              className="movie-card mb-4 mx-auto"
+              style={{ minWidth: "150px", aspectRatio: "1/1" }}
             >
               <img
                 src={
@@ -324,6 +324,7 @@ const CompilationPage = () => {
                   src={`${API_BASE_URL}${movie.posterUrl}`}
                   alt={movie.name}
                   className="img-fluid rounded-3 mb-3"
+                  style={{aspectRatio: "2/3" }}
                 />
                 <p className="card-title text-white">{movie.name}</p>
                 <p className="card-year text-white-50">{movie.releaseYear}</p>

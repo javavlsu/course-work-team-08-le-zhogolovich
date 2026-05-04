@@ -64,7 +64,7 @@ public class MovieController {
         return movieService.getMovieTags(movieId);
     }
 
-    @GetMapping("/top10")
+    @GetMapping("/top/top10")
     public List<MovieDto> getTop10Movies() {
         return movieService.getTop10Movies();
     }

@@ -144,9 +144,7 @@ body {
   color: white;
 }
 
-.section-divider .section-title {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
+
 
 .section-title {
   font-size: 32px;
@@ -179,7 +177,7 @@ body {
 .movie-card-static img,
 .movie-slot img {
   width: 100%;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 1/1;
   object-fit: cover;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   border: 2px solid transparent;
@@ -752,7 +750,6 @@ body {
   width: 6px;
 }
 .compilation-list-scrollable::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
 .stars-display-interactive i:hover {
@@ -762,4 +759,74 @@ body {
 
 .star-range-input {
   display: none;
+}
+
+/* Общий контейнер для одного слайдера */
+.slider-area {
+    position: relative; /* Критично для фиксации стрелок внутри этой секции */
+    width: 100%;
+    padding: 0 10px;
+}
+
+/* Контейнер скролла */
+.horizontal-scroll-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 15px 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+}
+
+.horizontal-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-item-movie, .scroll-item-comp {
+    flex: 0 0 calc(20% - 16px);
+    min-width: 160px;
+}
+
+.scroll-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(20, 20, 20, 0.8);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    pointer-events: all;
+}
+
+.scroll-arrow:hover {
+    background: rgba(27, 24, 23, 0.389); /* Цвет Кинопоиска */
+    border-color: rgba(21, 21, 20, 0.558);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.scroll-arrow.left {
+    left: -22px;
+}
+
+.scroll-arrow.right {
+    right: -22px;
+}
+
+.movie-card img, .img-box img {
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover img, .coll-card:hover img {
+    transform: translateY(-5px);
 }

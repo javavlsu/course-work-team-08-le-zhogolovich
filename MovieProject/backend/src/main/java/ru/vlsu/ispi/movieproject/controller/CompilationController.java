@@ -116,7 +116,7 @@ public class CompilationController {
         compilationService.unsubscribe(id);
     }
 
-    @GetMapping("/top10")
+    @GetMapping("/top/top10")
     public List<CompilationDto> getTop10Compilations() {
         return compilationService.getTop10Compilations();
     }

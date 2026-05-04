@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate, BrowserRouter } from "react-router-dom";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/MoviesPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -13,6 +13,7 @@ import FollowsPage from "./pages/FollowsPage";
 import WriteReviewPage from "./pages/WriteReviewPage";
 import ReviewDetailPage from "./pages/ReviewDetailPage";
 import CollectionsPage from "./pages/CollectionsPage";
+import MainPage from "./pages/MainPage";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -23,7 +24,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/movies" element={<HomePage />} />
 
         <Route path="/login" element={<LoginPage />} />
 
@@ -55,6 +56,8 @@ function App() {
         <Route path="/reviews/edit/:reviewId" element={<WriteReviewPage />} />
         <Route path="/reviews/:id" element={<ReviewDetailPage />} />
         <Route path="/collections" element={<CollectionsPage />} />
+        <Route path="/" element={<MainPage />} />
+
       </Routes>
     </BrowserRouter>
   );

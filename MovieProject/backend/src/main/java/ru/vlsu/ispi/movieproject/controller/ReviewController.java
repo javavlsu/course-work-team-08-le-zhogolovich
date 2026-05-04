@@ -86,7 +86,7 @@ public class ReviewController {
         reviewService.unlike(id);
     }
 
-    @GetMapping("/top10")
+    @GetMapping("/top/top10")
     public List<ReviewDto> getTop10Reviews() {
         return reviewService.getTop10Reviews();
     }

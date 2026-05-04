@@ -39,15 +39,25 @@ const CreateCompilationPage = () => {
     formData.append("description", description);
     formData.append("isPublic", isPublic);
 
-    if (imageFile) {
-      formData.append("cover", imageFile);
-    }
-
     try {
-      await apiClient.post("/compilations", formData);
+      const response = await apiClient.post("/compilations", formData);
+      const compilationId = response.data.id;
+
+      if (imageFile && compilationId) {
+        const coverFormData = new FormData();
+        coverFormData.append("file", imageFile);
+
+        await apiClient.patch(
+          `/compilations/${compilationId}/cover`,
+          coverFormData,
+        );
+      }
+
       navigate("/profile");
     } catch (error) {
-      const msg = error.response?.data?.message || "Ошибка";
+      console.error(error);
+      const msg =
+        error.response?.data?.message || "Ошибка при создании подборки";
       alert(msg);
     } finally {
       setLoading(false);

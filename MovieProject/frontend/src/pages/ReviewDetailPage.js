@@ -100,7 +100,7 @@ function ReviewDetailPage() {
                 src={`${API_BASE_URL}${review.movieCover}` || avatarDefault}
                 alt={movie?.name || movie?.title || "Постер"}
                 className="img-fluid rounded-3"
-                style={{ display: "block", width: "100%" }}
+                style={{ display: "block", width: "100%", aspectRatio:'2/3' }}
               />
             </div>
           </div>
