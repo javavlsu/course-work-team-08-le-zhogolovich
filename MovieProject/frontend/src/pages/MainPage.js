@@ -9,17 +9,16 @@ const API_BASE_URL = "http://localhost:8080/movie-project";
 function HomePage() {
   const [movies, setMovies] = useState([]);
   const [topCompilations, setTopCompilations] = useState([]);
-  const [reviews, setReviews] = useState([]); // Состояние для списка рецензий
+  const [reviews, setReviews] = useState([]); 
   const [loading, setLoading] = useState(true);
 
   const movieScrollRef = useRef(null);
   const compScrollRef = useRef(null);
-  const reviewScrollRef = useRef(null); // Реф для рецензий
+  const reviewScrollRef = useRef(null); 
 
   const scroll = (ref, direction, isSingle = false) => {
     if (ref.current) {
       const { scrollLeft, clientWidth } = ref.current;
-      // Если листаем по одной (рецензии), то на всю ширину, иначе на 80%
       const scrollAmount = isSingle ? clientWidth : clientWidth * 0.8;
 
       ref.current.scrollTo({
@@ -147,7 +146,7 @@ function HomePage() {
               {topCompilations.map((comp) => (
                 <div className="scroll-item-comp" key={comp.id}>
                   <Link
-                    to={`/collections/${comp.id}`}
+                    to={`/compilations/${comp.id}`}
                     className="coll-card d-block text-decoration-none"
                   >
                     <div className="img-box rounded-4 overflow-hidden mb-3">
@@ -165,7 +164,9 @@ function HomePage() {
                     <p className="text-light m-0 text-truncate small">
                       {comp.title}
                     </p>
+                    <small className="text-white-50">Автор: @{comp.authorName || 'user'}</small>
                   </Link>
+                  
                 </div>
               ))}
             </div>
