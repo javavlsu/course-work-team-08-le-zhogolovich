@@ -177,7 +177,7 @@ body {
 .movie-card-static img,
 .movie-slot img {
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 2/3;
   object-fit: cover;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   border: 2px solid transparent;
