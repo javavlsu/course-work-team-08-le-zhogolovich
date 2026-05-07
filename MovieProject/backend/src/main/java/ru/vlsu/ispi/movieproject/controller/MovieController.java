@@ -34,7 +34,7 @@ public class MovieController {
             @RequestParam(required = false) Long tagId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Integer year,
-            @RequestParam(defaultValue = "popularity") String sortBy,
+            @RequestParam(defaultValue = "name") String sortBy,
             @RequestParam(defaultValue = "desc") String sortOrder,
 
             @RequestParam(defaultValue = "0") int page,
