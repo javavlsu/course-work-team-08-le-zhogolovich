@@ -62,7 +62,9 @@ function CollectionsPage() {
       </header>
 
       <main className="container-xl px-4 px-md-5">
-        <h1 className="mb-4 fw-bold">Публичные подборки</h1>
+       <h2 className="section-title fw-light mb-5 text-center text-white">
+          Подборки пользователей
+        </h2>
 
         {loading ? (
           <div className="text-center py-5">Загрузка...</div>
