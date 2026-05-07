@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Compilation;
 import ru.vlsu.ispi.movieproject.projection.CompilationProjection;
@@ -52,13 +53,10 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         c.description as description,
         c.isPublic as isPublic,
         c.coverUrl as coverUrl,
-    
+        c.likesCount as likesCount,
+        c.subscribersCount as subscribersCount,
         c.author.id as authorId,
         c.author.username as authorName,
-    
-        (SELECT COUNT(cl) 
-         FROM CompilationLike cl 
-         WHERE cl.compilation.id = c.id) as likesCount,
     
         CASE 
             WHEN :currentUserId IS NULL THEN false
@@ -70,10 +68,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
             )
             THEN true ELSE false
         END as likedByUser,
-    
-        (SELECT COUNT(cs) 
-         FROM CompilationSubscription cs 
-         WHERE cs.compilation.id = c.id) as subscribersCount,
     
         CASE 
             WHEN :currentUserId IS NULL THEN false
@@ -101,13 +95,10 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         c.description as description,
         c.isPublic as isPublic,
         c.coverUrl as coverUrl,
-
+        c.likesCount as likesCount,
+        c.subscribersCount as subscribersCount,
         c.author.id as authorId,
         c.author.username as authorName,
-
-        (SELECT COUNT(cl)
-         FROM CompilationLike cl 
-         WHERE cl.compilation.id = c.id) as likesCount,
 
         CASE 
             WHEN :currentUserId IS NULL THEN false
@@ -119,10 +110,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
             )
             THEN true ELSE false
         END as likedByUser,
-
-        (SELECT COUNT(cs) 
-         FROM CompilationSubscription cs 
-         WHERE cs.compilation.id = c.id) as subscribersCount,
 
         true as isSubscribed
 
@@ -136,59 +123,14 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
     List<CompilationProjection> findAllSubscribedByUserId(Long userId, Long currentUserId);
 
     @Query("""
-    SELECT 
-        c.id as id,
-        c.title as title,
-        c.description as description,
-        c.isPublic as isPublic,
-        c.coverUrl as coverUrl,
-    
-        c.author.id as authorId,
-        c.author.username as authorName,
-    
-        (SELECT COUNT(cl) 
-         FROM CompilationLike cl 
-         WHERE cl.compilation.id = c.id) as likesCount,
-    
-        CASE 
-            WHEN :userId IS NULL THEN false
-            WHEN EXISTS (
-                SELECT 1 
-                FROM CompilationLike cl2 
-                WHERE cl2.compilation.id = c.id 
-                  AND cl2.user.id = :userId
-            )
-            THEN true ELSE false
-        END as likedByUser,
-    
-        (SELECT COUNT(cs) 
-         FROM CompilationSubscription cs 
-         WHERE cs.compilation.id = c.id) as subscribersCount,
-    
-        CASE 
-            WHEN :userId IS NULL THEN false
-            WHEN EXISTS (
-                SELECT 1 
-                FROM CompilationSubscription cs2 
-                WHERE cs2.compilation.id = c.id 
-                  AND cs2.user.id = :userId
-            )
-            THEN true ELSE false
-        END as isSubscribed
-    
-    FROM Compilation c
-    WHERE c.isPublic = true
-    """)
-    Page<CompilationProjection> findAllView(Pageable pageable, Long userId);
-
-    @Query("""
         SELECT 
             c.id as id,
             c.title as title,
             c.description as description,
             c.isPublic as isPublic,
             c.coverUrl as coverUrl,
-        
+            c.likesCount as likesCount,
+            c.subscribersCount as subscribersCount,
             c.author.id as authorId,
     
             CASE 
@@ -196,10 +138,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
                 WHEN c.author.deleted = true THEN 'Удалённый пользователь'
                 ELSE c.author.username
             END as authorName,
-        
-            (SELECT COUNT(cl) 
-             FROM CompilationLike cl 
-             WHERE cl.compilation.id = c.id) as likesCount,
         
             CASE 
                 WHEN :userId IS NULL THEN false
@@ -211,10 +149,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
                 )
                 THEN true ELSE false
             END as likedByUser,
-        
-            (SELECT COUNT(cs) 
-             FROM CompilationSubscription cs 
-             WHERE cs.compilation.id = c.id) as subscribersCount,
         
             CASE 
                 WHEN :userId IS NULL THEN false
@@ -239,13 +173,10 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         c.description as description,
         c.isPublic as isPublic,
         c.coverUrl as coverUrl,
-    
+        c.likesCount as likesCount,
+        c.subscribersCount as subscribersCount,
         c.author.id as authorId,
         c.author.username as authorName,
-    
-        (SELECT COUNT(cl) 
-         FROM CompilationLike cl 
-         WHERE cl.compilation.id = c.id) as likesCount,
     
         CASE 
             WHEN :currentUserId IS NULL THEN false
@@ -257,10 +188,6 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
             )
             THEN true ELSE false
         END as likedByUser,
-    
-        (SELECT COUNT(cs) 
-         FROM CompilationSubscription cs 
-         WHERE cs.compilation.id = c.id) as subscribersCount,
     
         CASE 
             WHEN :currentUserId IS NULL THEN false
@@ -289,23 +216,32 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
             c.description as description,
             c.isPublic as isPublic,
             c.coverUrl as coverUrl,
-    
+            c.likesCount as likesCount,
+            c.subscribersCount as subscribersCount,
             c.author.id as authorId,
             c.author.username as authorName,
-    
-            COUNT(cl) as likesCount,
-    
-            CASE 
+        
+            CASE
                 WHEN :currentUserId IS NULL THEN false
-                WHEN SUM(CASE WHEN cl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM CompilationLike cl2
+                    WHERE cl2.compilation.id = c.id
+                      AND cl2.user.id = :currentUserId
+                )
                 THEN true ELSE false
             END as likedByUser,
     
-            (SELECT COUNT(cs) 
-             FROM CompilationSubscription cs 
-             WHERE cs.compilation.id = c.id) as subscribersCount,
-    
-            false as isSubscribed
+            CASE 
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM CompilationSubscription cs2 
+                    WHERE cs2.compilation.id = c.id 
+                      AND cs2.user.id = :currentUserId
+                )
+                THEN true ELSE false
+            END as isSubscribed
     
         FROM Compilation c
         LEFT JOIN CompilationLike cl 
@@ -330,21 +266,21 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
             c.description as description,
             c.isPublic as isPublic,
             c.coverUrl as coverUrl,
-    
+            c.likesCount as likesCount,
+            c.subscribersCount as subscribersCount,
             c.author.id as authorId,
             c.author.username as authorName,
     
-            COUNT(cl) as likesCount,
-    
             CASE 
                 WHEN :currentUserId IS NULL THEN false
-                WHEN SUM(CASE WHEN cl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM CompilationLike cl2
+                    WHERE cl2.compilation.id = c.id
+                      AND cl2.user.id = :currentUserId
+                )
                 THEN true ELSE false
             END as likedByUser,
-    
-            (SELECT COUNT(cs) 
-             FROM CompilationSubscription cs 
-             WHERE cs.compilation.id = c.id) as subscribersCount,
     
             CASE 
                 WHEN :currentUserId IS NULL THEN false
@@ -358,16 +294,109 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
             END as isSubscribed
     
         FROM Compilation c
-        LEFT JOIN CompilationLike cl ON cl.compilation.id = c.id
     
         WHERE c.isPublic = true
           AND (:excludeIds IS NULL OR c.id NOT IN :excludeIds)
     
-        GROUP BY 
-            c.id, c.title, c.description, c.isPublic, c.coverUrl,
-            c.author.id, c.author.username
-    
         ORDER BY c.createdAt DESC
     """)
     List<CompilationProjection> findLatest(List<Long> excludeIds, Long currentUserId, Pageable pageable);
+
+    @Query("""
+        SELECT 
+            c.id as id,
+            c.title as title,
+            c.description as description,
+            c.isPublic as isPublic,
+            c.coverUrl as coverUrl,
+            c.likesCount as likesCount,
+            c.subscribersCount as subscribersCount,
+            c.author.id as authorId,
+            c.author.username as authorName,
+        
+            CASE 
+                WHEN :userId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM CompilationLike cl2 
+                    WHERE cl2.compilation.id = c.id 
+                      AND cl2.user.id = :userId
+                )
+                THEN true ELSE false
+            END as likedByUser,
+        
+            CASE 
+                WHEN :userId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM CompilationSubscription cs2 
+                    WHERE cs2.compilation.id = c.id 
+                      AND cs2.user.id = :userId
+                )
+                THEN true ELSE false
+            END as isSubscribed
+        FROM Compilation c
+        WHERE c.isPublic = true
+          AND (
+                :query IS NULL
+                OR :query = ''
+                OR LOWER(c.title) LIKE LOWER(CONCAT('%', :query, '%'))
+          )
+    
+        ORDER BY
+            CASE
+                WHEN :sortBy = 'title' AND :sortOrder = 'asc'
+                THEN c.title
+            END ASC,
+    
+            CASE
+                WHEN :sortBy = 'title' AND :sortOrder = 'desc'
+                THEN c.title
+            END DESC,
+    
+            CASE
+                WHEN :sortBy = 'popularity' AND :sortOrder = 'asc'
+                THEN c.likesCount
+            END ASC,
+    
+            CASE
+                WHEN :sortBy = 'popularity' AND :sortOrder = 'desc'
+                THEN c.likesCount
+            END DESC,
+                
+            c.createdAt DESC
+    """)
+    Page<CompilationProjection> search(String query, String sortBy, String sortOrder, Pageable pageable, Long userId);
+
+    @Modifying
+    @Query("""
+        UPDATE Compilation c
+        SET c.likesCount = c.likesCount + 1
+        WHERE c.id = :id
+    """)
+    void incrementLikes(Long id);
+
+    @Modifying
+    @Query("""
+        UPDATE Compilation c
+        SET c.likesCount = c.likesCount - 1
+        WHERE c.id = :id
+    """)
+    void decrementLikes(Long id);
+
+    @Modifying
+    @Query("""
+        UPDATE Compilation c
+        SET c.subscribersCount = c.subscribersCount + 1
+        WHERE c.id = :id
+    """)
+    void incrementSubs(Long id);
+
+    @Modifying
+    @Query("""
+        UPDATE Compilation c
+        SET c.subscribersCount = c.subscribersCount - 1
+        WHERE c.id = :id
+    """)
+    void decrementSubs(Long id);
 }

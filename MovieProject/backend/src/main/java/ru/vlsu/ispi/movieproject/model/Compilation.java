@@ -43,6 +43,12 @@ public class Compilation extends AuditableEntity{
     @Column(name = "cover_url")
     private String coverUrl;
 
+    @Column(name = "likes_count")
+    private Integer likesCount;
+
+    @Column(name = "subscribers_count")
+    private Integer subscribersCount;
+
     @ManyToMany
     @JoinTable(
             name = "compilation_movie",

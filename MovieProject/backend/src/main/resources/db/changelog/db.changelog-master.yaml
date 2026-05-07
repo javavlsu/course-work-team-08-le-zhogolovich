@@ -35,3 +35,7 @@ databaseChangeLog:
       file: db/changelog/changeset/17-add-indexes-to-user-follow.yaml
   - include:
       file: db/changelog/changeset/18-relations-changes.yaml
+  - include:
+      file: db/changelog/changeset/19-more-compilation-changes.yaml
+  - include:
+      file: db/changelog/changeset/20-more-review-changes.yaml

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.vlsu.ispi.movieproject.dto.review.CreateReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.EditReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.ReviewDto;
+import ru.vlsu.ispi.movieproject.dto.review.SearchReviewRequest;
 import ru.vlsu.ispi.movieproject.service.ReviewService;
 
 import java.util.List;
@@ -26,14 +27,25 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping
-    public Page<ReviewDto> getReviews(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "20") int size) {
-        return reviewService.getReviews(PageRequest.of(page, size));
+    public Page<ReviewDto> getReviews(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder,
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        SearchReviewRequest request = new SearchReviewRequest();
+        request.setQuery(query);
+        request.setSortBy(sortBy);
+        request.setSortOrder(sortOrder);
+
+        return reviewService.searchReviews(request, PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
     public ReviewDto getReview(@PathVariable Long id) {
-        return reviewService.getReview(id);
+        return reviewService.getReviewById(id);
     }
 
     @PostMapping

@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import ru.vlsu.ispi.movieproject.model.Review;
 import ru.vlsu.ispi.movieproject.projection.ReviewProjection;
@@ -48,12 +49,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             r.content as content,
             r.status as status,
             r.createdAt as createdAt,
-    
-            COUNT(rl) as likesCount,
-    
-            CASE 
-                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
-                THEN true ELSE false 
+            r.likesCount as likesCount,
+                
+            CASE
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ReviewLike rl2
+                    WHERE rl2.review.id = r.id
+                      AND rl2.user.id = :currentUserId
+                )
+                THEN true ELSE false
             END as isLikedByCurrentUser,
     
             m.posterUrl as movieCover
@@ -69,61 +75,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
               OR r.author.id = :currentUserId
             )
     
-        GROUP BY 
-            r.id, m.id, m.name, u.username, u.avatarUrl,
-            r.title, r.content, r.status, r.createdAt, m.posterUrl
-    
         ORDER BY r.createdAt DESC
     """)
-    List<ReviewProjection> findReviews(Long userId, Long currentUserId);
-
-    @Query(
-            value = """
-        SELECT 
-            r.id as id,
-            m.id as movieId,
-            m.name as movieName,
-            u.username as authorName,
-            u.avatarUrl as authorAvatar,
-            r.title as title,
-            r.content as content,
-            r.status as status,
-            r.createdAt as createdAt,
-
-            COUNT(rl) as likesCount,
-
-            CASE 
-                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
-                THEN true ELSE false 
-            END as isLikedByCurrentUser,
-
-            m.posterUrl as movieCover
-
-        FROM Review r
-        JOIN r.author u
-        JOIN r.movie m
-        LEFT JOIN ReviewLike rl ON rl.review.id = r.id
-            
-        WHERE (
-              r.status = 'PUBLISHED'
-              OR r.author.id = :currentUserId
-        )
-
-        GROUP BY 
-            r.id, m.id, m.name, u.username, u.avatarUrl,
-            r.title, r.content, r.status, r.createdAt, m.posterUrl
-
-        ORDER BY r.createdAt DESC
-    """,
-            countQuery = """
-        SELECT COUNT(r) FROM Review r
-        WHERE (
-              r.status = 'PUBLISHED'
-              OR r.author.id = :currentUserId
-        )
-    """
-    )
-    Page<ReviewProjection> findAllReviews(Pageable pageable, Long currentUserId);
+    List<ReviewProjection> findUserReviews(Long userId, Long currentUserId);
 
     @Query("""
         SELECT 
@@ -136,12 +90,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             r.content as content,
             r.status as status,
             r.createdAt as createdAt,
+            r.likesCount as likesCount,
     
-            COUNT(rl) as likesCount,
-    
-            CASE 
-                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
-                THEN true ELSE false 
+            CASE
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ReviewLike rl2
+                    WHERE rl2.review.id = r.id
+                      AND rl2.user.id = :currentUserId
+                )
+                THEN true ELSE false
             END as isLikedByCurrentUser,
     
             m.posterUrl as movieCover
@@ -156,10 +115,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
               r.status = 'PUBLISHED'
               OR r.author.id = :currentUserId
           )
-    
-        GROUP BY 
-            r.id, m.id, m.name, u.username, u.avatarUrl,
-            r.title, r.content, r.status, r.createdAt, m.posterUrl
     """)
     Optional<ReviewProjection> findReviewById(Long reviewId, Long currentUserId);
 
@@ -174,12 +129,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             r.content as content,
             r.status as status,
             r.createdAt as createdAt,
+            r.likesCount as likesCount,
     
-            COUNT(rl) as likesCount,
-    
-            CASE 
-                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
-                THEN true ELSE false 
+            CASE
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ReviewLike rl2
+                    WHERE rl2.review.id = r.id
+                      AND rl2.user.id = :currentUserId
+                )
+                THEN true ELSE false
             END as isLikedByCurrentUser,
     
             m.posterUrl as movieCover
@@ -195,10 +155,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
               r.status = 'PUBLISHED'
               OR r.author.id = :currentUserId
           )
-    
-        GROUP BY 
-            r.id, m.id, m.name, u.username, u.avatarUrl,
-            r.title, r.content, r.status, r.createdAt, m.posterUrl
     """)
     List<ReviewProjection> findAllLikedByUserId(Long userId, Long currentUserId);
 
@@ -213,12 +169,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             r.content as content,
             r.status as status,
             r.createdAt as createdAt,
+            r.likesCount as likesCount,
     
-            COUNT(rl) as likesCount,
-    
-            CASE 
-                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
-                THEN true ELSE false 
+            CASE
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ReviewLike rl2
+                    WHERE rl2.review.id = r.id
+                      AND rl2.user.id = :currentUserId
+                )
+                THEN true ELSE false
             END as isLikedByCurrentUser,
     
             m.posterUrl as movieCover
@@ -233,10 +194,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
               r.status = 'PUBLISHED'
               OR r.author.id = :currentUserId
           )
-    
-        GROUP BY 
-            r.id, m.id, m.name, u.username, u.avatarUrl,
-            r.title, r.content, r.status, r.createdAt, m.posterUrl
     """)
     List<ReviewProjection> findReviewsByMovieId(Long movieId, Long currentUserId);
 
@@ -251,12 +208,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             r.content as content,
             r.status as status,
             r.createdAt as createdAt,
+            r.likesCount as likesCount,
     
-            COUNT(rl) as likesCount,
-    
-            CASE 
-                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
-                THEN true ELSE false 
+            CASE
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ReviewLike rl2
+                    WHERE rl2.review.id = r.id
+                      AND rl2.user.id = :currentUserId
+                )
+                THEN true ELSE false
             END as isLikedByCurrentUser,
     
             m.posterUrl as movieCover
@@ -280,7 +242,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<ReviewProjection> findTopReviewsLastWeek(LocalDateTime fromDate, Long currentUserId, Pageable pageable);
 
     @Query("""
-    SELECT 
+        SELECT 
             r.id as id,
             m.id as movieId,
             m.name as movieName,
@@ -290,12 +252,17 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             r.content as content,
             r.status as status,
             r.createdAt as createdAt,
+            r.likesCount as likesCount,
     
-            COUNT(rl) as likesCount,
-    
-            CASE 
-                WHEN SUM(CASE WHEN rl.user.id = :currentUserId THEN 1 ELSE 0 END) > 0 
-                THEN true ELSE false 
+            CASE
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ReviewLike rl2
+                    WHERE rl2.review.id = r.id
+                      AND rl2.user.id = :currentUserId
+                )
+                THEN true ELSE false
             END as isLikedByCurrentUser,
     
             m.posterUrl as movieCover
@@ -306,13 +273,88 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         LEFT JOIN ReviewLike rl ON rl.review.id = r.id
     
         WHERE r.status = 'PUBLISHED'
-          AND (:excludeIds IS NULL OR r.id NOT IN :excludeIds)
-    
-        GROUP BY 
-            r.id, m.id, m.name, u.username, u.avatarUrl,
-            r.title, r.content, r.status, r.createdAt, m.posterUrl
+        AND (:excludeIds IS NULL OR r.id NOT IN :excludeIds)
     
         ORDER BY r.createdAt DESC
     """)
     List<ReviewProjection> findLatest(List<Long> excludeIds, Long currentUserId, Pageable pageable);
+
+    @Query("""
+        SELECT 
+            r.id as id,
+            m.id as movieId,
+            m.name as movieName,
+            u.username as authorName,
+            u.avatarUrl as authorAvatar,
+            r.title as title,
+            r.content as content,
+            r.status as status,
+            r.createdAt as createdAt,
+            r.likesCount as likesCount,
+    
+            CASE
+                WHEN :currentUserId IS NULL THEN false
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM ReviewLike rl2
+                    WHERE rl2.review.id = r.id
+                      AND rl2.user.id = :currentUserId
+                )
+                THEN true ELSE false
+            END as isLikedByCurrentUser,
+    
+            m.posterUrl as movieCover
+    
+        FROM Review r
+        JOIN r.author u
+        JOIN r.movie m
+    
+        WHERE (
+            :query IS NULL
+            OR :query = ''
+            OR LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))
+            OR LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%'))
+        )
+        AND r.status = 'PUBLISHED'
+
+        ORDER BY
+            CASE
+                WHEN :sortBy = 'title' AND :sortOrder = 'asc'
+                THEN r.title
+            END ASC,
+    
+            CASE
+                WHEN :sortBy = 'title' AND :sortOrder = 'desc'
+                THEN r.title
+            END DESC,
+    
+            CASE
+                WHEN :sortBy = 'popularity' AND :sortOrder = 'asc'
+                THEN r.likesCount
+            END ASC,
+    
+            CASE
+                WHEN :sortBy = 'popularity' AND :sortOrder = 'desc'
+                THEN r.likesCount
+            END DESC,
+                
+            r.createdAt DESC
+    """)
+    Page<ReviewProjection> search(String query, String sortBy, String sortOrder, Long currentUserId, Pageable pageable);
+
+    @Modifying
+    @Query("""
+        UPDATE Review r
+        SET r.likesCount = r.likesCount + 1
+        WHERE r.id = :id
+    """)
+    void incrementLikes(Long id);
+
+    @Modifying
+    @Query("""
+        UPDATE Review r
+        SET r.likesCount = r.likesCount - 1
+        WHERE r.id = :id
+    """)
+    void decrementLikes(Long id);
 }

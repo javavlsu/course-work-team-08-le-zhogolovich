@@ -40,4 +40,7 @@ public class Review extends AuditableEntity{
 
     @Enumerated(EnumType.STRING)
     private ReviewStatus status;
+
+    @Column(name = "likes_count")
+    private int likesCount;
 }

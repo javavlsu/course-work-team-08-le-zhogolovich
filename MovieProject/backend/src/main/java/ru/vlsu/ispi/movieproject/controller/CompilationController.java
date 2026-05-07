@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
+import ru.vlsu.ispi.movieproject.dto.compilation.SearchCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.compilation.UpdateCompilationRequest;
 import ru.vlsu.ispi.movieproject.service.CompilationService;
 
@@ -31,9 +32,19 @@ public class CompilationController {
 
     @GetMapping()
     public Page<CompilationDto> getCompilations(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder,
+
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        return compilationService.getAll(PageRequest.of(page, size));
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        SearchCompilationRequest request = new SearchCompilationRequest();
+        request.setQuery(query);
+        request.setSortBy(sortBy);
+        request.setSortOrder(sortOrder);
+
+        return compilationService.searchCompilations(request, PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}")
