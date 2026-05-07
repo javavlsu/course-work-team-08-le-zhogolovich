@@ -53,7 +53,9 @@ function HomePage() {
 
       <main className="content">
         <section className="section">
-          <h2 className="section-title">Лучшие фильмы за месяц</h2>
+          <h2 className="section-title fw-light mb-5 text-center text-white">
+          Каталог фильмов
+        </h2>
 
           <div className="movie-grid">
             {movies.map((movie) => (

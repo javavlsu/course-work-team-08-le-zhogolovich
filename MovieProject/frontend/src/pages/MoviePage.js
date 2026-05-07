@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AddToCompilationModal from "../components/AddToCompilationModal";
 import MovieTagsModal from "../components/MovieTagsModal";
 import MovieComments from "../components/MovieComments";
+import MovieReviews from "../components/MovieReviews";
 
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
@@ -17,6 +18,7 @@ const MoviePage = () => {
 
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("comments");
 
   const [currentUser, setCurrentUser] = useState({
     username: "",
@@ -495,12 +497,41 @@ const MoviePage = () => {
         <section className="mb-5">
         
 
-          <MovieComments 
-          movieId={id} 
-          currentUser={currentUser} 
-          isAuth={isAuth} 
-          avatarDefault={avatarDefault} 
-        />
+         {/* Секция обсуждений: Табы */}
+<section className="mb-5 mt-5 pt-4 border-top border-secondary">
+  <div className="d-flex justify-content-center gap-4 mb-4">
+    <button
+      className={`nav-btn border-0 pb-2 ${activeTab === "comments" ? " border-bottom border-white" : "text-white-50"}`}
+      style={{ background: "none", transition: "0.3s" }}
+      onClick={() => setActiveTab("comments")}
+    >
+      <i className="fa-solid fa-comments me-2"></i>
+      Комментарии ({comments.length})
+    </button>
+    <button
+      className={`nav-btn border-0 pb-2 ${activeTab === "reviews" ? " border-bottom border-white" : "text-white-50"}`}
+      style={{ background: "none", transition: "0.3s" }}
+      onClick={() => setActiveTab("reviews")}
+    >
+      <i className="fa-solid fa-feather me-2"></i>
+      Рецензии
+    </button>
+  </div>
+
+  {/* Контент вкладок */}
+  <div className="tab-content">
+    {activeTab === "comments" ? (
+      <MovieComments 
+        movieId={id} 
+        currentUser={currentUser} 
+        isAuth={isAuth} 
+        avatarDefault={avatarDefault} 
+      />
+    ) : (
+      <MovieReviews movieId={id} />
+    )}
+  </div>
+</section>
         </section>
       </main>
     </div>

@@ -4,6 +4,7 @@ import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import LikedContent from "../components/LikedContent";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
@@ -143,7 +144,9 @@ function ProfilePage() {
       }
     } catch (err) {
       console.error(err);
-      alert("Не удалось изменить статус подписки. Возможно, вы не зарегистрированны.");
+      alert(
+        "Не удалось изменить статус подписки. Возможно, вы не зарегистрированны.",
+      );
     }
   };
 
@@ -318,7 +321,7 @@ function ProfilePage() {
               </Link>
             </div>
           </div>
-          {/* табы переключения (подборки/подписки) */}
+          {/* табы переключения  */}
           <div className="d-flex justify-content-center border-bottom border-secondary mb-4">
             <button
               className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === "my" ? "border-bottom border-3 border-white fw-bold" : "opacity-50"}`}
@@ -339,8 +342,21 @@ function ProfilePage() {
             >
               Рецензии
             </button>
+            <button
+              className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === "liked" ? "border-bottom border-3 border-white fw-bold" : "opacity-50"}`}
+              onClick={() => setActiveTab("liked")}
+            >
+              Понравилось
+            </button>
           </div>
           <section className="mb-5">
+            {activeTab === "liked" && (
+              <LikedContent
+                userId={user.id || user.userId}
+                isMyProfile={isMyProfile}
+                renderGrid={renderGrid}
+              />
+            )}
             {activeTab === "my" && (
               <>
                 {isMyProfile && (
@@ -363,10 +379,7 @@ function ProfilePage() {
             )}
 
             {activeTab === "subscribed" &&
-              renderGrid(
-                subscriptions,
-                "Тут пока пусто :(",
-              )}
+              renderGrid(subscriptions, "Тут пока пусто :(")}
 
             {activeTab === "reviews" && (
               <div className="mt-3">
@@ -379,8 +392,30 @@ function ProfilePage() {
                         border: "2px solid white",
                         borderRadius: "20px",
                         background: "rgba(255,255,255,0.05)",
+                        position: "relative",
                       }}
                     >
+                      {/* Блок статуса (Черновик/Опубликовано) */}
+                      {isMyProfile && (
+                        <div className="mb-3 d-flex align-items-center gap-2">
+                          {rev.status === "DRAFT" ? (
+                            <span className="text-warning">
+                              <i className="fa-solid fa-pen me-2"></i>
+                              <small className="text-uppercase fw-bold">
+                                Черновик
+                              </small>
+                            </span>
+                          ) : (
+                            <span className="text-success">
+                              <i className="fa-solid fa-check me-2"></i>
+                              <small className="text-uppercase fw-bold">
+                                Опубликовано
+                              </small>
+                            </span>
+                          )}
+                        </div>
+                      )}
+
                       <div className="d-flex justify-content-between">
                         <Link
                           to={`/reviews/${rev.id}`}
@@ -390,12 +425,22 @@ function ProfilePage() {
                             {rev.title || "Название рецензии"}
                           </h5>
                         </Link>
-                        {/* сюда добавить ссылку на фильм */}
 
-                        <span className="badge rounded-pill  d-flex align-items-center gap-2 px-3 py-2">
+                        <span className="badge rounded-pill d-flex align-items-center gap-2 px-3 py-2">
                           <i className="fa-solid fa-heart"></i>
                           <span>{rev.likesCount || 0}</span>
                         </span>
+                      </div>
+
+                      <div>
+                        <Link
+                          to={`/movies/${rev.movieId}`}
+                          className="text-decoration-none text-white-50 hover-opacity"
+                        >
+                          <h6 className="fw-bold m-0">
+                            {rev.movieName || "Название фильма"}
+                          </h6>
+                        </Link>
                       </div>
                       <p className="mt-2">{rev.text}</p>
                       <small className="text-white-50">
