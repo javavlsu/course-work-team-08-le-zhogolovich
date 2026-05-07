@@ -3,13 +3,17 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
+import ru.vlsu.ispi.movieproject.dto.movie.SearchMoviesRequest;
 import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.exception.CompilationNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.MovieNotFoundException;
@@ -28,10 +32,14 @@ import ru.vlsu.ispi.movieproject.repository.MovieRepository;
 import ru.vlsu.ispi.movieproject.repository.TagRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.MovieService;
+import ru.vlsu.ispi.movieproject.specification.MovieSpecifications;
 import ru.vlsu.ispi.movieproject.util.FillTopUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +55,29 @@ public class MovieServiceImpl implements MovieService {
     private final TagMapper tagMapper;
 
     @Override
-    public Page<MovieDto> getAllMovies(Pageable pageable) {
-        return movieRepository.findAll(pageable).map(movieMapper::toMovieDto);
+    public Page<MovieDto> searchMovies(SearchMoviesRequest request, int page, int size) {
+        Specification<Movie> spec = Specification.where(null);
+        spec = spec.and(MovieSpecifications.hasGenre(request.getGenreId()));
+        spec = spec.and(MovieSpecifications.hasTag(request.getTagId()));
+        spec = spec.and(MovieSpecifications.hasCountry(request.getCountryId()));
+        spec = spec.and(MovieSpecifications.hasYear(request.getYear()));
+        spec = spec.and(MovieSpecifications.titleContains(request.getQuery()));
+
+        Pageable pageable = PageRequest.of(page, size, buildSort(request));
+
+        Page<Movie> moviePage = movieRepository.findAll(spec, pageable);
+
+        List<Long> ids = moviePage.getContent().stream().map(Movie::getId).toList();
+        if (ids.isEmpty()) return Page.empty(pageable);
+
+        List<Movie> movies = movieRepository.findAllWithRelations(ids);
+
+        Map<Long, Movie> moviesById = movies.stream().collect(Collectors.toMap(Movie::getId, m -> m));
+
+        List<MovieDto> orderedList = ids.stream().map(moviesById::get).filter(Objects::nonNull)
+                .map(movieMapper::toMovieDto).toList();
+
+        return new PageImpl<>(orderedList, pageable, moviePage.getTotalElements());
     }
 
     @Override
@@ -165,5 +194,25 @@ public class MovieServiceImpl implements MovieService {
 
         movie.setAvgRating(avg != null ? avg : 0.0);
         movie.setRatingsCount(count != null ? count : 0);
+    }
+
+    private Sort buildSort(SearchMoviesRequest request) {
+        String sortBy = request.getSortBy();
+        String direction = request.getSortOrder();
+
+        Sort.Direction dir = "asc".equalsIgnoreCase(direction) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        if ("year".equalsIgnoreCase(sortBy)) {
+            return Sort.by(dir, "releaseYear");
+        }
+
+        if ("popularity".equalsIgnoreCase(sortBy)) {
+            return Sort.by(
+                    new Sort.Order(dir, "avgRating"),
+                    new Sort.Order(dir, "ratingsCount")
+            );
+        }
+
+        return Sort.by(Sort.Direction.DESC, "id");
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.review.CreateReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.EditReviewRequest;
 import ru.vlsu.ispi.movieproject.dto.review.ReviewDto;
+import ru.vlsu.ispi.movieproject.dto.review.SearchReviewRequest;
 import ru.vlsu.ispi.movieproject.enums.ReviewStatus;
 import ru.vlsu.ispi.movieproject.exception.ReviewNotFoundException;
 import ru.vlsu.ispi.movieproject.mapper.ReviewMapper;
@@ -39,6 +40,48 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
     private final ReviewLikeRepository reviewLikeRepository;
+
+    @Override
+    public Page<ReviewDto> searchReviews(SearchReviewRequest request, Pageable pageable) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.search(request.getQuery(), request.getSortBy(), request.getSortOrder(), userId, pageable)
+                .map(reviewMapper::toDto);
+    }
+
+    @Override
+    public ReviewDto getReviewById(Long reviewId) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findReviewById(reviewId, userId)
+                .map(reviewMapper::toDto)
+                .orElseThrow(() -> new ReviewNotFoundException(reviewId));
+    }
+
+    @Override
+    public List<ReviewDto> getReviewsByMovieId(Long movieId) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        return reviewRepository.findReviewsByMovieId(movieId, userId)
+                .stream()
+                .map(reviewMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<ReviewDto> getTop10Reviews() {
+        Long userId = currentUserService.getCurrentUserID();
+
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(7);
+
+        List<ReviewProjection> top = reviewRepository.findTopReviewsLastWeek(fromDate, userId, PageRequest.of(0,10));
+
+        List<ReviewProjection> fullTop = FillTopUtil.fillTop(top, 10,
+                excludeIds -> reviewRepository.findLatest(excludeIds, userId, PageRequest.of(0, 10 - top.size())),
+                ReviewProjection::getId);
+
+        return fullTop.stream().map(reviewMapper::toDto).collect(Collectors.toList());
+    }
 
     @Override
     public ReviewDto create(CreateReviewRequest request) {
@@ -109,6 +152,7 @@ public class ReviewServiceImpl implements ReviewService {
         like.setUser(entityManager.getReference(User.class, userId));
 
         reviewLikeRepository.save(like);
+        reviewRepository.incrementLikes(reviewId);
     }
 
     @Override
@@ -116,22 +160,14 @@ public class ReviewServiceImpl implements ReviewService {
         Long userId = currentUserService.getCurrentUserID();
 
         reviewLikeRepository.deleteById(new ReviewLikeId(userId, reviewId));
-    }
-
-    @Override
-    public ReviewDto getReview(Long reviewId) {
-        Long currentUserId = currentUserService.getCurrentUserID();
-
-        return reviewRepository.findReviewById(reviewId, currentUserId)
-                .map(reviewMapper::toDto)
-                .orElseThrow(() -> new ReviewNotFoundException(reviewId));
+        reviewRepository.decrementLikes(reviewId);
     }
 
     @Override
     public List<ReviewDto> getCurrentUserReviews() {
         Long currentUserId = currentUserService.getCurrentUserID();
 
-        return reviewRepository.findReviews(currentUserId, currentUserId).stream()
+        return reviewRepository.findUserReviews(currentUserId, currentUserId).stream()
                 .map(reviewMapper::toDto)
                 .toList();
     }
@@ -140,7 +176,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewDto> getUserReviews(Long userId) {
         Long currentUserId = currentUserService.getCurrentUserID();
 
-        return reviewRepository.findReviews(userId, currentUserId).stream()
+        return reviewRepository.findUserReviews(userId, currentUserId).stream()
                 .map(reviewMapper::toDto)
                 .toList();
     }
@@ -164,40 +200,6 @@ public class ReviewServiceImpl implements ReviewService {
                 .map(reviewMapper::toDto)
                 .toList();
     }
-
-    @Override
-    public Page<ReviewDto> getReviews(Pageable pageable) {
-        Long currentUserId = currentUserService.getCurrentUserID();
-
-        return reviewRepository.findAllReviews(pageable, currentUserId)
-                .map(reviewMapper::toDto);
-    }
-
-    @Override
-    public List<ReviewDto> getReviewsByMovieId(Long movieId) {
-        Long userId = currentUserService.getCurrentUserID();
-
-        return reviewRepository.findReviewsByMovieId(movieId, userId)
-                .stream()
-                .map(reviewMapper::toDto)
-                .toList();
-    }
-
-    @Override
-    public List<ReviewDto> getTop10Reviews() {
-        Long userId = currentUserService.getCurrentUserID();
-
-        LocalDateTime fromDate = LocalDateTime.now().minusDays(7);
-
-        List<ReviewProjection> top = reviewRepository.findTopReviewsLastWeek(fromDate, userId, PageRequest.of(0,10));
-
-        List<ReviewProjection> fullTop = FillTopUtil.fillTop(top, 10,
-                excludeIds -> reviewRepository.findLatest(excludeIds, userId, PageRequest.of(0, 10 - top.size())),
-                ReviewProjection::getId);
-
-        return fullTop.stream().map(reviewMapper::toDto).collect(Collectors.toList());
-    }
-
 
     private void checkOwner(Review review, Long userId) {
         if (!review.getAuthor().getId().equals(userId)) {

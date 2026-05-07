@@ -11,6 +11,7 @@ public class MovieDto {
     private Long id;
     private Integer kinopoiskId;
     private String name;
+    private String originalName;
     private String posterUrl;
     private Integer releaseYear;
     private Double avgRating;

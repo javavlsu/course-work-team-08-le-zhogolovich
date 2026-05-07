@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-likes-count-column
+      author: Hiraeth
+      changes:
+        - addColumn:
+            tableName: compilation
+            columns:
+              - column: { name: likes_count, type: INT, defaultValue: 0, constraints: { nullable: false }}
+              - column: { name: subscribers_count, type: INT, defaultValue: 0, constraints: { nullable: false }}

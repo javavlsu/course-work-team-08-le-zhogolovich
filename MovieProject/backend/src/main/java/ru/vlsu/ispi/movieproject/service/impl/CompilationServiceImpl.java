@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlsu.ispi.movieproject.dto.compilation.CompilationDto;
 import ru.vlsu.ispi.movieproject.dto.compilation.CreateCompilationRequest;
+import ru.vlsu.ispi.movieproject.dto.compilation.SearchCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.compilation.UpdateCompilationRequest;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.enums.FileDirectory;
@@ -50,6 +51,24 @@ public class CompilationServiceImpl implements CompilationService {
     private final CurrentUserService currentUserService;
     private final CompilationSubscriptionRepository compilationSubscriptionRepository;
     private final MovieMapper movieMapper;
+
+    @Override
+    public Page<CompilationDto> searchCompilations(SearchCompilationRequest request, Pageable pageable) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        return compilationRepository.search(request.getQuery(), request.getSortBy(), request.getSortOrder(), pageable, userId)
+                .map(p -> compilationMapper.fromView(p, List.of()));
+    }
+
+    @Override
+    public CompilationDto getById(Long id) {
+        Long userId = currentUserService.getCurrentUserID();
+
+        Compilation compilation = compilationRepository.findByIdWithMovies(id, userId)
+                .orElseThrow(() -> new CompilationNotFoundException(id));
+
+        return buildDto(compilation, userId);
+    }
 
     @Override
     public CompilationDto createCompilation(CreateCompilationRequest request) {
@@ -126,8 +145,9 @@ public class CompilationServiceImpl implements CompilationService {
         compilationLike.setId(new CompilationLikeId(userId, compilationId));
         compilationLike.setUser(entityManager.getReference(User.class, userId));
         compilationLike.setCompilation(entityManager.getReference(Compilation.class, compilationId));
-
         compilationLikeRepository.save(compilationLike);
+
+        compilationRepository.incrementLikes(compilationId);
     }
 
     @Override
@@ -135,24 +155,7 @@ public class CompilationServiceImpl implements CompilationService {
         Long userId = currentUserService.getCurrentUserID();
 
         compilationLikeRepository.deleteByUserIdAndCompilationId(userId, compilationId);
-    }
-
-    @Override
-    public CompilationDto getById(Long id) {
-        Long userId = currentUserService.getCurrentUserID();
-
-        Compilation compilation = compilationRepository.findByIdWithMovies(id, userId)
-                .orElseThrow(() -> new CompilationNotFoundException(id));
-
-        return buildDto(compilation, userId);
-    }
-
-    @Override
-    public Page<CompilationDto> getAll(Pageable pageable) {
-        Long userId = currentUserService.getCurrentUserID();
-
-        return compilationRepository.findAllView(pageable, userId)
-                .map(p -> compilationMapper.fromView(p, List.of()));
+        compilationRepository.decrementLikes(compilationId);
     }
 
     @Override
@@ -251,6 +254,7 @@ public class CompilationServiceImpl implements CompilationService {
         compilationSubscription.setUser(entityManager.getReference(User.class, userId));
         compilationSubscription.setCompilation(entityManager.getReference(Compilation.class, compilationId));
         compilationSubscriptionRepository.save(compilationSubscription);
+        compilationRepository.incrementSubs(compilationId);
     }
 
     @Override
@@ -262,6 +266,7 @@ public class CompilationServiceImpl implements CompilationService {
                 .orElseThrow(() -> new IllegalStateException("Вы не подписаны на эту подборку"));
 
         compilationSubscriptionRepository.delete(compilationSubscription);
+        compilationRepository.decrementSubs(compilationId);
     }
 
     @Override

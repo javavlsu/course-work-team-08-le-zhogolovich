@@ -3,7 +3,6 @@ package ru.vlsu.ispi.movieproject.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import ru.vlsu.ispi.movieproject.dto.movie.AddMovieToCompilationsRequest;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
 import ru.vlsu.ispi.movieproject.dto.movie.RateMovieRequest;
+import ru.vlsu.ispi.movieproject.dto.movie.SearchMoviesRequest;
 import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.service.MovieService;
 
@@ -29,9 +29,28 @@ public class MovieController {
 
     @GetMapping()
     public Page<MovieDto> getMovies(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Long tagId,
+            @RequestParam(required = false) Long countryId,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(defaultValue = "popularity") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder,
+
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        return movieService.getAllMovies(PageRequest.of(page, size));
+            @RequestParam(defaultValue = "20") int size
+    ) {
+
+        SearchMoviesRequest request = new SearchMoviesRequest();
+        request.setQuery(query);
+        request.setGenreId(genreId);
+        request.setTagId(tagId);
+        request.setCountryId(countryId);
+        request.setYear(year);
+        request.setSortBy(sortBy);
+        request.setSortOrder(sortOrder);
+
+        return movieService.searchMovies(request, page, size);
     }
 
     @GetMapping("/{id}")
