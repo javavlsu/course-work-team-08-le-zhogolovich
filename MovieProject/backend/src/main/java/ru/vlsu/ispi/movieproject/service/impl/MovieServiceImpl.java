@@ -62,8 +62,14 @@ public class MovieServiceImpl implements MovieService {
         spec = spec.and(MovieSpecifications.hasCountry(request.getCountryId()));
         spec = spec.and(MovieSpecifications.hasYear(request.getYear()));
         spec = spec.and(MovieSpecifications.titleContains(request.getQuery()));
+        spec = spec.and(MovieSpecifications.orderByName(request.getSortOrder()));
 
-        Pageable pageable = PageRequest.of(page, size, buildSort(request));
+        Pageable pageable;
+        if ("name".equalsIgnoreCase(request.getSortBy())) {
+            pageable = PageRequest.of(page, size);
+        } else {
+            pageable = PageRequest.of(page, size, buildSort(request));
+        }
 
         Page<Movie> moviePage = movieRepository.findAll(spec, pageable);
 

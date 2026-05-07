@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.movieproject.specification;
 
+import jakarta.persistence.criteria.Expression;
 import org.springframework.data.jpa.domain.Specification;
 import ru.vlsu.ispi.movieproject.model.Movie;
 
@@ -44,6 +45,18 @@ public class MovieSpecifications {
             if (text == null || text.isBlank()) return null;
 
             return cb.like(cb.lower(root.get("name")), "%" + text.toLowerCase() + "%");
+        };
+    }
+
+    public static Specification<Movie> orderByName(String sortOrder) {
+        return (root, query, cb) -> {
+            Expression<String> expression = cb.coalesce(cb.nullif(root.get("name"), ""), root.get("originalName"));
+            if ("asc".equalsIgnoreCase(sortOrder)) {
+                query.orderBy(cb.asc(expression));
+            }
+            else query.orderBy(cb.desc(expression));
+
+            return null;
         };
     }
 }
