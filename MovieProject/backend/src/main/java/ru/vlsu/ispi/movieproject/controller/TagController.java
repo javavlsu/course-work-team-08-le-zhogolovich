@@ -19,6 +19,8 @@ import ru.vlsu.ispi.movieproject.dto.tag.EditTagRequest;
 import ru.vlsu.ispi.movieproject.dto.tag.TagDto;
 import ru.vlsu.ispi.movieproject.service.TagService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tags")
 @RequiredArgsConstructor
@@ -46,6 +48,11 @@ public class TagController {
             @PageableDefault(size = 20) Pageable pageable
     ) {
         return tagService.search(query, pageable);
+    }
+
+    @GetMapping
+    public List<TagDto> getTags() {
+        return tagService.getAll();
     }
 
 }

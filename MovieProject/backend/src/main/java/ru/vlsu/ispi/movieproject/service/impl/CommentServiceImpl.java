@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.comment.CommentDto;
 import ru.vlsu.ispi.movieproject.dto.comment.CommentRequest;
@@ -16,6 +15,7 @@ import ru.vlsu.ispi.movieproject.model.User;
 import ru.vlsu.ispi.movieproject.repository.CommentRepository;
 import ru.vlsu.ispi.movieproject.service.CommentService;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
+import ru.vlsu.ispi.movieproject.util.AccessUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +24,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final EntityManager entityManager;
     private final CommentMapper commentMapper;
+    private final AccessUtil accessUtil;
 
     @Override
     public CommentDto createComment(Long movieId, CommentRequest request) {
@@ -39,25 +40,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(Long commentId) {
-        Long userId = currentUserService.getCurrentUserID();
-
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
-        if (!comment.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("Нельзя удалить чужой комментарий");
-        }
+        accessUtil.checkOwnerOrAdmin(comment.getUser().getId());
+
         commentRepository.delete(comment);
     }
 
     @Override
     public CommentDto editComment(Long commentId, CommentRequest request) {
-        Long userId = currentUserService.getCurrentUserID();
-
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
-        if (!comment.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("Нельзя удалить чужой комментарий");
-        }
+        accessUtil.checkOwnerOrAdmin(comment.getUser().getId());
 
         comment.setContent(request.getContent());
 

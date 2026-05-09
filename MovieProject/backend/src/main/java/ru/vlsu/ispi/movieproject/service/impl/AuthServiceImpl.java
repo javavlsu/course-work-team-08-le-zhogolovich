@@ -102,6 +102,8 @@ public class AuthServiceImpl implements AuthService {
         c.setTitle(title);
         c.setAuthor(user);
         c.setIsPublic(false);
+        c.setLikesCount(0);
+        c.setSubscribersCount(0);
         return c;
     }
 }

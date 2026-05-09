@@ -1,4 +1,4 @@
-package ru.vlsu.ispi.movieproject.dto.movie;
+package ru.vlsu.ispi.movieproject.dto.imports;
 
 import lombok.Data;
 
@@ -13,6 +13,6 @@ public class MovieImportDto {
     private String posterUrl;
     private Double ratingKinopoisk;
     private Double ratingImdb;
-    private Set<GenreDto> genres;
-    private Set<CountryDto> countries;
+    private Set<ImportGenreDto> genres;
+    private Set<ImportCountryDto> countries;
 }

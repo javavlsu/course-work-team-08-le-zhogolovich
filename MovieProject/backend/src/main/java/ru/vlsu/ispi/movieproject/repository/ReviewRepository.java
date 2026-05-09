@@ -108,7 +108,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         FROM Review r
         JOIN r.author u
         JOIN r.movie m
-        LEFT JOIN ReviewLike rl ON rl.review.id = r.id
     
         WHERE r.id = :reviewId
           AND (
@@ -148,7 +147,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         JOIN r.author u
         JOIN r.movie m
         JOIN ReviewLike rlu ON rlu.review.id = r.id
-        LEFT JOIN ReviewLike rl ON rl.review.id = r.id
     
         WHERE rlu.user.id = :userId
           AND (
@@ -187,7 +185,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         FROM Review r
         JOIN r.author u
         JOIN r.movie m
-        LEFT JOIN ReviewLike rl ON rl.review.id = r.id
     
         WHERE m.id = :movieId
           AND (
@@ -270,7 +267,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         FROM Review r
         JOIN r.author u
         JOIN r.movie m
-        LEFT JOIN ReviewLike rl ON rl.review.id = r.id
     
         WHERE r.status = 'PUBLISHED'
         AND (:excludeIds IS NULL OR r.id NOT IN :excludeIds)

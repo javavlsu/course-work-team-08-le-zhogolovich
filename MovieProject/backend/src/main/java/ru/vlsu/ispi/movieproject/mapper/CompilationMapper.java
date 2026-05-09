@@ -18,6 +18,8 @@ public class CompilationMapper {
         c.setTitle(request.getTitle());
         c.setDescription(request.getDescription());
         c.setIsPublic(request.getIsPublic());
+        c.setLikesCount(0);
+        c.setSubscribersCount(0);
 
         return c;
     }

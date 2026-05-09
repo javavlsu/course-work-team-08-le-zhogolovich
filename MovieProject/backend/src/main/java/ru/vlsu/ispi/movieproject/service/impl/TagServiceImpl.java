@@ -16,6 +16,8 @@ import ru.vlsu.ispi.movieproject.model.Tag;
 import ru.vlsu.ispi.movieproject.repository.TagRepository;
 import ru.vlsu.ispi.movieproject.service.TagService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
@@ -65,5 +67,10 @@ public class TagServiceImpl implements TagService {
         }
 
         return tagRepository.findByNameContainingIgnoreCase(query, pageable).map(tagMapper::toDto);
+    }
+
+    @Override
+    public List<TagDto> getAll() {
+        return tagRepository.findAll().stream().map(tagMapper::toDto).toList();
     }
 }

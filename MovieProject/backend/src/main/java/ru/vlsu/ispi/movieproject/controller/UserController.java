@@ -2,6 +2,7 @@ package ru.vlsu.ispi.movieproject.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +27,13 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public List<UserDto> getUsers() {
-        return userService.getAllUsers();
+    public Page<UserDto> getUsers(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "desc") String sortOrder,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return userService.searchUsers(query, sortOrder, page, size);
     }
 
     @GetMapping("/me")
@@ -50,9 +56,29 @@ public class UserController {
         return userService.updateProfile(request);
     }
 
+    @PatchMapping("/id/{id}")
+    public UserDto updateUserProfile(@PathVariable Long id, @RequestBody @Valid EditProfileRequest request) {
+        return userService.updateProfileByUserId(id, request);
+    }
+
     @PatchMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public UserDto uploadAvatar(@RequestParam("file") MultipartFile file) {
         return userService.updateAvatar(file);
+    }
+
+    @PatchMapping(value = "/id/{id}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UserDto uploadUserAvatar(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        return userService.updateAvatarByUserId(id, file);
+    }
+
+    @DeleteMapping("/me/delete-profile")
+    public void deleteProfile() {
+        userService.deleteProfile();
+    }
+
+    @DeleteMapping("/id/{id}/delete-profile")
+    public void deleteProfileById(@PathVariable Long id) {
+        userService.deleteUserById(id);
     }
 
     @PostMapping("/follow/{id}")
@@ -83,15 +109,5 @@ public class UserController {
     @GetMapping("/{username}/followings")
     public List<UserDto> getFollowingsByUsername(@PathVariable String username) {
         return userService.getFollowingsByUsername(username);
-    }
-
-    @DeleteMapping("/me/delete-profile")
-    public void deleteProfile() {
-        userService.deleteProfile();
-    }
-
-    @DeleteMapping("/id/{id}/delete-profile")
-    public void deleteProfileById(@PathVariable Long id) {
-        userService.deleteUserById(id);
     }
 }
