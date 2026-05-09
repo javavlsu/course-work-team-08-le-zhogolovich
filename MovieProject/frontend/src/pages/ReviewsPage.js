@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,41 +9,118 @@ const API_BASE_URL = "http://localhost:8080/movie-project";
 function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoading(true);
-        const response = await apiClient.get("/reviews");
-        if (response.data && response.data.content) {
-          setReviews(response.data.content);
-        }
-      } catch (error) {
-        console.error("Ошибка загрузки рецензий:", error);
-      } finally {
-        setLoading(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("title");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 10;
+
+  const fetchReviews = useCallback(async (page, query, sort, order) => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get("/reviews", {
+        params: {
+          page: page,
+          size: pageSize,
+          query: query || undefined,
+          sortBy: sort,
+          sortOrder: order,
+        },
+      });
+
+      if (response.data) {
+        setReviews(response.data.content || []);
+        setTotalPages(response.data.totalPages || 0);
       }
-    };
-    fetchReviews();
+    } catch (error) {
+      console.error("Ошибка загрузки рецензий:", error);
+      setError("Не удалось загрузить рецензии");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  if (loading) return <div className="text-white text-center mt-5">Загрузка...</div>;
+  useEffect(() => {
+    fetchReviews(currentPage, searchQuery, sortBy, sortOrder);
+  }, [currentPage, searchQuery, sortBy, sortOrder, fetchReviews]);
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  if (loading)
+    return <div className="text-white text-center mt-5">Загрузка...</div>;
 
   return (
     <div className="container-wrapper min-vh-100">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
         <nav className="custom-navbar d-flex align-items-center">
-          <Link to="/" className="nav-btn">Главная</Link>
-          <Link to="/movies" className="nav-btn">Фильмы</Link>
-          <Link to="/collections" className="nav-btn">Подборки</Link>
-          <Link to="/reviews" className="nav-btn active">Рецензии</Link>
-          <Link to="/profile" className="nav-btn">Моя страница</Link>
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn active">
+            Рецензии
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
         </nav>
       </header>
 
       <main className="container-xl px-4 px-md-5">
+        {/* Секция поиска */}
+        <div className="search-section d-flex flex-column align-items-center mb-5">
+          <div
+            className="search-input-container position-relative mb-4"
+            style={{ maxWidth: "500px", width: "100%" }}
+          >
+            <input
+              type="text"
+              className="search-input w-100 py-2 px-4 rounded-pill border border-white text-white bg-transparent"
+              placeholder="Поиск по названию"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(0);
+              }}
+            />
+            <i className="fa fa-search search-icon-pill"></i>
+           </div>
+
+          <hr className="w-75 border-white opacity-25 mb-4" />
+
+          <button
+            className="btn border-white rounded-3 px-4 py-2 text-white d-flex align-items-center gap-2 bg-transparent"
+            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          >
+            Сортировать по{" "}
+            {sortOrder === "asc" ? (
+              <>
+                возрастанию <i className="fa-solid fa-sort-up"></i>
+              </>
+            ) : (
+              <>
+                убыванию <i className="fa-solid fa-sort-down"></i>
+              </>
+            )}
+          </button>
+        </div>
+
         <h2 className="section-title fw-light mb-5 text-center text-white">
-          Популярные рецензии
+          {searchQuery
+            ? `Рецензии на сайте: ${searchQuery}`
+            : "Популярные рецензии"}
         </h2>
 
         <div className="d-flex flex-column gap-1">
@@ -89,7 +166,9 @@ function ReviewsPage() {
                         <span className="fs-2 text-white fw-light">
                           {rev.likesCount || 0}
                         </span>
-                        <i className={`${rev.likedByCurrentUser ? 'fa-solid' : 'fa-regular'} text-white fa-heart fs-3`}></i>
+                        <i
+                          className={`${rev.likedByCurrentUser ? "fa-solid" : "fa-regular"} text-white fa-heart fs-3`}
+                        ></i>
                       </div>
                     </div>
                   </div>
