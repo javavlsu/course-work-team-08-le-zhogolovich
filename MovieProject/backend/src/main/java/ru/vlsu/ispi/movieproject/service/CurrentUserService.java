@@ -1,5 +1,7 @@
 package ru.vlsu.ispi.movieproject.service;
 
 public interface CurrentUserService {
-    public Long getCurrentUserID();
+    Long getCurrentUserID();
+    boolean hasRole(String role);
+    boolean isAdmin();
 }

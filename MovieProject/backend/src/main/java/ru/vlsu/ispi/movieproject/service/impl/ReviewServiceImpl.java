@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.vlsu.ispi.movieproject.dto.review.CreateReviewRequest;
@@ -25,6 +24,7 @@ import ru.vlsu.ispi.movieproject.repository.ReviewLikeRepository;
 import ru.vlsu.ispi.movieproject.repository.ReviewRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.ReviewService;
+import ru.vlsu.ispi.movieproject.util.AccessUtil;
 import ru.vlsu.ispi.movieproject.util.FillTopUtil;
 
 import java.time.LocalDateTime;
@@ -40,6 +40,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
     private final ReviewLikeRepository reviewLikeRepository;
+    private final AccessUtil accessUtil;
 
     @Override
     public Page<ReviewDto> searchReviews(SearchReviewRequest request, Pageable pageable) {
@@ -108,7 +109,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findById(reviewId).
                 orElseThrow(() -> new ReviewNotFoundException(reviewId));
 
-        checkOwner(review, userId);
+        accessUtil.checkOwnerOrAdmin(review.getAuthor().getId());
 
         if (request.getTitle() != null) {
             review.setTitle(request.getTitle());
@@ -116,9 +117,13 @@ public class ReviewServiceImpl implements ReviewService {
         if (request.getContent() != null) {
             review.setContent(request.getContent());
         }
-        if (Boolean.TRUE.equals(request.getIsPublish())) {
-            review.setStatus(ReviewStatus.PUBLISHED);
-        } else review.setStatus(ReviewStatus.DRAFT);
+        if (request.getIsPublish() != null) {
+            if (request.getIsPublish()) {
+                review.setStatus(ReviewStatus.PUBLISHED);
+            } else {
+                review.setStatus(ReviewStatus.DRAFT);
+            }
+        }
 
         reviewRepository.save(review);
 
@@ -129,11 +134,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void delete(Long reviewId) {
-        Long userId = currentUserService.getCurrentUserID();
-
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ReviewNotFoundException(reviewId));
-        checkOwner(review, userId);
+        accessUtil.checkOwnerOrAdmin(review.getAuthor().getId());
 
         reviewRepository.delete(review);
     }
@@ -199,11 +202,5 @@ public class ReviewServiceImpl implements ReviewService {
                 .stream()
                 .map(reviewMapper::toDto)
                 .toList();
-    }
-
-    private void checkOwner(Review review, Long userId) {
-        if (!review.getAuthor().getId().equals(userId)) {
-            throw new AccessDeniedException("Вы не являетесь владельцем этой рецензии");
-        }
     }
 }

@@ -2,6 +2,7 @@ package ru.vlsu.ispi.movieproject.service.impl;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import ru.vlsu.ispi.movieproject.security.CustomUserDetails;
@@ -26,5 +27,24 @@ public class CurrentUserServiceImpl implements CurrentUserService {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean hasRole(String role) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || auth instanceof AnonymousAuthenticationToken) {
+            return false;
+        }
+
+        return auth.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role::equals);
+    }
+
+    @Override
+    public boolean isAdmin() {
+        return hasRole("ROLE_ADMIN");
     }
 }

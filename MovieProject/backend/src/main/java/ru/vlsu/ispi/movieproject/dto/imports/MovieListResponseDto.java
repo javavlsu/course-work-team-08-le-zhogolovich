@@ -1,7 +1,6 @@
 package ru.vlsu.ispi.movieproject.dto.imports;
 
 import lombok.Data;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
 
 import java.util.List;
 

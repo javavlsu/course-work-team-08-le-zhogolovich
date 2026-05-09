@@ -1,9 +1,11 @@
 package ru.vlsu.ispi.movieproject.repository;
 
-import ru.vlsu.ispi.movieproject.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import ru.vlsu.ispi.movieproject.model.User;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,5 +39,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     Optional<User> findByUsernameAndDeletedFalse(String username);
     Optional<User> findByIdAndDeletedFalse(Long id);
-    List<User> findAllByDeletedFalse();
+
+    @Query("""
+        SELECT u
+        FROM User u
+        WHERE u.deleted = false
+        AND (
+            :query IS NULL
+            OR :query = ''
+            OR LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%'))
+        )
+    """)
+    Page<User> search(String query, Pageable pageable);
 }

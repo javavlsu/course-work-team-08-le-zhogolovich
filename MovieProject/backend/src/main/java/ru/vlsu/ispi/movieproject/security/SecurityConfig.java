@@ -50,8 +50,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/movies/*/tags/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/movies/*/tags/*").hasRole("ADMIN")
                         // tags
-                        .requestMatchers(HttpMethod.GET, "/tags/search").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/tags/**").permitAll()
                         .requestMatchers("/tags/**").hasRole("ADMIN")
+                        // genres
+                        .requestMatchers(HttpMethod.GET, "/genres/**").permitAll()
+                        // countries
+                        .requestMatchers(HttpMethod.GET, "/countries/**").permitAll()
                         // compilations
                         .requestMatchers(HttpMethod.GET, "/compilations/**").permitAll()
                         // comments
@@ -61,8 +65,7 @@ public class SecurityConfig {
                         // import
                         .requestMatchers("/api/import/**").hasRole("ADMIN")
                         // user
-                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "users/id/{id}/delete-profile").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users").permitAll()
                         .requestMatchers("/users/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users/{username}").permitAll()
                         .requestMatchers(HttpMethod.GET, "users/id/{id}").permitAll()

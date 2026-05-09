@@ -3,7 +3,7 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.imports.ImportResult;
-import ru.vlsu.ispi.movieproject.dto.movie.GenreDto;
+import ru.vlsu.ispi.movieproject.dto.imports.ImportGenreDto;
 import ru.vlsu.ispi.movieproject.model.Genre;
 import ru.vlsu.ispi.movieproject.model.GenreMapping;
 import ru.vlsu.ispi.movieproject.repository.GenreMappingRepository;
@@ -22,7 +22,7 @@ public class GenreImportServiceImpl implements GenreImportService {
     private final GenreMappingRepository genreMappingRepository;
 
     @Override
-    public ImportResult importGenres(List<GenreDto> genres) {
+    public ImportResult importGenres(List<ImportGenreDto> genres) {
         int imported = 0;
         int skipped = 0;
 
@@ -39,7 +39,7 @@ public class GenreImportServiceImpl implements GenreImportService {
         List<Genre> genresToSave = new ArrayList<>();
         List<GenreMapping> mappingsToSave = new ArrayList<>();
 
-        for (GenreDto dto : genres) {
+        for (ImportGenreDto dto : genres) {
             String name = dto.getGenre().trim().toLowerCase();
             Genre genre = null;
             if (!existingGenres.contains(name)) {

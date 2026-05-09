@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +32,7 @@ import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.service.CompilationService;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.FileStorageService;
+import ru.vlsu.ispi.movieproject.util.AccessUtil;
 import ru.vlsu.ispi.movieproject.util.FillTopUtil;
 
 import java.time.LocalDateTime;
@@ -51,6 +51,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final CurrentUserService currentUserService;
     private final CompilationSubscriptionRepository compilationSubscriptionRepository;
     private final MovieMapper movieMapper;
+    private final AccessUtil accessUtil;
 
     @Override
     public Page<CompilationDto> searchCompilations(SearchCompilationRequest request, Pageable pageable) {
@@ -90,7 +91,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
-        checkOwner(compilation, userId);
+        accessUtil.checkOwnerOrAdmin(compilation.getAuthor().getId());
 
         if (request.getTitle() != null) {
             compilation.setTitle(request.getTitle());
@@ -111,7 +112,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
-        checkOwner(compilation, userId);
+        accessUtil.checkOwnerOrAdmin(compilation.getAuthor().getId());
 
         String coverUrl = fileStorageService.upload(cover, FileDirectory.COMPILATIONS.getFolder());
 
@@ -123,12 +124,9 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public void deleteCompilation(Long id) {
-        Long userId = currentUserService.getCurrentUserID();
-
         Compilation compilation = compilationRepository.findById(id)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
-
-        checkOwner(compilation, userId);
+        accessUtil.checkOwnerOrAdmin(compilation.getAuthor().getId());
 
         compilationRepository.delete(compilation);
     }
@@ -164,7 +162,7 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = compilationRepository.findById(compilationId)
                 .orElseThrow(() -> new CompilationNotFoundException(compilationId));
-        checkOwner(compilation, userId);
+        accessUtil.checkOwnerOrAdmin(compilation.getAuthor().getId());
 
         boolean removed = compilation.getMovies().removeIf(movie -> movie.getId().equals(movieId));
         if (!removed) {
@@ -287,12 +285,6 @@ public class CompilationServiceImpl implements CompilationService {
     private CompilationProjection getView(Long id, Long userId) {
         return compilationRepository.findViewById(id, userId)
                 .orElseThrow(() -> new CompilationNotFoundException(id));
-    }
-
-    private void checkOwner(Compilation compilation, Long userId) {
-        if (compilation.getAuthor() == null || !compilation.getAuthor().getId().equals(userId) ) {
-            throw new AccessDeniedException("Вы не являетесь владельцем подборки");
-        }
     }
 
     private CompilationDto buildDto(Compilation compilation, Long userId) {

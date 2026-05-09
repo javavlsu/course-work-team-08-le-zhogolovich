@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.vlsu.ispi.movieproject.dto.imports.ExternalSourceDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieDto;
 import ru.vlsu.ispi.movieproject.dto.movie.MovieFullDto;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
+import ru.vlsu.ispi.movieproject.dto.imports.MovieImportDto;
 import ru.vlsu.ispi.movieproject.exception.CountryMapException;
 import ru.vlsu.ispi.movieproject.exception.GenreMapException;
 import ru.vlsu.ispi.movieproject.model.Country;

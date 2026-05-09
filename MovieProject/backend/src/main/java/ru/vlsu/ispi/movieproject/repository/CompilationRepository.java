@@ -178,16 +178,7 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
         c.author.id as authorId,
         c.author.username as authorName,
     
-        CASE 
-            WHEN :currentUserId IS NULL THEN false
-            WHEN EXISTS (
-                SELECT 1 
-                FROM CompilationLike cl2 
-                WHERE cl2.compilation.id = c.id 
-                  AND cl2.user.id = :currentUserId
-            )
-            THEN true ELSE false
-        END as likedByUser,
+        true as likedByUser,
     
         CASE 
             WHEN :currentUserId IS NULL THEN false

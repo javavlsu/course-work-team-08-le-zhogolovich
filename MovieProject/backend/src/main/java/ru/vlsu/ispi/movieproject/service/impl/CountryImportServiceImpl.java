@@ -3,7 +3,7 @@ package ru.vlsu.ispi.movieproject.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.vlsu.ispi.movieproject.dto.imports.ImportResult;
-import ru.vlsu.ispi.movieproject.dto.movie.CountryDto;
+import ru.vlsu.ispi.movieproject.dto.imports.ImportCountryDto;
 import ru.vlsu.ispi.movieproject.model.Country;
 import ru.vlsu.ispi.movieproject.model.CountryMapping;
 import ru.vlsu.ispi.movieproject.repository.CountryMappingRepository;
@@ -22,7 +22,7 @@ public class CountryImportServiceImpl implements CountryImportService {
     private final CountryMappingRepository countryMappingRepository;
 
     @Override
-    public ImportResult importCountries(List<CountryDto> countries) {
+    public ImportResult importCountries(List<ImportCountryDto> countries) {
         int imported = 0;
         int skipped = 0;
 
@@ -39,7 +39,7 @@ public class CountryImportServiceImpl implements CountryImportService {
         List<Country> countriesToSave = new ArrayList<>();
         List<CountryMapping> mappingsToSave = new ArrayList<>();
 
-        for (CountryDto dto : countries) {
+        for (ImportCountryDto dto : countries) {
             String name = dto.getCountry().trim().toLowerCase();
             Country country = null;
             if (!existingCountries.contains(name)) {

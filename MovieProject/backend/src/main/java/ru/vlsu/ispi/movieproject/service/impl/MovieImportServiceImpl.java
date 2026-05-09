@@ -7,7 +7,7 @@ import ru.vlsu.ispi.movieproject.dto.imports.ImportResult;
 import ru.vlsu.ispi.movieproject.dto.imports.MovieImportErrorDto;
 import ru.vlsu.ispi.movieproject.dto.imports.MovieImportResultDto;
 import ru.vlsu.ispi.movieproject.dto.imports.MovieListResponseDto;
-import ru.vlsu.ispi.movieproject.dto.movie.MovieImportDto;
+import ru.vlsu.ispi.movieproject.dto.imports.MovieImportDto;
 import ru.vlsu.ispi.movieproject.mapper.MovieMapper;
 import ru.vlsu.ispi.movieproject.model.Movie;
 import ru.vlsu.ispi.movieproject.repository.MovieRepository;

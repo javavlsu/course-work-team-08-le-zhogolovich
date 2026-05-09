@@ -2,6 +2,10 @@ package ru.vlsu.ispi.movieproject.service.impl;
 
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +24,7 @@ import ru.vlsu.ispi.movieproject.repository.UserRepository;
 import ru.vlsu.ispi.movieproject.service.CurrentUserService;
 import ru.vlsu.ispi.movieproject.service.FileStorageService;
 import ru.vlsu.ispi.movieproject.service.UserService;
+import ru.vlsu.ispi.movieproject.util.AccessUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,10 +39,15 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserFollowRepository userFollowRepository;
     private final EntityManager entityManager;
+    private final AccessUtil accessUtil;
 
     @Override
-    public List<UserDto> getAllUsers() {
-        return userRepository.findAllByDeletedFalse().stream().map(userMapper::mapToDto).toList();
+    public Page<UserDto> searchUsers(String query, String sortOrder, int page, int size) {
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "username"));
+
+        return userRepository.search(query, pageable).map(userMapper::mapToDto);
     }
 
     @Override
@@ -74,30 +84,28 @@ public class UserServiceImpl implements UserService {
     public UserDto updateAvatar(MultipartFile file) {
         Long userId = currentUserService.getCurrentUserID();
 
-        User user = userRepository.findByIdAndDeletedFalse(userId)
-                .orElseThrow(() -> new UserNotFoundException());
+        return updateAvatarInternal(userId, file);
+    }
 
-        String avatarUrl = fileStorageService.upload(file, FileDirectory.AVATARS.getFolder());
-        fileStorageService.delete(user.getAvatarUrl());
-        user.setAvatarUrl(avatarUrl);
+    @Override
+    public UserDto updateAvatarByUserId(Long userId, MultipartFile file) {
+        accessUtil.checkAdmin();
 
-        return userMapper.mapToDto(user);
+        return updateAvatarInternal(userId, file);
     }
 
     @Override
     public UserDto updateProfile(EditProfileRequest request) {
         Long userId = currentUserService.getCurrentUserID();
 
-        User user = userRepository.findByIdAndDeletedFalse(userId)
-                .orElseThrow(() -> new UserNotFoundException());
+        return updateProfileInternal(userId, request);
+    }
 
-        if (request.getUsername() != null && !request.getUsername().isBlank()) {
-            user.setUsername(request.getUsername());
-        }
+    @Override
+    public UserDto updateProfileByUserId(Long userId, EditProfileRequest request) {
+        accessUtil.checkAdmin();
 
-        user.setAboutMe(request.getAboutMe());
-
-        return userMapper.mapToDto(user);
+        return updateProfileInternal(userId, request);
     }
 
     @Override
@@ -109,6 +117,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long id) {
+        accessUtil.checkAdmin();
+
         userRepository.deleteById(id);
     }
 
@@ -181,5 +191,29 @@ public class UserServiceImpl implements UserService {
         return userFollowRepository.findFollowings(user.getId()).stream()
                 .map(userMapper::mapToDto)
                 .toList();
+    }
+
+    private UserDto updateProfileInternal(Long userId, EditProfileRequest request) {
+        User user = userRepository.findByIdAndDeletedFalse(userId)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        if (request.getUsername() != null && !request.getUsername().isBlank()) {
+            user.setUsername(request.getUsername());
+        }
+
+        user.setAboutMe(request.getAboutMe());
+
+        return userMapper.mapToDto(user);
+    }
+
+    private UserDto updateAvatarInternal(Long userId, MultipartFile file) {
+        User user = userRepository.findByIdAndDeletedFalse(userId)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        String avatarUrl = fileStorageService.upload(file, FileDirectory.AVATARS.getFolder());
+        fileStorageService.delete(user.getAvatarUrl());
+        user.setAvatarUrl(avatarUrl);
+
+        return userMapper.mapToDto(user);
     }
 }

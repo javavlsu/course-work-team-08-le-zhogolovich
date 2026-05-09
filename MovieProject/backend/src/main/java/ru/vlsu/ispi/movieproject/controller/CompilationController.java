@@ -52,7 +52,7 @@ public class CompilationController {
         return compilationService.getById(id);
     }
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping()
     public CompilationDto createCompilation(@ModelAttribute @Valid CreateCompilationRequest request) {
         return compilationService.createCompilation(request);
     }
