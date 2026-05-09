@@ -9,7 +9,6 @@ import MovieTagsModal from "../components/MovieTagsModal";
 import MovieComments from "../components/MovieComments";
 import MovieReviews from "../components/MovieReviews";
 
-
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
 const MoviePage = () => {
@@ -86,11 +85,14 @@ const MoviePage = () => {
         }
 
         const roles = decoded.roles || [];
-        console.log(decoded.role)
-      if (decoded.role === "REVIEWER" || roles.includes("REVIEWER") || roles.includes("ROLE_REVIEWER")) {
-        setIsReviewer(true);
-      }
-      
+        console.log(decoded.role);
+        if (
+          decoded.role === "REVIEWER" ||
+          roles.includes("REVIEWER") ||
+          roles.includes("ROLE_REVIEWER")
+        ) {
+          setIsReviewer(true);
+        }
       } catch (e) {
         console.error("Ошибка декодирования токена", e);
       }
@@ -147,7 +149,6 @@ const MoviePage = () => {
     fetchComments();
   }, [id]);
 
-
   const handleRateMovie = async (ratingValue) => {
     if (!isAuth) {
       if (
@@ -186,7 +187,6 @@ const MoviePage = () => {
 
     return true;
   };
-
 
   if (loading)
     return <div className="text-white text-center mt-5">Загрузка...</div>;
@@ -228,8 +228,7 @@ const MoviePage = () => {
                 src={`${API_BASE_URL}${movie.posterUrl}`}
                 alt={movie.name}
                 className="img-fluid rounded-3"
-                
-                style={{ display: "block", width: "100%", aspectRatio:'2/3'}}
+                style={{ display: "block", width: "100%", aspectRatio: "2/3" }}
               />
 
               <div
@@ -246,54 +245,6 @@ const MoviePage = () => {
                 {movie.ratingKinopoisk}
               </div>
             </div>
-
-            {/*<div className="dropdown">
-              <button
-                className="custom-btn w-70 dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-              >
-                {label}
-              </button>
-                  <button
-              <ul className="dropdown-menu dropdown-menu-dark custom-dropdown text-center">
-                <li>
-                  <button
-                    className="dropdown-item"
-                    onClick={() => setLabel("Буду смотреть")}
-                  >
-                    Буду смотреть
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="dropdown-item"
-                    onClick={() => setLabel("Просмотрено")}
-                  >
-                    Просмотрено
-                  </button>
-                </li>
-                <li>
-                  <button
-                    className="dropdown-item"
-                    onClick={() => setLabel("Любимое")}
-                  >
-                    Любимое
-                  </button>
-                </li>
-                <li>
-                  <hr className="dropdown-divider border-secondary" />
-                </li>
-                <li>
-                 {/*<button
-                    className="dropdown-item text-danger"
-                    onClick={() => setLabel("Добавить метку")}
-                  >
-                    Убрать метку
-                  </button>  сделать после 
-                </li>
-              </ul>
-            </div>*/}
           </div>
 
           {/* Описание, жанры и метки */}
@@ -354,36 +305,68 @@ const MoviePage = () => {
               <MovieTagsModal
                 show={showTagsModal}
                 movieId={movie.id}
-                currentTags={movie.tags} 
+                currentTags={movie.tags}
                 onClose={() => setShowTagsModal(false)}
-                onTagsUpdated={fetchMovieData} 
+                onTagsUpdated={fetchMovieData}
               />
             </div>
-            <div>
+
+            {/* Ряд кнопок: Написать рецензию и в подборку */}
+            <div className="d-flex justify-content-center gap-3 mt-3">
+              {isReviewer && (
+                <Link
+                  to={`/movies/${id}/write-review`}
+                  className="custom-btn flex-fill text-decoration-none d-flex align-items-center justify-content-center py-2"
+                  style={{ maxWidth: "220px", fontSize: "0.9rem" }}
+                >
+                  <i className="fa-solid fa-pen-nib me-2"></i> Написать рецензию
+                </Link>
+              )}
+
               <button
-                className="custom-btn w-100"
+                className="custom-btn flex-fill py-2"
+                style={{ maxWidth: "220px", fontSize: "0.9rem" }}
                 onClick={() => checkAuth() && handleOpenModal()}
               >
-                <i className="fa-solid fa-folder-plus me-2"></i> В подборку
+                <i className="fa-solid fa-folder-plus me-2"></i> В
+                подборку
               </button>
             </div>
-            {showModal && (
-              <AddToCompilationModal
-                movieId={id}
-                onClose={() => setShowModal(false)}
-                onSuccess={(count) => alert(`Добавлено в ${count} подборки!`)}
-              />
-            )}
-            
-  {isReviewer && (
-    <Link 
-      to={`/movies/${id}/write-review`} 
-      className="custom-btn w-100 text-decoration-none d-flex align-items-center justify-content-center"
-    >
-      <i className="fa-solid fa-pen-nib me-2"></i> Написать рецензию
-    </Link>
-  )}
 
+            {/* Блок "Где посмотреть" */}
+            {movie.externalSources && movie.externalSources.length > 0 && (
+              <div className="col-12 text-center mt-5">
+                <h2 className="text-white mb-4 fw-light">Где посмотреть</h2>
+                <div className="d-flex justify-content-center flex-wrap gap-3">
+                  {movie.externalSources.map((source, idx) => (
+                    <a
+                      key={idx}
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="source-card text-decoration-none d-flex align-items-center gap-2 px-3 py-2"
+                    >
+                      {source.logoUrl && (
+                        <img
+                          src={source.logoUrl}
+                          alt={source.platform}
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                          }}
+                          style={{
+                            width: "24px",
+                            height: "24px",
+                            borderRadius: "4px",
+                            objectFit: "contain",
+                          }}
+                        />
+                      )}
+                      <span className="text-white fs-6">{source.platform}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* Рейтинг */}
             <div className="d-flex flex-column align-items-center justify-content-start gap-1 mt-3">
               <p
@@ -495,43 +478,41 @@ const MoviePage = () => {
 
         {/* Секция комментариев */}
         <section className="mb-5">
-        
+          {/* Секция обсуждений: Табы */}
+          <section className="mb-5 mt-5 pt-4 border-top border-secondary">
+            <div className="d-flex justify-content-center gap-4 mb-4">
+              <button
+                className={`nav-btn border-0 pb-2 ${activeTab === "comments" ? " border-bottom border-white" : "text-white-50"}`}
+                style={{ background: "none", transition: "0.3s" }}
+                onClick={() => setActiveTab("comments")}
+              >
+                <i className="fa-solid fa-comments me-2"></i>
+                Комментарии ({comments.length})
+              </button>
+              <button
+                className={`nav-btn border-0 pb-2 ${activeTab === "reviews" ? " border-bottom border-white" : "text-white-50"}`}
+                style={{ background: "none", transition: "0.3s" }}
+                onClick={() => setActiveTab("reviews")}
+              >
+                <i className="fa-solid fa-feather me-2"></i>
+                Рецензии
+              </button>
+            </div>
 
-         {/* Секция обсуждений: Табы */}
-<section className="mb-5 mt-5 pt-4 border-top border-secondary">
-  <div className="d-flex justify-content-center gap-4 mb-4">
-    <button
-      className={`nav-btn border-0 pb-2 ${activeTab === "comments" ? " border-bottom border-white" : "text-white-50"}`}
-      style={{ background: "none", transition: "0.3s" }}
-      onClick={() => setActiveTab("comments")}
-    >
-      <i className="fa-solid fa-comments me-2"></i>
-      Комментарии ({comments.length})
-    </button>
-    <button
-      className={`nav-btn border-0 pb-2 ${activeTab === "reviews" ? " border-bottom border-white" : "text-white-50"}`}
-      style={{ background: "none", transition: "0.3s" }}
-      onClick={() => setActiveTab("reviews")}
-    >
-      <i className="fa-solid fa-feather me-2"></i>
-      Рецензии
-    </button>
-  </div>
-
-  {/* Контент вкладок */}
-  <div className="tab-content">
-    {activeTab === "comments" ? (
-      <MovieComments 
-        movieId={id} 
-        currentUser={currentUser} 
-        isAuth={isAuth} 
-        avatarDefault={avatarDefault} 
-      />
-    ) : (
-      <MovieReviews movieId={id} />
-    )}
-  </div>
-</section>
+            {/* Контент вкладок */}
+            <div className="tab-content">
+              {activeTab === "comments" ? (
+                <MovieComments
+                  movieId={id}
+                  currentUser={currentUser}
+                  isAuth={isAuth}
+                  avatarDefault={avatarDefault}
+                />
+              ) : (
+                <MovieReviews movieId={id} />
+              )}
+            </div>
+          </section>
         </section>
       </main>
     </div>
