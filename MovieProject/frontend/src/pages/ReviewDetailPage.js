@@ -45,14 +45,15 @@ function ReviewDetailPage() {
   }, [id]);
 
   const handleLike = async () => {
-    try {
-      await apiClient.post(`/reviews/${id}/like`);
-      setIsLiked(!isLiked);
-      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
-    } catch (err) {
-      console.error("Ошибка при лайке:", err);
-    }
-  };
+  const method = isLiked ? 'delete' : 'post';
+  try {
+    await apiClient[method](`/reviews/${id}/like`);
+    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+    setIsLiked(!isLiked);
+  } catch (err) {
+    console.error("Ошибка:", err);
+  }
+};
 
   const canEdit =
     currentUser &&
@@ -92,6 +93,16 @@ function ReviewDetailPage() {
       <main className="container-xl px-4 px-md-5 mt-5">
         <div className="row mb-5 align-items-start">
           <div className="col-md-5 col-lg-5 mb-4 mb-md-0">
+            <div className="mb-4">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="btn text-white-50 p-0 d-flex align-items-center gap-2 border-0 bg-transparent hover-white transition-all"
+            style={{ fontSize: '1.1rem' }}
+          >
+            <i className="fa-solid fa-arrow-left"></i>
+            <span>Назад</span>
+          </button>
+        </div>
             <div
               className="movie-card-static mb-4 mx-auto"
               style={{ maxWidth: "300px", position: "relative" }}

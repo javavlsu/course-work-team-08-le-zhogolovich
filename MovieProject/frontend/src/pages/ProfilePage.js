@@ -459,19 +459,6 @@ function ProfilePage() {
           </section>
           <div className="border-bottom border-secondary mb-5"></div>
 
-          <div
-            className="stats-card p-4 text-white mb-5"
-            style={{
-              border: "2px solid white",
-              borderRadius: "20px",
-              background: "rgba(255,255,255,0.05)",
-            }}
-          >
-            <h2>Статистика</h2>
-            <p className="text-white-50 m-0">
-              Всего просмотрено: {user.watchedCount || 0}
-            </p>
-          </div>
         </div>
       </main>
     </div>

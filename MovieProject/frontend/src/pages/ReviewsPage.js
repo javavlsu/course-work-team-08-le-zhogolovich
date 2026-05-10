@@ -53,8 +53,7 @@ function ReviewsPage() {
     }
   };
 
-  if (loading)
-    return <div className="text-white text-center mt-5">Загрузка...</div>;
+if (error) return <div className="text-danger text-center mt-5">{error}</div>;
 
   return (
     <div className="container-wrapper min-vh-100">

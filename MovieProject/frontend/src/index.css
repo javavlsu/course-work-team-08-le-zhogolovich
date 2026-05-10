@@ -864,6 +864,20 @@ body {
   background-position: right 10px center;
   background-size: 14px;
 }
+.filter-pill-select:hover {
+  border-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.filter-pill-select option {
+  background-color: #1a1d29; /* Темный фон под стать сайту */
+  color: white;
+}
+
+.filter-pill-select:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
 
 .year-input {
   width: 90px;
