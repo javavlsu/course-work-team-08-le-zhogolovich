@@ -62,9 +62,9 @@ function LoginPage() {
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="input-container mb-3">
               <input
-                type="email"
+                type=""
                 className="search-input mb-3"
-                placeholder="Email"
+                placeholder="Почта или логин"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

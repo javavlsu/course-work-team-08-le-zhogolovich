@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams} from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 import defaultMoviePoster from "../images/BasePoster.png";
@@ -7,54 +7,56 @@ import defaultMoviePoster from "../images/BasePoster.png";
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
 function MoviesPage() {
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const [movies, setMovies] = useState([]);
-  const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [genreId, setGenreId] = useState("");
-  const [tagId, setTagId] = useState("");
-  const [countryId, setCountryId] = useState("");
-  const [year, setYear] = useState("");
-  
-  const [sortBy, setSortBy] = useState("name");
-  const [sortOrder, setSortOrder] = useState("desc");
-
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const fetchMovies = useCallback(async (p) => {
+  // Извлекаем значения из URL (если их нет, ставим значения по умолчанию)
+  const page = parseInt(searchParams.get("page") || "0", 10);
+  const searchQuery = searchParams.get("query") || "";
+  const genreId = searchParams.get("genreId") || "";
+  const tagId = searchParams.get("tagId") || "";
+  const countryId = searchParams.get("countryId") || "";
+  const year = searchParams.get("year") || "";
+  const sortBy = searchParams.get("sortBy") || "name";
+  const sortOrder = searchParams.get("sortOrder") || "desc";
+
+  const updateFilters = (newParams) => {
+    const current = Object.fromEntries([...searchParams]);
+    if (!newParams.hasOwnProperty('page')) {
+        newParams.page = 0;
+    }
+    setSearchParams({ ...current, ...newParams });
+  };
+
+const fetchMovies = useCallback(async () => {
     try {
-      const params = new URLSearchParams({
-        page: p,
-        size: 20,
-        sortBy,
-        sortOrder
-      });
+      const params = new URLSearchParams(searchParams);
+      if (!params.has("size")) params.set("size", "20");
+      if (!params.has("sortBy")) params.set("sortBy", sortBy);
+      if (!params.has("sortOrder")) params.set("sortOrder", sortOrder);
 
-      if (searchQuery.trim()) params.append("query", searchQuery);
-      if (genreId) params.append("genreId", genreId);
-      if (tagId) params.append("tagId", tagId);
-      if (countryId) params.append("countryId", countryId);
-      if (year) params.append("year", year);
-
-      const url = `/movies?${params.toString()}`;
-      const res = await apiClient.get(url);
+      const res = await apiClient.get(`/movies?${params.toString()}`);
       
       setMovies(res.data.content || []);
-      setTotalPages(res.data.page?.totalPages || 0);
+      // Проверьте структуру вашего ответа (у вас было и res.data.page, и res.data.totalPages)
+      setTotalPages(res.data.totalPages || res.data.page?.totalPages || 0);
     } catch (error) {
       console.error("Ошибка загрузки фильмов:", error);
     }
-  }, [searchQuery, genreId, tagId, countryId, year, sortBy, sortOrder]);
+  }, [searchParams, sortBy, sortOrder]);
 
   useEffect(() => {
-    fetchMovies(page);
-  }, [page, fetchMovies]);
+    fetchMovies();
+  }, [fetchMovies]);
 
   const onSearchSubmit = (e) => {
     if (e) e.preventDefault();
-    setPage(0);
-    fetchMovies(0);
+    // Поиск уже срабатывает через onChange в updateFilters, 
+    // но если нужна кнопка, она просто подтверждает текущий URL
+    fetchMovies();
   };
 
   return (
@@ -78,21 +80,21 @@ function MoviesPage() {
               className="search-input-pill"
               placeholder="Поиск по названию"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => updateFilters({ query: e.target.value })}
             />
             <i className="fa fa-search search-icon-pill" onClick={onSearchSubmit}></i>
           </form>
 
           <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
-            <select className="filter-pill-select" value={genreId} onChange={(e) => setGenreId(e.target.value)}>
+            <select className="filter-pill-select" value={genreId} onChange={(e) => updateFilters({genreId: e.target.value})}>
               <option value="">Жанр</option>
             </select>
 
-            <select className="filter-pill-select" value={tagId} onChange={(e) => setTagId(e.target.value)}>
+            <select className="filter-pill-select" value={tagId} onChange={(e) => updateFilters({ tagId: e.target.value})}>
               <option value="">Тег</option>
             </select>
 
-            <select className="filter-pill-select" value={countryId} onChange={(e) => setCountryId(e.target.value)}>
+            <select className="filter-pill-select" value={countryId} onChange={(e) => updateFilters({countryId: e.target.value})}>
               <option value="">Страна</option>
             </select>
 
@@ -101,7 +103,7 @@ function MoviesPage() {
               className="filter-pill-select year-input" 
               placeholder="Год" 
               value={year}
-              onChange={(e) => setYear(e.target.value)}
+              onChange={(e) => updateFilters({ year: e.target.value})}
             />
           </div>
 
@@ -120,7 +122,7 @@ function MoviesPage() {
               <div className="filter-dropdown-panel p-3 mt-2 shadow">
                 <div className="mb-2">
                   <label className="text-white-50 small d-block mb-1">Сортировать по</label>
-                  <select className="filter-select-custom" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                  <select className="filter-select-custom" value={sortBy} onChange={(e) => updateFilters({ sortBy: e.target.value })}>
                     <option value="name">Названию</option>
                     <option value="popularity">Популярности</option>
                     <option value="year">Году</option>
@@ -128,7 +130,7 @@ function MoviesPage() {
                 </div>
                 <div className="mb-3">
                   <label className="text-white-50 small d-block mb-1">Порядок</label>
-                  <select className="filter-select-custom" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                  <select className="filter-select-custom" value={sortOrder} onChange={(e) => updateFilters({ sortOrder: e.target.value })}>
                     <option value="desc">Убывание</option>
                     <option value="asc">Возрастание</option>
                   </select>
@@ -164,11 +166,22 @@ function MoviesPage() {
 
           {totalPages > 1 && (
             <div className="d-flex justify-content-center align-items-center gap-2 mt-5 mb-5">
-              <button className="pag-circle" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}>&lt;</button>
+              <button 
+                className="pag-circle" 
+                onClick={() => updateFilters({ page: Math.max(0, page - 1) })} 
+                disabled={page === 0}
+              >&lt;</button>
+              
               <button className="pag-circle active">{page + 1}</button>
-              <button className="pag-circle" onClick={() => setPage((p) => p + 1)} disabled={page >= totalPages - 1}>&gt;</button>
+              
+              <button 
+                className="pag-circle" 
+                onClick={() => updateFilters({ page: page + 1 })} 
+                disabled={page >= totalPages - 1}
+              ></button>
             </div>
           )}
+          
         </section>
       </main>
     </div>
