@@ -221,15 +221,15 @@ const MoviePage = () => {
           {/* Постер */}
           <div className="col-lg-3 col-md-5 text-center">
             <div className="mb-4">
-          <button 
-            onClick={() => navigate(-1)} 
-            className="btn text-white-50 p-0 d-flex align-items-center gap-2 border-0 bg-transparent hover-white transition-all"
-            style={{ fontSize: '1.1rem' }}
-          >
-            <i className="fa-solid fa-arrow-left"></i>
-            <span>Назад</span>
-          </button>
-        </div>
+              <button
+                onClick={() => navigate(-1)}
+                className="btn text-white-50 p-0 d-flex align-items-center gap-2 border-0 bg-transparent hover-white transition-all"
+                style={{ fontSize: "1.1rem" }}
+              >
+                <i className="fa-solid fa-arrow-left"></i>
+                <span>Назад</span>
+              </button>
+            </div>
             <div
               className="movie-card-static mb-4 mx-auto"
               style={{ maxWidth: "300px", position: "relative" }}
@@ -316,8 +316,11 @@ const MoviePage = () => {
                 show={showTagsModal}
                 movieId={movie.id}
                 currentTags={movie.tags}
-                onClose={() => setShowTagsModal(false)}
-                onTagsUpdated={fetchMovieData}
+                onClose={() => {
+                  setShowTagsModal(false);
+
+                  fetchMovieData();
+                }}
               />
             </div>
 
@@ -338,8 +341,7 @@ const MoviePage = () => {
                 style={{ maxWidth: "220px", fontSize: "0.9rem" }}
                 onClick={() => checkAuth() && handleOpenModal()}
               >
-                <i className="fa-solid fa-folder-plus me-2"></i> В
-                подборку
+                <i className="fa-solid fa-folder-plus me-2"></i> В подборку
               </button>
             </div>
 
@@ -508,7 +510,6 @@ const MoviePage = () => {
               </button>
             </div>
 
-        
             <div className="tab-content">
               {activeTab === "comments" ? (
                 <MovieComments
@@ -524,15 +525,15 @@ const MoviePage = () => {
           </section>
         </section>
         {showModal && (
-        <AddToCompilationModal
-          movieId={id}
-          onClose={() => setShowModal(false)}
-          onSuccess={(count) => {
-            alert(`Успешно добавлено в ${count} подборок`);
-            fetchMovieData(); 
-          }}
-        />
-      )}
+          <AddToCompilationModal
+            movieId={id}
+            onClose={() => setShowModal(false)}
+            onSuccess={(count) => {
+              alert(`Успешно добавлено в ${count} подборок`);
+              fetchMovieData();
+            }}
+          />
+        )}
       </main>
     </div>
   );
