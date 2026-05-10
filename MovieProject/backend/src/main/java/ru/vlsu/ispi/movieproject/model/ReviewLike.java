@@ -2,6 +2,7 @@ package ru.vlsu.ispi.movieproject.model;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -18,12 +19,12 @@ public class ReviewLike extends AuditableEntity{
     @EmbeddedId
     private ReviewLikeId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("reviewId")
     @JoinColumn(name = "review_id")
     private Review review;

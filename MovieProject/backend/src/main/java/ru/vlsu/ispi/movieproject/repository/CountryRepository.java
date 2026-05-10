@@ -30,11 +30,4 @@ import java.util.Optional;
  * </p>
  */
 public interface CountryRepository extends JpaRepository<Country, Long> {
-    /**
-     * Находит страну по идентификатору Kinopoisk.
-     *
-     * @param name название страны из внешнего API
-     * @return Optional с найденной страной
-     */
-    Optional<Country> findByName(String name);
 }

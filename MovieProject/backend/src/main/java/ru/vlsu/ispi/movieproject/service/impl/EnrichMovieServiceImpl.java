@@ -38,11 +38,11 @@ public class EnrichMovieServiceImpl implements EnrichMovieService {
             return false;
         }
 
-        enrichMovie(movie);
+        enrichMovieInternal(movie);
         return true;
     }
 
-    public void enrichMovie(Movie movie) {
+    public void enrichMovieInternal(Movie movie) {
         MovieDetailsDto details = kinopoiskApiService.getMovieDetails(movie.getKinopoiskId());
         movie.setOverview(details.getDescription());
 

@@ -32,8 +32,8 @@ public class CommentServiceImpl implements CommentService {
 
         Comment comment = new Comment();
         comment.setContent(request.getContent());
-        comment.setUser(entityManager.find(User.class, userId));
-        comment.setMovie(entityManager.find(Movie.class, movieId));
+        comment.setUser(entityManager.getReference(User.class, userId));
+        comment.setMovie(entityManager.getReference(Movie.class, movieId));
 
         return commentMapper.toDto(commentRepository.save(comment));
     }

@@ -3,6 +3,7 @@ package ru.vlsu.ispi.movieproject.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -61,34 +63,38 @@ public class Movie {
     @Column(name = "details_loaded_at")
     private LocalDateTime detailsLoadedAt;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "movie_genre",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
+    @BatchSize(size = 50)
     private Set<Genre> genres = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "movie_country",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "country_id")
     )
+    @BatchSize(size = 50)
     private Set<Country> countries = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "movie_tag",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+    @BatchSize(size = 50)
     private Set<Tag> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY)
     private Set<Review> reviews = new HashSet<>();
 
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 50)
     private Set<ExternalSource> externalSources = new HashSet<>();
 
     @Override

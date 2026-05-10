@@ -67,7 +67,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         FROM Review r
         JOIN r.author u
         JOIN r.movie m
-        LEFT JOIN ReviewLike rl ON rl.review.id = r.id
     
         WHERE (:userId IS NULL OR u.id = :userId)
             AND (

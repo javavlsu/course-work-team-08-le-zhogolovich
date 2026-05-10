@@ -2,6 +2,7 @@ package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.vlsu.ispi.movieproject.dto.comment.CommentDto;
 import ru.vlsu.ispi.movieproject.model.Comment;
@@ -36,5 +37,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @param movieId идентификатор фильма
      * @return список комментариев фильма
      */
+    @EntityGraph(attributePaths = {"user", "movie"})
     Page<Comment> findByMovieId(Long movieId, Pageable pageable);
 }
