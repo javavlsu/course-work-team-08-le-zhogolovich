@@ -213,6 +213,7 @@ const CompilationPage = () => {
                 }
                 alt="Обложка"
                 className="img-fluid rounded-3 shadow"
+                style={{ aspectRatio: "1/1" }}
               />
             </div>
           </div>
