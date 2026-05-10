@@ -2,6 +2,7 @@ package ru.vlsu.ispi.movieproject.model;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.MapsId;
@@ -19,12 +20,12 @@ public class MovieRating extends AuditableEntity {
     @EmbeddedId
     private MovieRatingId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("movieId")
     @JoinColumn(name = "movie_id")
     private Movie movie;

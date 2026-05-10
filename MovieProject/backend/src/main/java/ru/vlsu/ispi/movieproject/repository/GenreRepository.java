@@ -30,12 +30,4 @@ import java.util.Optional;
  * </p>
  */
 public interface GenreRepository extends JpaRepository<Genre, Long> {
-    /**
-     * Находит жанр по идентификатору Kinopoisk
-     *
-     * @param name внешний идентификатор жанра
-     * @return Optional с найденным жанром
-     */
-    Optional<Genre> findByName(String name);
-
 }

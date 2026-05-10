@@ -1,6 +1,7 @@
 package ru.vlsu.ispi.movieproject.repository;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +9,7 @@ import ru.vlsu.ispi.movieproject.model.Movie;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -31,6 +33,9 @@ import java.util.Set;
  * </p>
  */
 public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
+    @EntityGraph(attributePaths = {"genres", "countries", "tags","externalSources"})
+    Optional<Movie> findById(Long id);
+
     @Query("SELECT m.kinopoiskId from Movie m")
     Set<Integer> findAllKinopoiskId();
 
@@ -62,8 +67,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecific
     @Query("""
         SELECT DISTINCT m
         FROM Movie m
-        LEFT JOIN FETCH m.genres
-        LEFT JOIN FETCH m.tags
         WHERE m.id IN :ids
     """)
     List<Movie> findAllWithRelations(List<Long> ids);

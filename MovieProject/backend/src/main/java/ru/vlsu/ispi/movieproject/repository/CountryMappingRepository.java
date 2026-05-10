@@ -8,7 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CountryMappingRepository extends JpaRepository<CountryMapping, Long> {
-    Optional<CountryMapping> findByExternalName(String externalName);
-
     List<CountryMapping> findAllByExternalNameIn(Collection<String> names);
 }

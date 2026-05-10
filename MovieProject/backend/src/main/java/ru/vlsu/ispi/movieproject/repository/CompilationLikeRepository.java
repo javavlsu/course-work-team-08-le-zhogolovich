@@ -30,38 +30,6 @@ import java.util.Optional;
  * </p>
  */
 public interface CompilationLikeRepository extends JpaRepository<CompilationLike, CompilationLikeId> {
-    @Query("""
-        SELECT COUNT(cl)
-        FROM CompilationLike cl
-        WHERE cl.compilation.id = :id
-    """)
-    long countLikes(Long id);
     boolean existsByUserIdAndCompilationId(Long userId, Long compilationId);
     void deleteByUserIdAndCompilationId(Long userId, Long compilationId);
-
-    @Query("""
-    SELECT 
-        c.id as id,
-        c.title as title,
-        c.description as description,
-        c.isPublic as isPublic,
-        c.coverUrl as coverUrl,
-        c.author.id as authorId,
-        c.author.username as authorName,
-    
-        COUNT(cl.id) as likesCount,
-    
-        CASE 
-            WHEN SUM(CASE WHEN cl.user.id = :userId THEN 1 ELSE 0 END) > 0 
-            THEN true 
-            ELSE false 
-        END as likedByUser
-    
-    FROM Compilation c
-    LEFT JOIN CompilationLike cl ON cl.compilation.id = c.id
-    
-    WHERE c.id = :id
-    GROUP BY c.id, c.title, c.description, c.isPublic, c.coverUrl, c.author.id, c.author.username
-    """)
-    Optional<CompilationProjection> findFullById(Long id, Long userId);
 }

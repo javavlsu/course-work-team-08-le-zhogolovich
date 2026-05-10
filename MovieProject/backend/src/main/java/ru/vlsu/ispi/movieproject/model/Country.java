@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.movieproject.model;
 
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Entity;
@@ -26,6 +27,6 @@ public class Country {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "countries")
+    @ManyToMany(mappedBy = "countries", fetch = FetchType.LAZY)
     private Set<Movie> movies = new HashSet<>();
 }

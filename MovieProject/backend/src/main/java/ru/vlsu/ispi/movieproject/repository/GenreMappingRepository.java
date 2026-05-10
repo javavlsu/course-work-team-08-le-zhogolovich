@@ -8,7 +8,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GenreMappingRepository extends JpaRepository<GenreMapping, Long> {
-    Optional<GenreMapping> findByExternalName(String externalName);
-
     List<GenreMapping> findAllByExternalNameIn(Collection<String> names);
 }
