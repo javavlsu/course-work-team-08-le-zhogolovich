@@ -71,24 +71,29 @@ function ReviewDetailPage() {
   return (
     <div className="container-wrapper text-white">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-          <Link to="/" className="nav-btn">
-            Главная
-          </Link>
-          <Link to="/movies" className="nav-btn">
-            Фильмы
-          </Link>
-          <Link to="/collections" className="nav-btn">
-            Подборки
-          </Link>
-          <Link to="/reviews" className="nav-btn">
-            Рецензии
-          </Link>
-          <Link to="/profile" className="nav-btn">
-            Моя страница
-          </Link>
-        </nav>
-      </header>
+              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+                <Link to="/" className="nav-btn">
+                  Главная
+                </Link>
+                <Link to="/movies" className="nav-btn">
+                  Фильмы
+                </Link>
+                <Link to="/collections" className="nav-btn">
+                  Подборки
+                </Link>
+                <Link to="/reviews" className="nav-btn">
+                  Рецензии
+                </Link>
+                <Link to="/searchuser" className="nav-btn">
+                 Пользователи
+                </Link>
+                <Link to="/profile" className="nav-btn">
+                  Моя страница
+                </Link>
+                
+                
+              </nav>
+            </header>
 
       <main className="container-xl px-4 px-md-5 mt-5">
         <div className="row mb-5 align-items-start">

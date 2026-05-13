@@ -216,21 +216,26 @@ function ProfilePage() {
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
         <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-          <Link to="/" className="nav-btn">
-            Главная
-          </Link>
-          <Link to="/movies" className="nav-btn">
-            Фильмы
-          </Link>
-          <Link to="/collections" className="nav-btn">
-            Подборки
-          </Link>
-          <Link to="/reviews" className="nav-btn">
-            Рецензии
-          </Link>
-          <Link to="/profile" className="nav-btn">
-            Моя страница
-          </Link>
+         
+                    <Link to="/" className="nav-btn">
+                      Главная
+                    </Link>
+                    <Link to="/movies" className="nav-btn">
+                      Фильмы
+                    </Link>
+                    <Link to="/collections" className="nav-btn">
+                      Подборки
+                    </Link>
+                    <Link to="/reviews" className="nav-btn">
+                      Рецензии
+                    </Link>
+                    <Link to="/searchuser" className="nav-btn">
+                     Пользователи
+                    </Link>
+                    <Link to="/profile" className="nav-btn">
+                      Моя страница
+                    </Link>
+                  
 
           {isMyProfile && (
             <button

@@ -4,7 +4,7 @@ import apiClient from "../api/apiClient";
 
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
-const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault }) => {
+const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault, isAdmin }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
 
@@ -26,7 +26,7 @@ const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault }) 
           </Link>
         </div>
 
-        {currentUser && currentUser.username === authorName && (
+        {(currentUser && currentUser.username === authorName || isAdmin) && (
           <div className="d-flex gap-2">
             <button className="btn btn-sm btn-outline-light border-0" onClick={() => setIsEditing(true)}>
               <i className="fa-solid fa-pen"></i>
@@ -68,7 +68,7 @@ const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault }) 
   );
 };
 
-const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault }) => {
+const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault, isAdmin }) => {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
 
@@ -162,6 +162,7 @@ const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault }) => {
               avatarDefault={avatarDefault}
               onDelete={handleDeleteComment}
               onEdit={handleSaveEdit}
+              isAdmin={isAdmin}
             />
           ))
         ) : (

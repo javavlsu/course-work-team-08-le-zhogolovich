@@ -939,3 +939,98 @@ body {
 .source-card img {
   background-color: transparent; 
 }
+
+.user-card-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px; /* Эффект пилюли */
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.user-card-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.user-avatar-placeholder {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(45deg, #ffc107, #ff8c00);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.pag-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.pag-circle.active {
+  background: white;
+  color: black;
+  border-color: white;
+}
+
+.pag-circle:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.user-avatar-container {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0; 
+  border-radius: 50%;
+  overflow: hidden; 
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Заполняет круг без искажения пропорций */
+  display: block;
+}
+
+.user-about-me {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Показатьтолько 2 строки, если текста много */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.user-card-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 15px 20px;
+  border-radius: 20px;
+  transition: 0.3s all ease;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.user-card-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #b5acbc;
+  transform: translateY(-3px);
+}

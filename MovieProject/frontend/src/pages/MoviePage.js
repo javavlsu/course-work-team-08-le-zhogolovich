@@ -210,9 +210,14 @@ const MoviePage = () => {
           <Link to="/reviews" className="nav-btn">
             Рецензии
           </Link>
+          <Link to="/searchuser" className="nav-btn">
+           Пользователи
+          </Link>
           <Link to="/profile" className="nav-btn">
             Моя страница
           </Link>
+          
+          
         </nav>
       </header>
 
@@ -517,6 +522,7 @@ const MoviePage = () => {
                   currentUser={currentUser}
                   isAuth={isAuth}
                   avatarDefault={avatarDefault}
+                  isAdmin={isAdmin}
                 />
               ) : (
                 <MovieReviews movieId={id} />
