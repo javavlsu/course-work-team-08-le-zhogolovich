@@ -277,25 +277,31 @@ function ProfilePage() {
                 />
               </div>
 
-              {isMyProfile || isAdmin ? (
-                <Link
-                  to={
-                    isMyProfile
-                      ? "/edit-profile"
-                      : `/edit-profile/${user.id || user.userId}`
-                  }
-                  className="custom-btn user-pill py-3 px-5 text-decoration-none"
-                >
-                  Редактировать
-                </Link>
-              ) : (
-                <button
-                  onClick={toggleFollow}
-                  className="custom-btn user-pill py-3 px-5 text-decoration-none"
-                >
-                  {isFollowing ? "Отписаться" : "Подписаться"}
-                </button>
-              )}
+              <div className="d-flex flex-row align-items-center justify-content-center flex-wrap gap-3 mt-3">
+                {(isMyProfile || isAdmin) && (
+                  <Link
+                    to={
+                      isMyProfile
+                        ? "/edit-profile"
+                        : `/edit-profile/${user.id || user.userId}`
+                    }
+                    className="custom-btn user-pill py-3 px-4 text-decoration-none text-center"
+                    style={{ minWidth: "200px", whiteSpace: "nowrap" }}
+                  >
+                    Редактировать
+                  </Link>
+                )}
+
+                {!isMyProfile && (
+                  <button
+                    onClick={toggleFollow}
+                    className="custom-btn user-pill py-3 px-4 text-decoration-none"
+                    style={{ minWidth: "200px", whiteSpace: "nowrap" }}
+                  >
+                    {isFollowing ? "Отписаться" : "Подписаться"}
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="col ps-md-5 pt-1">

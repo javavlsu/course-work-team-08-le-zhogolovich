@@ -177,7 +177,7 @@ if (error) return <div className="text-danger text-center mt-5">{error}</div>;
                     </div>
                   </div>
                   <div className="article-content">
-                    <p className="article-text text-secondary mt-2 review-preview-text">
+                    <p className="article-text text-secondary text-white mt-2 review-preview-text">
                       {strippedContent.substring(0, 350)}...
                     </p>
                     <div className="d-flex justify-content-end">
