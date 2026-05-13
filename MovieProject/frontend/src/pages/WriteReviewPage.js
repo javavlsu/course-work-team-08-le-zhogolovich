@@ -17,6 +17,8 @@ function WriteReviewPage() {
   const [loading, setLoading] = useState(true);
   const [isCheckingRole, setIsCheckingRole] = useState(true);
 
+  const [authorId, setAuthorId] = useState(null);
+
   useEffect(() => {
     const checkAccess = async () => {
       const token = localStorage.getItem("token");
@@ -26,7 +28,7 @@ function WriteReviewPage() {
       }
       try {
         const res = await apiClient.get("/users/me");
-        if (res.data.role !== "REVIEWER") {
+        if (res.data.role !== "ADMIN" && res.data.role !== "REVIEWER") {
           alert("Доступ запрещен. Только для рецензентов.");
           navigate("/");
         } else {
@@ -50,7 +52,7 @@ function WriteReviewPage() {
           
           setTitle(reviewData.title);
           setInitialContent(reviewData.content);
-
+setAuthorId(reviewData.userId || reviewData.authorId);
           const movieRes = await apiClient.get(`/movies/${reviewData.movieId}`);
           setMovie(movieRes.data);
         } else if (movieId) {
@@ -103,7 +105,8 @@ function WriteReviewPage() {
       movieId: movie?.id,
       title: title,
       content: cleanContent,
-      isPublish: isPublish 
+      isPublish: isPublish,
+      userId: authorId
     };
 
     console.log("Отправка данных:", payload); 
@@ -117,7 +120,7 @@ function WriteReviewPage() {
       navigate("/reviews");
     } catch (err) {
       console.error("Ошибка при сохранении:", err);
-      alert("Ошибка при сохранении");
+      alert(`Ошибка при сохранении: ${err.response?.status} ${err.response?.data?.message || ""}`);
     }
   };
 

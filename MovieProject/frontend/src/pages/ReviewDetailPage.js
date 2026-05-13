@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
+import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
 const API_BASE_URL = "http://localhost:8080/movie-project";
 
 function ReviewDetailPage() {
@@ -15,6 +16,7 @@ function ReviewDetailPage() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,8 +60,20 @@ function ReviewDetailPage() {
   const canEdit =
     currentUser &&
     review &&
-    currentUser.username === review.authorName &&
-    currentUser.role === "REVIEWER";
+    (currentUser.role === "ADMIN" || currentUser.username === review.authorName &&
+    currentUser.role === "REVIEWER");
+
+  const handleDelete = async () => {
+  try {
+    await apiClient.delete(`/reviews/${id}`);
+    navigate("/reviews"); 
+  } catch (err) {
+    console.error("Ошибка при удалении рецензии:", err);
+    alert("Не удалось удалить рецензию");
+  } finally {
+    setShowDeleteModal(false);
+  }
+};
 
   if (loading)
     return <div className="text-white text-center mt-5">Загрузка...</div>;
@@ -164,12 +178,21 @@ function ReviewDetailPage() {
               </div>
 
               {canEdit && (
+                <div className="d-flex gap-2">
                 <button
                   className="custom-btn rounded-pill px-4"
                   onClick={() => navigate(`/reviews/edit/${review.id}`)}
                 >
                   <i className="fa-solid fa-pen-to-square me-2"></i> Изменить
                 </button>
+                <button
+      className="btn btn-outline-danger rounded-pill px-3"
+      onClick={() => setShowDeleteModal(true)}
+      title="Удалить рецензию"
+    >
+      <i className="fa-solid fa-trash"></i>
+    </button>
+  </div>
               )}
             </div>
           </div>
@@ -183,8 +206,17 @@ function ReviewDetailPage() {
           />
         </div>
       </main>
+
+      <ConfirmDeleteModal
+  show={showDeleteModal}
+  title="Удаление рецензии"
+  message="Вы уверены, что хотите безвозвратно удалить эту рецензию? Это действие нельзя отменить."
+  onConfirm={handleDelete}
+  onCancel={() => setShowDeleteModal(false)}
+/>
     </div>
   );
 }
+
 
 export default ReviewDetailPage;

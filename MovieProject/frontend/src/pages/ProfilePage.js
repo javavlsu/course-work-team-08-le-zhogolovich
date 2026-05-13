@@ -19,6 +19,7 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [isMyProfile, setIsMyProfile] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
@@ -45,6 +46,9 @@ function ProfilePage() {
         const decoded = jwtDecode(token);
         console.log("Содержимое JWT токена:", decoded);
         myIdFromToken = decoded.userId;
+        setIsAdmin(
+          decoded.roles?.includes("ADMIN") || decoded.role === "ADMIN",
+        );
       }
 
       const isDirectMyPath = !urlUsername || urlUsername === "profile";
@@ -111,6 +115,11 @@ function ProfilePage() {
         );
         setReviews(reviewsRes.data.content || reviewsRes.data || []);
       }
+      const canEdit =
+        isMy ||
+        (token &&
+          (jwtDecode(token).role === "ADMIN" ||
+            jwtDecode(token).roles?.includes("ADMIN")));
     } catch (error) {
       console.error("Ошибка в ProfilePage:", error);
       setErrorMsg("Ошибка загрузки");
@@ -216,26 +225,24 @@ function ProfilePage() {
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
         <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-         
-                    <Link to="/" className="nav-btn">
-                      Главная
-                    </Link>
-                    <Link to="/movies" className="nav-btn">
-                      Фильмы
-                    </Link>
-                    <Link to="/collections" className="nav-btn">
-                      Подборки
-                    </Link>
-                    <Link to="/reviews" className="nav-btn">
-                      Рецензии
-                    </Link>
-                    <Link to="/searchuser" className="nav-btn">
-                     Пользователи
-                    </Link>
-                    <Link to="/profile" className="nav-btn">
-                      Моя страница
-                    </Link>
-                  
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
 
           {isMyProfile && (
             <button
@@ -270,9 +277,13 @@ function ProfilePage() {
                 />
               </div>
 
-              {isMyProfile ? (
+              {isMyProfile || isAdmin ? (
                 <Link
-                  to="/edit-profile"
+                  to={
+                    isMyProfile
+                      ? "/edit-profile"
+                      : `/edit-profile/${user.id || user.userId}`
+                  }
                   className="custom-btn user-pill py-3 px-5 text-decoration-none"
                 >
                   Редактировать
@@ -463,7 +474,6 @@ function ProfilePage() {
             )}
           </section>
           <div className="border-bottom border-secondary mb-5"></div>
-
         </div>
       </main>
     </div>
