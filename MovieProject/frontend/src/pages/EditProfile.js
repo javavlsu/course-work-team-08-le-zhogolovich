@@ -78,6 +78,42 @@ const EditProfile = () => {
       setLoading(false);
     }
   };
+useEffect(() =>{const checkAccessAndFetch = async () => {
+      try {
+        
+        const meRes = await apiClient.get("/users/me");
+        const currentUser = meRes.data;
+
+        if (isEditingOther) {
+          const isAdmin = currentUser.role === "ADMIN" || (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN"));
+          
+          if (currentUser.id.toString() !== id.toString() && !isAdmin) {
+            alert("У вас нет прав для редактирования этого профиля");
+            navigate("/profile");
+            return;
+          }
+        }
+
+        const res = await apiClient.get(fetchUrl);
+        setUser(res.data);
+      } catch (error) {
+        console.error("Ошибка доступа или загрузки", error);
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAccessAndFetch();
+  }, [id, navigate, fetchUrl, isEditingOther]);
+
+  if (loading) {
+    return (
+      <div className="container-wrapper d-flex justify-content-center align-items-center" style={{height: "100vh"}}>
+        <div className="spinner-border text-light" role="status"></div>
+      </div>
+    );
+  }
 
   const handleDelete = async () => {
     if (window.confirm("Вы уверены, что хотите удалить этот профиль?")) {
@@ -99,6 +135,7 @@ const EditProfile = () => {
       }
     }
   };
+  
 
   return (
     <div className="container-wrapper">

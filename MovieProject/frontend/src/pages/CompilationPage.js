@@ -132,6 +132,12 @@ const CompilationPage = () => {
     }
   };
 
+const canEdit = currentUser && (
+  compilation.authorId === currentUser.id || 
+  currentUser.role === "ADMIN" || 
+  (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN"))
+);
+
   if (loading)
     return <div className="text-white text-center mt-5">Загрузка...</div>;
   if (!compilation)
@@ -261,7 +267,7 @@ const CompilationPage = () => {
                 </button>
               </div>
 
-              {isOwner ? (
+              {canEdit ? (
                 <div className="d-flex gap-2">
                   <Link
                     to={`/compilations/${id}/edit`}
