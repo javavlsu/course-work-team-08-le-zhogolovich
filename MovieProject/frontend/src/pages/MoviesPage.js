@@ -3,8 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 import defaultMoviePoster from "../images/BasePoster.png";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 function MoviesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,29 +84,27 @@ function MoviesPage() {
   return (
     <div className="container-wrapper movie-page-bg">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-                <Link to="/" className="nav-btn">
-                  Главная
-                </Link>
-                <Link to="/movies" className="nav-btn">
-                  Фильмы
-                </Link>
-                <Link to="/collections" className="nav-btn">
-                  Подборки
-                </Link>
-                <Link to="/reviews" className="nav-btn">
-                  Рецензии
-                </Link>
-                <Link to="/searchuser" className="nav-btn">
-                 Пользователи
-                </Link>
-                <Link to="/profile" className="nav-btn">
-                  Моя страница
-                </Link>
-                
-                
-              </nav>
-            </header>
+        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
+        </nav>
+      </header>
 
       <main className="content px-4">
         <section className="d-flex flex-column align-items-center mb-5">
@@ -238,7 +235,7 @@ function MoviesPage() {
                 const displayName =
                   movie.name || movie.originalName || "Без названия";
                 const posterPath = movie.posterUrl
-                  ? `${API_BASE_URL}${movie.posterUrl}`
+                  ? `${getImageUrl(movie.posterUrl)}`
                   : defaultMoviePoster;
                 return (
                   <Link

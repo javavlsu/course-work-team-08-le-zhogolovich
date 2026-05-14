@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getImageUrl } from "../utils/getImageUrl";
 
-const API_BASE_URL = "http://localhost:8080/movie-project";
 const avatarDefault = "../images/такса.svg";
 
 const EditProfile = () => {
@@ -41,7 +41,7 @@ const EditProfile = () => {
 
   const getAvatarImage = () => {
     if (previewUrl) return previewUrl;
-    if (user.avatarUrl) return `${API_BASE_URL}${user.avatarUrl}`;
+    if (user.avatarUrl) return `${getImageUrl(user.avatarUrl)}`;
     return avatarDefault;
   };
 
@@ -78,15 +78,17 @@ const EditProfile = () => {
       setLoading(false);
     }
   };
-useEffect(() =>{const checkAccessAndFetch = async () => {
+  useEffect(() => {
+    const checkAccessAndFetch = async () => {
       try {
-        
         const meRes = await apiClient.get("/users/me");
         const currentUser = meRes.data;
 
         if (isEditingOther) {
-          const isAdmin = currentUser.role === "ADMIN" || (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN"));
-          
+          const isAdmin =
+            currentUser.role === "ADMIN" ||
+            (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN"));
+
           if (currentUser.id.toString() !== id.toString() && !isAdmin) {
             alert("У вас нет прав для редактирования этого профиля");
             navigate("/profile");
@@ -109,7 +111,10 @@ useEffect(() =>{const checkAccessAndFetch = async () => {
 
   if (loading) {
     return (
-      <div className="container-wrapper d-flex justify-content-center align-items-center" style={{height: "100vh"}}>
+      <div
+        className="container-wrapper d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
         <div className="spinner-border text-light" role="status"></div>
       </div>
     );
@@ -135,7 +140,6 @@ useEffect(() =>{const checkAccessAndFetch = async () => {
       }
     }
   };
-  
 
   return (
     <div className="container-wrapper">

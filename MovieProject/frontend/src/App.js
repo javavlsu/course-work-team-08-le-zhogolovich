@@ -62,7 +62,6 @@ function App() {
         <Route path="/reviews" element={<ReviewsPage />} />
         <Route path="/searchuser" element={<UsersPage />} />
         <Route path="/edit-profile/:id" element={<EditProfile />} />
-
       </Routes>
     </BrowserRouter>
   );

@@ -5,8 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import LikedContent from "../components/LikedContent";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 function ProfilePage() {
   const { username: urlUsername } = useParams();
@@ -193,7 +192,7 @@ function ProfilePage() {
                 <img
                   src={
                     comp.coverUrl
-                      ? `${API_BASE_URL}${comp.coverUrl}`
+                      ? `${getImageUrl(comp.coverUrl)}`
                       : avatarDefault
                   }
                   alt={comp.title}
@@ -266,7 +265,7 @@ function ProfilePage() {
                 <img
                   src={
                     user.avatarUrl
-                      ? `${API_BASE_URL}${user.avatarUrl}`
+                      ? `${getImageUrl(user.avatarUrl)}`
                       : avatarDefault
                   }
                   className="img-fluid w-100 h-100 object-fit-cover"

@@ -4,8 +4,7 @@ import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 import EditCompilationMovies from "../components/EditCompilationMovies";
 import avatarDefault from "../images/такса.svg";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 const EditCompilation = () => {
   const { id } = useParams();
@@ -24,40 +23,42 @@ const EditCompilation = () => {
   const [loading, setLoading] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   useEffect(() => {
-  const checkAccessAndFetch = async () => {
-    try {
-      const [compRes, userRes] = await Promise.all([
-        apiClient.get(`/compilations/${id}`),
-        apiClient.get(`/users/me`)
-      ]);
+    const checkAccessAndFetch = async () => {
+      try {
+        const [compRes, userRes] = await Promise.all([
+          apiClient.get(`/compilations/${id}`),
+          apiClient.get(`/users/me`),
+        ]);
 
-      const fetchedCompilation = compRes.data;
-      const user = userRes.data;
+        const fetchedCompilation = compRes.data;
+        const user = userRes.data;
 
-      const isAdmin = user.role === "ADMIN" || (user.roles && user.roles.includes("ROLE_ADMIN"));
-      const isAuthor = fetchedCompilation.authorId === user.id;
+        const isAdmin =
+          user.role === "ADMIN" ||
+          (user.roles && user.roles.includes("ROLE_ADMIN"));
+        const isAuthor = fetchedCompilation.authorId === user.id;
 
-      if (!isAdmin && !isAuthor) {
-        alert("У вас нет прав для редактирования этой подборки");
-        navigate(`/compilations/${id}`); 
-        return;
+        if (!isAdmin && !isAuthor) {
+          alert("У вас нет прав для редактирования этой подборки");
+          navigate(`/compilations/${id}`);
+          return;
+        }
+
+        setCompilation(fetchedCompilation);
+        setCurrentUser(user);
+      } catch (error) {
+        console.error("Ошибка проверки доступа", error);
+        if (error.response?.status === 401) {
+          navigate("/login");
+        } else {
+          alert("Не удалось загрузить подборку");
+          navigate(-1);
+        }
       }
+    };
 
-      setCompilation(fetchedCompilation);
-      setCurrentUser(user);
-    } catch (error) {
-      console.error("Ошибка проверки доступа", error);
-      if (error.response?.status === 401) {
-        navigate("/login");
-      } else {
-        alert("Не удалось загрузить подборку");
-        navigate(-1);
-      }
-    }
-  };
-
-  checkAccessAndFetch();
-}, [id, navigate]);
+    checkAccessAndFetch();
+  }, [id, navigate]);
   useEffect(() => {
     const fetchCompilation = async () => {
       try {
@@ -91,7 +92,7 @@ const EditCompilation = () => {
 
   const getCoverImage = () => {
     if (previewUrl) return previewUrl;
-    if (compilation.coverUrl) return `${API_BASE_URL}${compilation.coverUrl}`;
+    if (compilation.coverUrl) return `${getImageUrl(compilation.coverUrl)}`;
     return avatarDefault;
   };
 
@@ -156,18 +157,19 @@ const EditCompilation = () => {
       movies: prev.movies.filter((m) => m.id !== movieId),
     }));
   };
-  {
-    console.log(getCoverImage());
-  }
-if (!currentUser || !compilation.title) {
-  return (
-    <div className="container-wrapper d-flex justify-content-center align-items-center" style={{height: "100vh"}}>
-      <div className="spinner-border text-light" role="status">
-        <span className="visually-hidden">Загрузка...</span>
+
+  if (!currentUser || !compilation.title) {
+    return (
+      <div
+        className="container-wrapper d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
+        <div className="spinner-border text-light" role="status">
+          <span className="visually-hidden">Загрузка...</span>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className="container-wrapper">

@@ -3,18 +3,17 @@ import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 import avatarDefault from "../images/такса.svg";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 function HomePage() {
   const [movies, setMovies] = useState([]);
   const [topCompilations, setTopCompilations] = useState([]);
-  const [reviews, setReviews] = useState([]); 
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const movieScrollRef = useRef(null);
   const compScrollRef = useRef(null);
-  const reviewScrollRef = useRef(null); 
+  const reviewScrollRef = useRef(null);
 
   const scroll = (ref, direction, isSingle = false) => {
     if (ref.current) {
@@ -58,29 +57,27 @@ function HomePage() {
   return (
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-                <Link to="/" className="nav-btn">
-                  Главная
-                </Link>
-                <Link to="/movies" className="nav-btn">
-                  Фильмы
-                </Link>
-                <Link to="/collections" className="nav-btn">
-                  Подборки
-                </Link>
-                <Link to="/reviews" className="nav-btn">
-                  Рецензии
-                </Link>
-                <Link to="/searchuser" className="nav-btn">
-                 Пользователи
-                </Link>
-                <Link to="/profile" className="nav-btn">
-                  Моя страница
-                </Link>
-                
-                
-              </nav>
-            </header>
+        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
+        </nav>
+      </header>
 
       <main className="container-xl px-4 px-md-5">
         {/* Фильмы */}
@@ -112,7 +109,7 @@ function HomePage() {
                         src={
                           movie.posterUrl?.startsWith("http")
                             ? movie.posterUrl
-                            : `${API_BASE_URL}${movie.posterUrl}`
+                            : `${getImageUrl(movie.posterUrl)}`
                         }
                         alt={movie.name}
                         className="img-fluid rounded-3 shadow-sm"
@@ -158,7 +155,7 @@ function HomePage() {
                       <img
                         src={
                           comp.coverUrl
-                            ? `${API_BASE_URL}${comp.coverUrl}`
+                            ? `${getImageUrl(comp.coverUrl)}`
                             : avatarDefault
                         }
                         alt={comp.title}
@@ -169,9 +166,10 @@ function HomePage() {
                     <p className="text-light m-0 text-truncate small">
                       {comp.title}
                     </p>
-                    <small className="text-white-50">Автор: @{comp.authorName || 'user'}</small>
+                    <small className="text-white-50">
+                      Автор: @{comp.authorName || "user"}
+                    </small>
                   </Link>
-                  
                 </div>
               ))}
             </div>
@@ -221,7 +219,7 @@ function HomePage() {
                         <img
                           src={
                             rev.movieCover
-                              ? `${API_BASE_URL}${rev.movieCover}`
+                              ? `${getImageUrl(rev.movieCover)}`
                               : avatarDefault
                           }
                           className="article-img rounded-1 object-fit-cover"

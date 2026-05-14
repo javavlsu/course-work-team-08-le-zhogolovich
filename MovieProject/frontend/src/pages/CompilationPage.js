@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
-
 import "bootstrap/dist/css/bootstrap.min.css";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 const CompilationPage = () => {
   const { id } = useParams();
@@ -132,11 +130,11 @@ const CompilationPage = () => {
     }
   };
 
-const canEdit = currentUser && (
-  compilation.authorId === currentUser.id || 
-  currentUser.role === "ADMIN" || 
-  (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN"))
-);
+  const canEdit =
+    currentUser &&
+    (compilation.authorId === currentUser.id ||
+      currentUser.role === "ADMIN" ||
+      (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN")));
 
   if (loading)
     return <div className="text-white text-center mt-5">Загрузка...</div>;
@@ -148,29 +146,27 @@ const canEdit = currentUser && (
   return (
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-                <Link to="/" className="nav-btn">
-                  Главная
-                </Link>
-                <Link to="/movies" className="nav-btn">
-                  Фильмы
-                </Link>
-                <Link to="/collections" className="nav-btn">
-                  Подборки
-                </Link>
-                <Link to="/reviews" className="nav-btn">
-                  Рецензии
-                </Link>
-                <Link to="/searchuser" className="nav-btn">
-                 Пользователи
-                </Link>
-                <Link to="/profile" className="nav-btn">
-                  Моя страница
-                </Link>
-                
-                
-              </nav>
-            </header>
+        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
+        </nav>
+      </header>
       <main className="container-xl px-4 px-md-5">
         <h1 className="text-center mb-5 text-white">{compilation.title}</h1>
         <div className="d-flex justify-content-center mb-3">
@@ -191,11 +187,7 @@ const canEdit = currentUser && (
             }
           >
             <img
-              src={
-                authorAvatar
-                  ? `${API_BASE_URL}${authorAvatar}`
-                  : avatarDefault
-              }
+              src={authorAvatar ? getImageUrl(authorAvatar) : avatarDefault}
               alt="Author"
               style={{
                 width: "30px",
@@ -221,7 +213,7 @@ const canEdit = currentUser && (
               <img
                 src={
                   compilation.coverUrl
-                    ? `${API_BASE_URL}${compilation.coverUrl}`
+                    ? getImageUrl(compilation.coverUrl)
                     : avatarDefault
                 }
                 alt="Обложка"
@@ -335,10 +327,10 @@ const canEdit = currentUser && (
               >
                 <div className="badge-overlay">{movie.ratingKinopoisk}</div>
                 <img
-                  src={`${API_BASE_URL}${movie.posterUrl}`}
+                  src={`${getImageUrl(movie.posterUrl)}`}
                   alt={movie.name}
                   className="img-fluid rounded-3 mb-3"
-                  style={{aspectRatio: "2/3" }}
+                  style={{ aspectRatio: "2/3" }}
                 />
                 <p className="card-title text-white">{movie.name}</p>
                 <p className="card-year text-white-50">{movie.releaseYear}</p>

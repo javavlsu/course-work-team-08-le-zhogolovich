@@ -54,7 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewDto getReviewById(Long reviewId) {
         Long userId = currentUserService.getCurrentUserID();
 
-        return reviewRepository.findReviewById(reviewId, userId)
+        return reviewRepository.findReviewById(reviewId, userId, currentUserService.isAdmin())
                 .map(reviewMapper::toDto)
                 .orElseThrow(() -> new ReviewNotFoundException(reviewId));
     }
@@ -97,7 +97,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review saved = reviewRepository.save(review);
 
-        return reviewRepository.findReviewById(saved.getId(), userId)
+        return reviewRepository.findReviewById(saved.getId(), userId, currentUserService.isAdmin())
                 .map(reviewMapper::toDto)
                 .orElseThrow(() -> new ReviewNotFoundException(saved.getId()));
     }
@@ -127,7 +127,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepository.save(review);
 
-        return reviewRepository.findReviewById(reviewId, userId)
+        return reviewRepository.findReviewById(reviewId, userId, currentUserService.isAdmin())
                 .map(reviewMapper::toDto)
                 .orElseThrow(() -> new ReviewNotFoundException(reviewId));
     }

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
-import avatarDefault from "../images/такса.svg";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
 
 const LikedContent = ({ userId, isMyProfile, renderGrid }) => {
   const [likedCompilations, setLikedCompilations] = useState([]);

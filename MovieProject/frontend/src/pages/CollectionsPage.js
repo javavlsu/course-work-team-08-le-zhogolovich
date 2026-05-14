@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import { Link } from "react-router-dom";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 function CollectionsPage() {
   const [compilations, setCompilations] = useState([]);
@@ -58,29 +57,27 @@ function CollectionsPage() {
   return (
     <div className="container-wrapper min-vh-100 text-white">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-                <Link to="/" className="nav-btn">
-                  Главная
-                </Link>
-                <Link to="/movies" className="nav-btn">
-                  Фильмы
-                </Link>
-                <Link to="/collections" className="nav-btn">
-                  Подборки
-                </Link>
-                <Link to="/reviews" className="nav-btn">
-                  Рецензии
-                </Link>
-                <Link to="/searchuser" className="nav-btn">
-                 Пользователи
-                </Link>
-                <Link to="/profile" className="nav-btn">
-                  Моя страница
-                </Link>
-                
-                
-              </nav>
-            </header>
+        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
+        </nav>
+      </header>
 
       <main className="container-xl px-4 px-md-5">
         {/* Поиск  */}
@@ -145,7 +142,7 @@ function CollectionsPage() {
                       <img
                         src={
                           comp.coverUrl
-                            ? `${API_BASE_URL}${comp.coverUrl}`
+                            ? getImageUrl(comp.coverUrl)
                             : avatarDefault
                         }
                         alt={comp.title}

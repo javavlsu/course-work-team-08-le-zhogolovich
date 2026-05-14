@@ -4,7 +4,7 @@ import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 function ReviewDetailPage() {
   const { id } = useParams();
@@ -47,33 +47,34 @@ function ReviewDetailPage() {
   }, [id]);
 
   const handleLike = async () => {
-  const method = isLiked ? 'delete' : 'post';
-  try {
-    await apiClient[method](`/reviews/${id}/like`);
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-    setIsLiked(!isLiked);
-  } catch (err) {
-    console.error("Ошибка:", err);
-  }
-};
+    const method = isLiked ? "delete" : "post";
+    try {
+      await apiClient[method](`/reviews/${id}/like`);
+      setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
+      setIsLiked(!isLiked);
+    } catch (err) {
+      console.error("Ошибка:", err);
+    }
+  };
 
   const canEdit =
     currentUser &&
     review &&
-    (currentUser.role === "ADMIN" || currentUser.username === review.authorName &&
-    currentUser.role === "REVIEWER");
+    (currentUser.role === "ADMIN" ||
+      (currentUser.username === review.authorName &&
+        currentUser.role === "REVIEWER"));
 
   const handleDelete = async () => {
-  try {
-    await apiClient.delete(`/reviews/${id}`);
-    navigate("/reviews"); 
-  } catch (err) {
-    console.error("Ошибка при удалении рецензии:", err);
-    alert("Не удалось удалить рецензию");
-  } finally {
-    setShowDeleteModal(false);
-  }
-};
+    try {
+      await apiClient.delete(`/reviews/${id}`);
+      navigate("/reviews");
+    } catch (err) {
+      console.error("Ошибка при удалении рецензии:", err);
+      alert("Не удалось удалить рецензию");
+    } finally {
+      setShowDeleteModal(false);
+    }
+  };
 
   if (loading)
     return <div className="text-white text-center mt-5">Загрузка...</div>;
@@ -85,52 +86,50 @@ function ReviewDetailPage() {
   return (
     <div className="container-wrapper text-white">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-                <Link to="/" className="nav-btn">
-                  Главная
-                </Link>
-                <Link to="/movies" className="nav-btn">
-                  Фильмы
-                </Link>
-                <Link to="/collections" className="nav-btn">
-                  Подборки
-                </Link>
-                <Link to="/reviews" className="nav-btn">
-                  Рецензии
-                </Link>
-                <Link to="/searchuser" className="nav-btn">
-                 Пользователи
-                </Link>
-                <Link to="/profile" className="nav-btn">
-                  Моя страница
-                </Link>
-                
-                
-              </nav>
-            </header>
+        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
+        </nav>
+      </header>
 
       <main className="container-xl px-4 px-md-5 mt-5">
         <div className="row mb-5 align-items-start">
           <div className="col-md-5 col-lg-5 mb-4 mb-md-0">
             <div className="mb-4">
-          <button 
-            onClick={() => navigate(-1)} 
-            className="btn text-white-50 p-0 d-flex align-items-center gap-2 border-0 bg-transparent hover-white transition-all"
-            style={{ fontSize: '1.1rem' }}
-          >
-            <i className="fa-solid fa-arrow-left"></i>
-            <span>Назад</span>
-          </button>
-        </div>
+              <button
+                onClick={() => navigate(-1)}
+                className="btn text-white-50 p-0 d-flex align-items-center gap-2 border-0 bg-transparent hover-white transition-all"
+                style={{ fontSize: "1.1rem" }}
+              >
+                <i className="fa-solid fa-arrow-left"></i>
+                <span>Назад</span>
+              </button>
+            </div>
             <div
               className="movie-card-static mb-4 mx-auto"
               style={{ maxWidth: "300px", position: "relative" }}
             >
               <img
-                src={`${API_BASE_URL}${review.movieCover}` || avatarDefault}
+                src={`${getImageUrl(review.movieCover)}` || avatarDefault}
                 alt={movie?.name || movie?.title || "Постер"}
                 className="img-fluid rounded-3"
-                style={{ display: "block", width: "100%", aspectRatio:'2/3' }}
+                style={{ display: "block", width: "100%", aspectRatio: "2/3" }}
               />
             </div>
           </div>
@@ -179,20 +178,20 @@ function ReviewDetailPage() {
 
               {canEdit && (
                 <div className="d-flex gap-2">
-                <button
-                  className="custom-btn rounded-pill px-4"
-                  onClick={() => navigate(`/reviews/edit/${review.id}`)}
-                >
-                  <i className="fa-solid fa-pen-to-square me-2"></i> Изменить
-                </button>
-                <button
-      className="btn btn-outline-danger rounded-pill px-3"
-      onClick={() => setShowDeleteModal(true)}
-      title="Удалить рецензию"
-    >
-      <i className="fa-solid fa-trash"></i>
-    </button>
-  </div>
+                  <button
+                    className="custom-btn rounded-pill px-4"
+                    onClick={() => navigate(`/reviews/edit/${review.id}`)}
+                  >
+                    <i className="fa-solid fa-pen-to-square me-2"></i> Изменить
+                  </button>
+                  <button
+                    className="btn btn-outline-danger rounded-pill px-3"
+                    onClick={() => setShowDeleteModal(true)}
+                    title="Удалить рецензию"
+                  >
+                    <i className="fa-solid fa-trash"></i>
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -208,15 +207,14 @@ function ReviewDetailPage() {
       </main>
 
       <ConfirmDeleteModal
-  show={showDeleteModal}
-  title="Удаление рецензии"
-  message="Вы уверены, что хотите безвозвратно удалить эту рецензию? Это действие нельзя отменить."
-  onConfirm={handleDelete}
-  onCancel={() => setShowDeleteModal(false)}
-/>
+        show={showDeleteModal}
+        title="Удаление рецензии"
+        message="Вы уверены, что хотите безвозвратно удалить эту рецензию? Это действие нельзя отменить."
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </div>
   );
 }
-
 
 export default ReviewDetailPage;

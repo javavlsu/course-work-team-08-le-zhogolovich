@@ -3,8 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
-const API_BASE_URL = "http://localhost:8080/movie-project";
-
+import { getImageUrl } from "../utils/getImageUrl";
 
 function WriteReviewPage() {
   const { movieId, reviewId } = useParams();
@@ -49,10 +48,10 @@ function WriteReviewPage() {
         if (reviewId) {
           const reviewRes = await apiClient.get(`/reviews/${reviewId}`);
           const reviewData = reviewRes.data;
-          
+
           setTitle(reviewData.title);
           setInitialContent(reviewData.content);
-setAuthorId(reviewData.userId || reviewData.authorId);
+          setAuthorId(reviewData.userId || reviewData.authorId);
           const movieRes = await apiClient.get(`/movies/${reviewData.movieId}`);
           setMovie(movieRes.data);
         } else if (movieId) {
@@ -91,9 +90,9 @@ setAuthorId(reviewData.userId || reviewData.authorId);
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = editorRef.current.innerHTML;
-    const elementsWithStyle = tempDiv.querySelectorAll('[style]');
-    elementsWithStyle.forEach(el => el.removeAttribute('style'));
-    
+    const elementsWithStyle = tempDiv.querySelectorAll("[style]");
+    elementsWithStyle.forEach((el) => el.removeAttribute("style"));
+
     const cleanContent = tempDiv.innerHTML;
 
     if (!title || !cleanContent || cleanContent === "<br>") {
@@ -106,10 +105,10 @@ setAuthorId(reviewData.userId || reviewData.authorId);
       title: title,
       content: cleanContent,
       isPublish: isPublish,
-      userId: authorId
+      userId: authorId,
     };
 
-    console.log("Отправка данных:", payload); 
+    console.log("Отправка данных:", payload);
 
     try {
       if (reviewId) {
@@ -120,43 +119,47 @@ setAuthorId(reviewData.userId || reviewData.authorId);
       navigate("/reviews");
     } catch (err) {
       console.error("Ошибка при сохранении:", err);
-      alert(`Ошибка при сохранении: ${err.response?.status} ${err.response?.data?.message || ""}`);
+      alert(
+        `Ошибка при сохранении: ${err.response?.status} ${err.response?.data?.message || ""}`,
+      );
     }
   };
 
-  if (isCheckingRole) return <div className="text-white text-center mt-5">Проверка прав...</div>;
-  if (loading) return <div className="text-white text-center mt-5">Загрузка данных...</div>;
+  if (isCheckingRole)
+    return <div className="text-white text-center mt-5">Проверка прав...</div>;
+  if (loading)
+    return (
+      <div className="text-white text-center mt-5">Загрузка данных...</div>
+    );
 
   return (
     <div className="container-wrapper text-white">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-                <Link to="/" className="nav-btn">
-                  Главная
-                </Link>
-                <Link to="/movies" className="nav-btn">
-                  Фильмы
-                </Link>
-                <Link to="/collections" className="nav-btn">
-                  Подборки
-                </Link>
-                <Link to="/reviews" className="nav-btn">
-                  Рецензии
-                </Link>
-                <Link to="/searchuser" className="nav-btn">
-                 Пользователи
-                </Link>
-                <Link to="/profile" className="nav-btn">
-                  Моя страница
-                </Link>
-                
-                
-              </nav>
-            </header>
+        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
+        </nav>
+      </header>
 
       <main className="container-xl px-4" style={{ maxWidth: "900px" }}>
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="btn btn-link text-white-50 text-decoration-none mb-4 p-0 d-flex align-items-center gap-2"
         >
           <i className="fa-solid fa-arrow-left"></i> Назад
@@ -168,10 +171,10 @@ setAuthorId(reviewData.userId || reviewData.authorId);
             <div style={{ minWidth: "250px", width: "250px" }}>
               <div className="ratio ratio-4x3">
                 <div className="cover-upload d-flex align-items-center justify-content-center border border-secondary rounded overflow-hidden bg-dark">
-                  <img 
-                    src={`${API_BASE_URL}${movie.posterUrl}` || avatarDefault} 
-                    className="w-100 h-100 object-fit-cover" 
-                    alt="Постер" 
+                  <img
+                    src={`${getImageUrl(movie.posterUrl)}` || avatarDefault}
+                    className="w-100 h-100 object-fit-cover"
+                    alt="Постер"
                   />
                 </div>
               </div>
@@ -181,9 +184,13 @@ setAuthorId(reviewData.userId || reviewData.authorId);
               <h3 className="mb-2 ">
                 {movie?.name || movie?.title || "Название фильма"}
               </h3>
-              <textarea 
-                className="  text-white border-secondary" 
-                style={{ height: "100px", resize: "none", backgroundColor: "#2b2d33" }}
+              <textarea
+                className="  text-white border-secondary"
+                style={{
+                  height: "100px",
+                  resize: "none",
+                  backgroundColor: "#2b2d33",
+                }}
                 placeholder="Введите заголовок вашей рецензии"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -194,12 +201,30 @@ setAuthorId(reviewData.userId || reviewData.authorId);
           <section className="mt-2">
             {/* Панель инструментов */}
             <div className="btn-toolbar mb-2 d-flex gap-2 p-2 bg-dark border border-secondary rounded">
-              <button type="button" onClick={() => handleFormat('bold')} className="btn btn-sm btn-outline-light"><b>B</b></button>
-              <button type="button" onClick={() => handleFormat('italic')} className="btn btn-sm btn-outline-light"><i>I</i></button>
-              <button type="button" onClick={() => handleFormat('underline')} className="btn btn-sm btn-outline-light"><u>U</u></button>
-              <select 
+              <button
+                type="button"
+                onClick={() => handleFormat("bold")}
+                className="btn btn-sm btn-outline-light"
+              >
+                <b>B</b>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFormat("italic")}
+                className="btn btn-sm btn-outline-light"
+              >
+                <i>I</i>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFormat("underline")}
+                className="btn btn-sm btn-outline-light"
+              >
+                <u>U</u>
+              </button>
+              <select
                 className="form-select form-select-sm w-auto bg-dark text-white border-secondary"
-                onChange={(e) => handleFormat('formatBlock', e.target.value)}
+                onChange={(e) => handleFormat("formatBlock", e.target.value)}
               >
                 <option value="P">Текст</option>
                 <option value="H1">Заголовок 1</option>
@@ -208,35 +233,36 @@ setAuthorId(reviewData.userId || reviewData.authorId);
               </select>
             </div>
 
-            <div 
+            <div
               ref={editorRef}
-              contentEditable="true" 
+              contentEditable="true"
               onPaste={handlePaste}
-              className="form-control text-white border-secondary" 
-              style={{ 
-                minHeight: "400px", 
-                height: "auto", 
-                padding: "20px", 
+              className="form-control text-white border-secondary"
+              style={{
+                minHeight: "400px",
+                height: "auto",
+                padding: "20px",
                 backgroundColor: "#2b2d33",
                 outline: "none",
-                color: "white"
+                color: "white",
               }}
               onInput={(e) => {
-                if (e.currentTarget.innerHTML === '<br>') e.currentTarget.innerHTML = '';
+                if (e.currentTarget.innerHTML === "<br>")
+                  e.currentTarget.innerHTML = "";
               }}
             />
 
             <div className="form-actions d-flex justify-content-end mt-4 gap-3">
-              <button 
-                type="button" 
-                onClick={() => handleSave(false)} 
+              <button
+                type="button"
+                onClick={() => handleSave(false)}
                 className="btn btn-outline-secondary px-4 py-2 rounded-pill"
               >
                 В черновик
               </button>
-              <button 
-                type="button" 
-                onClick={() => handleSave(true)} 
+              <button
+                type="button"
+                onClick={() => handleSave(true)}
                 className="custom-btn px-5 py-2"
               >
                 Опубликовать

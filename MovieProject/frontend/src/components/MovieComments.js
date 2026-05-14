@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
+import { getImageUrl } from "../utils/getImageUrl";
 
-const API_BASE_URL = "http://localhost:8080/movie-project";
-
-const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault, isAdmin }) => {
+const CommentItem = ({
+  comment,
+  currentUser,
+  onDelete,
+  onEdit,
+  avatarDefault,
+  isAdmin,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
 
@@ -24,31 +30,49 @@ const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault, is
   };
 
   return (
-    <div className="p-3 rounded-4 mb-3" style={{ background: "rgba(255,255,255,0.05)" }}>
+    <div
+      className="p-3 rounded-4 mb-3"
+      style={{ background: "rgba(255,255,255,0.05)" }}
+    >
       <div className="d-flex justify-content-between align-items-start mb-2">
         <div className="d-flex align-items-center gap-2">
           <Link to={authorName !== "Аноним" ? `/users/${authorName}` : "#"}>
             <img
-              src={comment.authorAvatar ? `${API_BASE_URL}${comment.authorAvatar}` : avatarDefault}
-              width="35" height="35" className="rounded-circle"
-              style={{ objectFit: "cover" }} alt="avatar"
+              src={
+                comment.authorAvatar
+                  ? getImageUrl(comment.authorAvatar)
+                  : avatarDefault
+              }
+              width="35"
+              height="35"
+              className="rounded-circle"
+              style={{ objectFit: "cover" }}
+              alt="avatar"
             />
           </Link>
-          <Link to={authorName !== "Аноним" ? `/users/${authorName}` : "#"} className="text-decoration-none fw-bold text-white">
+          <Link
+            to={authorName !== "Аноним" ? `/users/${authorName}` : "#"}
+            className="text-decoration-none fw-bold text-white"
+          >
             @{authorName}
           </Link>
-           <small className="text-white-50" style={{ fontSize: "0.75rem" }}>
-              {formatDate(comment.createdAt)}
-            </small>
-
+          <small className="text-white-50" style={{ fontSize: "0.75rem" }}>
+            {formatDate(comment.createdAt)}
+          </small>
         </div>
 
-        {(currentUser && currentUser.username === authorName || isAdmin) && (
+        {((currentUser && currentUser.username === authorName) || isAdmin) && (
           <div className="d-flex gap-2">
-            <button className="btn btn-sm btn-outline-light border-0" onClick={() => setIsEditing(true)}>
+            <button
+              className="btn btn-sm btn-outline-light border-0"
+              onClick={() => setIsEditing(true)}
+            >
               <i className="fa-solid fa-pen"></i>
             </button>
-            <button className="btn btn-sm btn-outline-danger border-0" onClick={() => onDelete(comment.id)}>
+            <button
+              className="btn btn-sm btn-outline-danger border-0"
+              onClick={() => onDelete(comment.id)}
+            >
               <i className="fa-solid fa-trash"></i>
             </button>
           </div>
@@ -63,13 +87,17 @@ const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault, is
             onChange={(e) => setEditText(e.target.value)}
           />
           <div className="d-flex gap-2 justify-content-end">
-            <button className="btn btn-sm btn-link text-white text-decoration-none" onClick={() => setIsEditing(false)}>
+            <button
+              className="btn btn-sm btn-link text-white text-decoration-none"
+              onClick={() => setIsEditing(false)}
+            >
               Отмена
             </button>
             <button
               className="custom-btn py-1 px-3"
               onClick={() => {
-                if (!editText.trim()) return alert("Комментарий не может быть пустым");
+                if (!editText.trim())
+                  return alert("Комментарий не может быть пустым");
                 onEdit(comment.id, editText);
                 setIsEditing(false);
               }}
@@ -79,15 +107,21 @@ const CommentItem = ({ comment, currentUser, onDelete, onEdit, avatarDefault, is
           </div>
         </div>
       ) : (
-        <p className="m-0 ps-1" style={{ whiteSpace: "pre-wrap" }}>{comment.content}</p>
-               
-
+        <p className="m-0 ps-1" style={{ whiteSpace: "pre-wrap" }}>
+          {comment.content}
+        </p>
       )}
     </div>
   );
 };
 
-const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault, isAdmin }) => {
+const MovieComments = ({
+  movieId,
+  currentUser,
+  isAuth,
+  avatarDefault,
+  isAdmin,
+}) => {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
 
@@ -108,7 +142,9 @@ const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault, isAdmin })
   const handleSendComment = async () => {
     if (!commentText.trim()) return;
     try {
-      await apiClient.post(`/comment/movie/${movieId}`, { content: commentText });
+      await apiClient.post(`/comment/movie/${movieId}`, {
+        content: commentText,
+      });
       setCommentText("");
       fetchComments();
     } catch (e) {
@@ -143,8 +179,16 @@ const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault, isAdmin })
         <div className="p-4 mb-5 mx-auto" style={{ maxWidth: "800px" }}>
           <div className="d-flex align-items-center gap-3 mb-3">
             <img
-              src={currentUser.avatarUrl ? `${API_BASE_URL}${currentUser.avatarUrl}` : avatarDefault}
-              className="rounded-circle" width="40" height="40" alt="Avatar" style={{ objectFit: "cover" }}
+              src={
+                currentUser.avatarUrl
+                  ? getImageUrl(currentUser.avatarUrl)
+                  : avatarDefault
+              }
+              className="rounded-circle"
+              width="40"
+              height="40"
+              alt="Avatar"
+              style={{ objectFit: "cover" }}
             />
             <Link to="/profile" className="text-decoration-none text-white">
               @{currentUser.username || "loading..."}
@@ -158,20 +202,43 @@ const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault, isAdmin })
             onChange={(e) => setCommentText(e.target.value)}
           />
           <div className="d-flex justify-content-end">
-            <button onClick={handleSendComment} className="custom-btn py-2 px-4">Отправить</button>
+            <button
+              onClick={handleSendComment}
+              className="custom-btn py-2 px-4"
+            >
+              Отправить
+            </button>
           </div>
         </div>
       ) : (
-        <div className="p-5 mb-5 mx-auto text-center border border-secondary rounded-4" style={{ maxWidth: "800px", background: "rgba(255,255,255,0.05)" }}>
-          <p className="text-white-50 fs-5 mb-4">Вы пока не можете оставлять комментарии</p>
+        <div
+          className="p-5 mb-5 mx-auto text-center border border-secondary rounded-4"
+          style={{ maxWidth: "800px", background: "rgba(255,255,255,0.05)" }}
+        >
+          <p className="text-white-50 fs-5 mb-4">
+            Вы пока не можете оставлять комментарии
+          </p>
           <div className="d-flex justify-content-center gap-3">
-            <Link to="/register" className="custom-btn py-2 px-4 text-decoration-none">Зарегистрироваться</Link>
-            <Link to="/login" className="btn btn-outline-light rounded-pill py-2 px-4">Войти</Link>
+            <Link
+              to="/register"
+              className="custom-btn py-2 px-4 text-decoration-none"
+            >
+              Зарегистрироваться
+            </Link>
+            <Link
+              to="/login"
+              className="btn btn-outline-light rounded-pill py-2 px-4"
+            >
+              Войти
+            </Link>
           </div>
         </div>
       )}
 
-      <div className="comment-list d-flex flex-column gap-2 mx-auto text-white" style={{ maxWidth: "800px" }}>
+      <div
+        className="comment-list d-flex flex-column gap-2 mx-auto text-white"
+        style={{ maxWidth: "800px" }}
+      >
         {comments.length > 0 ? (
           comments.map((comment) => (
             <CommentItem
@@ -182,7 +249,6 @@ const MovieComments = ({ movieId, currentUser, isAuth, avatarDefault, isAdmin })
               onDelete={handleDeleteComment}
               onEdit={handleSaveEdit}
               isAdmin={isAdmin}
-              
             />
           ))
         ) : (

@@ -112,9 +112,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
           AND (
               r.status = 'PUBLISHED'
               OR r.author.id = :currentUserId
+              OR :isAdmin = true
           )
     """)
-    Optional<ReviewProjection> findReviewById(Long reviewId, Long currentUserId);
+    Optional<ReviewProjection> findReviewById(Long reviewId, Long currentUserId, boolean isAdmin);
 
     @Query("""
         SELECT 

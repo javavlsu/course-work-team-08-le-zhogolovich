@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 import avatarDefault from "../images/такса.svg";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 function ReviewsPage() {
   const [reviews, setReviews] = useState([]);
@@ -53,34 +52,32 @@ function ReviewsPage() {
     }
   };
 
-if (error) return <div className="text-danger text-center mt-5">{error}</div>;
+  if (error) return <div className="text-danger text-center mt-5">{error}</div>;
 
   return (
     <div className="container-wrapper min-vh-100">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-                <Link to="/" className="nav-btn">
-                  Главная
-                </Link>
-                <Link to="/movies" className="nav-btn">
-                  Фильмы
-                </Link>
-                <Link to="/collections" className="nav-btn">
-                  Подборки
-                </Link>
-                <Link to="/reviews" className="nav-btn">
-                  Рецензии
-                </Link>
-                <Link to="/searchuser" className="nav-btn">
-                 Пользователи
-                </Link>
-                <Link to="/profile" className="nav-btn">
-                  Моя страница
-                </Link>
-                
-                
-              </nav>
-            </header>
+        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+          <Link to="/" className="nav-btn">
+            Главная
+          </Link>
+          <Link to="/movies" className="nav-btn">
+            Фильмы
+          </Link>
+          <Link to="/collections" className="nav-btn">
+            Подборки
+          </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
+          <Link to="/profile" className="nav-btn">
+            Моя страница
+          </Link>
+        </nav>
+      </header>
 
       <main className="container-xl px-4 px-md-5">
         {/* Секция поиска */}
@@ -100,7 +97,7 @@ if (error) return <div className="text-danger text-center mt-5">{error}</div>;
               }}
             />
             <i className="fa fa-search search-icon-pill"></i>
-           </div>
+          </div>
 
           <hr className="w-75 border-white opacity-25 mb-4" />
 
@@ -144,7 +141,7 @@ if (error) return <div className="text-danger text-center mt-5">{error}</div>;
                     <img
                       src={
                         rev.movieCover
-                          ? `${API_BASE_URL}${rev.movieCover}`
+                          ? `${getImageUrl(rev.movieCover)}`
                           : avatarDefault
                       }
                       className="article-img rounded-1 object-fit-cover"

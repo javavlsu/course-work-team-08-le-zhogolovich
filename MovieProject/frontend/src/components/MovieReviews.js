@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import avatarDefault from "../images/такса.svg";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 const MovieReviews = ({ movieId }) => {
   const [reviews, setReviews] = useState([]);
@@ -24,12 +23,17 @@ const MovieReviews = ({ movieId }) => {
   }, [movieId]);
 
   const getStrippedContent = (content) => {
-    return content
-      ?.replace(/<\/p>|<\/div>|<\/h3>|<br\s*\/?>/gi, "\n")
-      ?.replace(/<[^>]+>/g, "") || "";
+    return (
+      content
+        ?.replace(/<\/p>|<\/div>|<\/h3>|<br\s*\/?>/gi, "\n")
+        ?.replace(/<[^>]+>/g, "") || ""
+    );
   };
 
-  if (loading) return <div className="text-white-50 py-4 text-center">Загрузка рецензий...</div>;
+  if (loading)
+    return (
+      <div className="text-white-50 py-4 text-center">Загрузка рецензий...</div>
+    );
 
   return (
     <div className="reviews-list mt-4">
@@ -43,9 +47,7 @@ const MovieReviews = ({ movieId }) => {
             <div className="d-flex flex-column flex-md-row gap-4 mb-4 align-items-stretch">
               <img
                 src={
-                  rev.movieCover
-                    ? `${API_BASE_URL}${rev.movieCover}`
-                    : avatarDefault
+                  rev.movieCover ? getImageUrl(rev.movieCover) : avatarDefault
                 }
                 className="article-img rounded-1 object-fit-cover"
                 alt="Review cover"
@@ -60,8 +62,6 @@ const MovieReviews = ({ movieId }) => {
                   >
                     @{rev.authorName || "user"}
                   </Link>
-
-                  
                 </div>
 
                 <Link
@@ -88,7 +88,10 @@ const MovieReviews = ({ movieId }) => {
             </div>
 
             <div className="article-content">
-              <p className="article-text text-secondary mt-2 text-white" style={{ lineHeight: '1.6' }}>
+              <p
+                className="article-text text-secondary mt-2 text-white"
+                style={{ lineHeight: "1.6" }}
+              >
                 {getStrippedContent(rev.content).substring(0, 450)}...
               </p>
               <div className="d-flex justify-content-end">
@@ -96,7 +99,7 @@ const MovieReviews = ({ movieId }) => {
                   to={`/reviews/${rev.id}`}
                   className="arrow-btn text-decoration-none"
                 >
-                   ⟶
+                  ⟶
                 </Link>
               </div>
             </div>

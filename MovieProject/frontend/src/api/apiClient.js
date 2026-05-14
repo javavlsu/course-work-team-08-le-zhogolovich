@@ -1,7 +1,12 @@
 import axios from "axios";
 
+const apiBaseUrl =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_API_URL
+    : "/api";
+
 const apiClient = axios.create({
-  baseURL: "http://localhost:8080/movie-project",
+  baseURL: apiBaseUrl,
 });
 
 apiClient.interceptors.request.use((config) => {

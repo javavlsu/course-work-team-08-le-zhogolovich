@@ -8,8 +8,7 @@ import AddToCompilationModal from "../components/AddToCompilationModal";
 import MovieTagsModal from "../components/MovieTagsModal";
 import MovieComments from "../components/MovieComments";
 import MovieReviews from "../components/MovieReviews";
-
-const API_BASE_URL = "http://localhost:8080/movie-project";
+import { getImageUrl } from "../utils/getImageUrl";
 
 const MoviePage = () => {
   const { id } = useParams();
@@ -192,7 +191,7 @@ const MoviePage = () => {
     return <div className="text-white text-center mt-5">Загрузка...</div>;
   if (!movie)
     return <div className="text-white text-center mt-5">Фильм не найден</div>;
-  console.log("Full URL:", `${API_BASE_URL}${movie.posterUrl}`);
+  console.log("Full URL:", `${getImageUrl(movie.posterUrl)}`);
 
   return (
     <div className="container-wrapper">
@@ -211,13 +210,11 @@ const MoviePage = () => {
             Рецензии
           </Link>
           <Link to="/searchuser" className="nav-btn">
-           Пользователи
+            Пользователи
           </Link>
           <Link to="/profile" className="nav-btn">
             Моя страница
           </Link>
-          
-          
         </nav>
       </header>
 
@@ -240,7 +237,7 @@ const MoviePage = () => {
               style={{ maxWidth: "300px", position: "relative" }}
             >
               <img
-                src={`${API_BASE_URL}${movie.posterUrl}`}
+                src={`${getImageUrl(movie.posterUrl)}`}
                 alt={movie.name}
                 className="img-fluid rounded-3"
                 style={{ display: "block", width: "100%", aspectRatio: "2/3" }}
