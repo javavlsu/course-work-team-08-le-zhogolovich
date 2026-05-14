@@ -41,7 +41,6 @@ const MovieReviews = ({ movieId }) => {
             style={{ maxWidth: "900px" }}
           >
             <div className="d-flex flex-column flex-md-row gap-4 mb-4 align-items-stretch">
-              {/* Постер фильма или обложка рецензии */}
               <img
                 src={
                   rev.movieCover
@@ -89,7 +88,7 @@ const MovieReviews = ({ movieId }) => {
             </div>
 
             <div className="article-content">
-              <p className="article-text text-secondary mt-2" style={{ lineHeight: '1.6' }}>
+              <p className="article-text text-secondary mt-2 text-white" style={{ lineHeight: '1.6' }}>
                 {getStrippedContent(rev.content).substring(0, 450)}...
               </p>
               <div className="d-flex justify-content-end">
