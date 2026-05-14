@@ -19,6 +19,7 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [isMyProfile, setIsMyProfile] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
@@ -45,6 +46,9 @@ function ProfilePage() {
         const decoded = jwtDecode(token);
         console.log("Содержимое JWT токена:", decoded);
         myIdFromToken = decoded.userId;
+        setIsAdmin(
+          decoded.roles?.includes("ADMIN") || decoded.role === "ADMIN",
+        );
       }
 
       const isDirectMyPath = !urlUsername || urlUsername === "profile";
@@ -111,6 +115,11 @@ function ProfilePage() {
         );
         setReviews(reviewsRes.data.content || reviewsRes.data || []);
       }
+      const canEdit =
+        isMy ||
+        (token &&
+          (jwtDecode(token).role === "ADMIN" ||
+            jwtDecode(token).roles?.includes("ADMIN")));
     } catch (error) {
       console.error("Ошибка в ProfilePage:", error);
       setErrorMsg("Ошибка загрузки");
@@ -228,6 +237,9 @@ function ProfilePage() {
           <Link to="/reviews" className="nav-btn">
             Рецензии
           </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
           <Link to="/profile" className="nav-btn">
             Моя страница
           </Link>
@@ -265,21 +277,31 @@ function ProfilePage() {
                 />
               </div>
 
-              {isMyProfile ? (
-                <Link
-                  to="/edit-profile"
-                  className="custom-btn user-pill py-3 px-5 text-decoration-none"
-                >
-                  Редактировать
-                </Link>
-              ) : (
-                <button
-                  onClick={toggleFollow}
-                  className="custom-btn user-pill py-3 px-5 text-decoration-none"
-                >
-                  {isFollowing ? "Отписаться" : "Подписаться"}
-                </button>
-              )}
+              <div className="d-flex flex-row align-items-center justify-content-center flex-wrap gap-3 mt-3">
+                {(isMyProfile || isAdmin) && (
+                  <Link
+                    to={
+                      isMyProfile
+                        ? "/edit-profile"
+                        : `/edit-profile/${user.id || user.userId}`
+                    }
+                    className="custom-btn user-pill py-3 px-4 text-decoration-none text-center"
+                    style={{ minWidth: "200px", whiteSpace: "nowrap" }}
+                  >
+                    Редактировать
+                  </Link>
+                )}
+
+                {!isMyProfile && (
+                  <button
+                    onClick={toggleFollow}
+                    className="custom-btn user-pill py-3 px-4 text-decoration-none"
+                    style={{ minWidth: "200px", whiteSpace: "nowrap" }}
+                  >
+                    {isFollowing ? "Отписаться" : "Подписаться"}
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="col ps-md-5 pt-1">
@@ -458,20 +480,6 @@ function ProfilePage() {
             )}
           </section>
           <div className="border-bottom border-secondary mb-5"></div>
-
-          <div
-            className="stats-card p-4 text-white mb-5"
-            style={{
-              border: "2px solid white",
-              borderRadius: "20px",
-              background: "rgba(255,255,255,0.05)",
-            }}
-          >
-            <h2>Статистика</h2>
-            <p className="text-white-50 m-0">
-              Всего просмотрено: {user.watchedCount || 0}
-            </p>
-          </div>
         </div>
       </main>
     </div>

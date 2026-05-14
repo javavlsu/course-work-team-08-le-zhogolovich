@@ -53,30 +53,34 @@ function ReviewsPage() {
     }
   };
 
-  if (loading)
-    return <div className="text-white text-center mt-5">Загрузка...</div>;
+if (error) return <div className="text-danger text-center mt-5">{error}</div>;
 
   return (
     <div className="container-wrapper min-vh-100">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-        <nav className="custom-navbar d-flex align-items-center">
-          <Link to="/" className="nav-btn">
-            Главная
-          </Link>
-          <Link to="/movies" className="nav-btn">
-            Фильмы
-          </Link>
-          <Link to="/collections" className="nav-btn">
-            Подборки
-          </Link>
-          <Link to="/reviews" className="nav-btn active">
-            Рецензии
-          </Link>
-          <Link to="/profile" className="nav-btn">
-            Моя страница
-          </Link>
-        </nav>
-      </header>
+              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+                <Link to="/" className="nav-btn">
+                  Главная
+                </Link>
+                <Link to="/movies" className="nav-btn">
+                  Фильмы
+                </Link>
+                <Link to="/collections" className="nav-btn">
+                  Подборки
+                </Link>
+                <Link to="/reviews" className="nav-btn">
+                  Рецензии
+                </Link>
+                <Link to="/searchuser" className="nav-btn">
+                 Пользователи
+                </Link>
+                <Link to="/profile" className="nav-btn">
+                  Моя страница
+                </Link>
+                
+                
+              </nav>
+            </header>
 
       <main className="container-xl px-4 px-md-5">
         {/* Секция поиска */}
@@ -173,7 +177,7 @@ function ReviewsPage() {
                     </div>
                   </div>
                   <div className="article-content">
-                    <p className="article-text text-secondary mt-2 review-preview-text">
+                    <p className="article-text text-secondary text-white mt-2 review-preview-text">
                       {strippedContent.substring(0, 350)}...
                     </p>
                     <div className="d-flex justify-content-end">

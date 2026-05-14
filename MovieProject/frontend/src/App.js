@@ -15,6 +15,7 @@ import ReviewDetailPage from "./pages/ReviewDetailPage";
 import CollectionsPage from "./pages/CollectionsPage";
 import MainPage from "./pages/MainPage";
 import ReviewsPage from "./pages/ReviewsPage";
+import UsersPage from "./pages/UsersPage";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -59,7 +60,8 @@ function App() {
         <Route path="/collections" element={<CollectionsPage />} />
         <Route path="/" element={<MainPage />} />
         <Route path="/reviews" element={<ReviewsPage />} />
-
+        <Route path="/searchuser" element={<UsersPage />} />
+        <Route path="/edit-profile/:id" element={<EditProfile />} />
 
       </Routes>
     </BrowserRouter>

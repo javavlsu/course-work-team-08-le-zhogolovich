@@ -10,6 +10,7 @@ const API_BASE_URL = "http://localhost:8080/movie-project";
 const EditCompilation = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
 
   const [compilation, setCompilation] = useState({
     title: "",
@@ -22,7 +23,41 @@ const EditCompilation = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  useEffect(() => {
+  const checkAccessAndFetch = async () => {
+    try {
+      const [compRes, userRes] = await Promise.all([
+        apiClient.get(`/compilations/${id}`),
+        apiClient.get(`/users/me`)
+      ]);
 
+      const fetchedCompilation = compRes.data;
+      const user = userRes.data;
+
+      const isAdmin = user.role === "ADMIN" || (user.roles && user.roles.includes("ROLE_ADMIN"));
+      const isAuthor = fetchedCompilation.authorId === user.id;
+
+      if (!isAdmin && !isAuthor) {
+        alert("У вас нет прав для редактирования этой подборки");
+        navigate(`/compilations/${id}`); 
+        return;
+      }
+
+      setCompilation(fetchedCompilation);
+      setCurrentUser(user);
+    } catch (error) {
+      console.error("Ошибка проверки доступа", error);
+      if (error.response?.status === 401) {
+        navigate("/login");
+      } else {
+        alert("Не удалось загрузить подборку");
+        navigate(-1);
+      }
+    }
+  };
+
+  checkAccessAndFetch();
+}, [id, navigate]);
   useEffect(() => {
     const fetchCompilation = async () => {
       try {
@@ -121,7 +156,18 @@ const EditCompilation = () => {
       movies: prev.movies.filter((m) => m.id !== movieId),
     }));
   };
-                    {console.log(getCoverImage())}
+  {
+    console.log(getCoverImage());
+  }
+if (!currentUser || !compilation.title) {
+  return (
+    <div className="container-wrapper d-flex justify-content-center align-items-center" style={{height: "100vh"}}>
+      <div className="spinner-border text-light" role="status">
+        <span className="visually-hidden">Загрузка...</span>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="container-wrapper">
@@ -136,8 +182,14 @@ const EditCompilation = () => {
           <Link to="/collections" className="nav-btn">
             Подборки
           </Link>
+          <Link to="/reviews" className="nav-btn">
+            Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
+          </Link>
           <Link to="/profile" className="nav-btn">
-            Профиль
+            Моя страница
           </Link>
         </nav>
       </header>
@@ -160,8 +212,7 @@ const EditCompilation = () => {
                 }}
               >
                 <img
-              
-                  src= {getCoverImage()}
+                  src={getCoverImage()}
                   alt="Cover"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />

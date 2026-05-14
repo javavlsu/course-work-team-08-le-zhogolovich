@@ -132,6 +132,12 @@ const CompilationPage = () => {
     }
   };
 
+const canEdit = currentUser && (
+  compilation.authorId === currentUser.id || 
+  currentUser.role === "ADMIN" || 
+  (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN"))
+);
+
   if (loading)
     return <div className="text-white text-center mt-5">Загрузка...</div>;
   if (!compilation)
@@ -142,22 +148,29 @@ const CompilationPage = () => {
   return (
     <div className="container-wrapper">
       <header className="header-sticky d-flex justify-content-center mb-5 mt-4">
-        <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
-          <Link to="/" className="nav-btn">
-            Главная
-          </Link>
-          <Link to="/movies" className="nav-btn">
-            Фильмы
-          </Link>
-          <Link to="/collections" className="nav-btn">
-            Подборки
-          </Link>
-          <Link to="/profile" className="nav-btn">
-            Моя страница
-          </Link>
-        </nav>
-      </header>
-
+              <nav className="custom-navbar d-flex align-items-center px-4 py-2 gap-2">
+                <Link to="/" className="nav-btn">
+                  Главная
+                </Link>
+                <Link to="/movies" className="nav-btn">
+                  Фильмы
+                </Link>
+                <Link to="/collections" className="nav-btn">
+                  Подборки
+                </Link>
+                <Link to="/reviews" className="nav-btn">
+                  Рецензии
+                </Link>
+                <Link to="/searchuser" className="nav-btn">
+                 Пользователи
+                </Link>
+                <Link to="/profile" className="nav-btn">
+                  Моя страница
+                </Link>
+                
+                
+              </nav>
+            </header>
       <main className="container-xl px-4 px-md-5">
         <h1 className="text-center mb-5 text-white">{compilation.title}</h1>
         <div className="d-flex justify-content-center mb-3">
@@ -213,6 +226,7 @@ const CompilationPage = () => {
                 }
                 alt="Обложка"
                 className="img-fluid rounded-3 shadow"
+                style={{ aspectRatio: "1/1" }}
               />
             </div>
           </div>
@@ -253,7 +267,7 @@ const CompilationPage = () => {
                 </button>
               </div>
 
-              {isOwner ? (
+              {canEdit ? (
                 <div className="d-flex gap-2">
                   <Link
                     to={`/compilations/${id}/edit`}

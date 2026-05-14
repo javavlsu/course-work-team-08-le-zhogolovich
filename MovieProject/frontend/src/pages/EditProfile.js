@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -7,6 +7,7 @@ const API_BASE_URL = "http://localhost:8080/movie-project";
 const avatarDefault = "../images/такса.svg";
 
 const EditProfile = () => {
+  const { id } = useParams();
   const [user, setUser] = useState({
     username: "",
     email: "",
@@ -18,11 +19,17 @@ const EditProfile = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const isEditingOther = Boolean(id);
+  const fetchUrl = isEditingOther ? `/users/id/${id}` : "/users/me";
+  const patchUrl = isEditingOther ? `/users/id/${id}` : "/users/me";
+  const avatarUrl = isEditingOther
+    ? `/users/id/${id}/avatar`
+    : "/users/me/avatar";
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await apiClient.get("/users/me");
+        const res = await apiClient.get(fetchUrl);
         setUser(res.data);
       } catch (error) {
         console.error("Ошибка загрузки пользователя", error);
@@ -55,15 +62,15 @@ const EditProfile = () => {
         const formData = new FormData();
         formData.append("file", selectedFile);
 
-        await apiClient.patch("/users/me/avatar", formData);
+        await apiClient.patch(avatarUrl, formData);
       }
 
-      await apiClient.patch("/users/me", {
+      await apiClient.patch(patchUrl, {
         username: user.username,
         aboutMe: user.aboutMe,
       });
 
-      navigate("/profile");
+      navigate(isEditingOther ? `/users/${user.username}` : "/profile");
     } catch (error) {
       console.error("Ошибка сохранения", error);
       alert("Не удалось сохранить изменения (возможно ник занят)");
@@ -71,6 +78,64 @@ const EditProfile = () => {
       setLoading(false);
     }
   };
+useEffect(() =>{const checkAccessAndFetch = async () => {
+      try {
+        
+        const meRes = await apiClient.get("/users/me");
+        const currentUser = meRes.data;
+
+        if (isEditingOther) {
+          const isAdmin = currentUser.role === "ADMIN" || (currentUser.roles && currentUser.roles.includes("ROLE_ADMIN"));
+          
+          if (currentUser.id.toString() !== id.toString() && !isAdmin) {
+            alert("У вас нет прав для редактирования этого профиля");
+            navigate("/profile");
+            return;
+          }
+        }
+
+        const res = await apiClient.get(fetchUrl);
+        setUser(res.data);
+      } catch (error) {
+        console.error("Ошибка доступа или загрузки", error);
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAccessAndFetch();
+  }, [id, navigate, fetchUrl, isEditingOther]);
+
+  if (loading) {
+    return (
+      <div className="container-wrapper d-flex justify-content-center align-items-center" style={{height: "100vh"}}>
+        <div className="spinner-border text-light" role="status"></div>
+      </div>
+    );
+  }
+
+  const handleDelete = async () => {
+    if (window.confirm("Вы уверены, что хотите удалить этот профиль?")) {
+      try {
+        const deleteUrl = isEditingOther
+          ? `/users/id/${id}/delete-profile`
+          : `	users/me/delete-profile`;
+        await apiClient.delete(deleteUrl);
+        alert("Профиль удален");
+        if (!isEditingOther) {
+          localStorage.removeItem("token");
+
+          navigate("/login");
+        } else {
+          navigate("/searchuser");
+        }
+      } catch (err) {
+        alert("Ошибка при удалении");
+      }
+    }
+  };
+  
 
   return (
     <div className="container-wrapper">
@@ -88,6 +153,9 @@ const EditProfile = () => {
           </Link>
           <Link to="/reviews" className="nav-btn">
             Рецензии
+          </Link>
+          <Link to="/searchuser" className="nav-btn">
+            Пользователи
           </Link>
           <Link to="/profile" className="nav-btn">
             Моя страница
@@ -215,6 +283,15 @@ const EditProfile = () => {
               </button>
             </div>
           </form>
+        </div>
+        <div className="text-center mt-3">
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="btn btn-outline-danger border-0"
+          >
+            Удалить профиль
+          </button>
         </div>
       </main>
     </div>
