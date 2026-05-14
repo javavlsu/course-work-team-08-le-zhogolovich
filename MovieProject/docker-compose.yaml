@@ -27,8 +27,8 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./uploads:/app/uploads
-      - ./posters:/app/posters
+      - ./backend/uploads:/app/uploads
+      - ./backend/posters:/app/posters
   frontend:
     image: movie_project_frontend
     container_name: movie_frontend
@@ -38,9 +38,6 @@ services:
       - "3000:80"
     depends_on:
       - backend
-    environment:
-      BACKEND_HOST: backend
-      BACKEND_PORT: 8080
 
 volumes:
   db-data:

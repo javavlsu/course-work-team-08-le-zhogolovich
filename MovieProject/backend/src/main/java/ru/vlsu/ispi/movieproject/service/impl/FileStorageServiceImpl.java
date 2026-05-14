@@ -39,6 +39,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
         try {
             Path dirPath = Paths.get(baseUploadDir, directory);
+            Files.createDirectories(dirPath);
 
             String extension = getExtensionFromContentType(contentType);
             String fileName = UUID.randomUUID() + extension;
@@ -79,26 +80,31 @@ public class FileStorageServiceImpl implements FileStorageService {
             return null;
         }
 
-        Path dirPath = Paths.get(basePosterDir);
+        try {
+            URL urlObj = new URL(url);
+            URLConnection connection = urlObj.openConnection();
 
-        try (InputStream in = new URL(url).openStream()){
-            String contentType = URLConnection.guessContentTypeFromStream(in);
-
+            String contentType = connection.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
                 return null;
             }
 
             String extension = getExtensionFromContentType(contentType);
-            if (extension == null) {
-                return null;
-            }
+
+            Path dirPath = Paths.get(basePosterDir);
+            Files.createDirectories(dirPath);
 
             String filename = UUID.randomUUID() + extension;
             Path target = dirPath.resolve(filename);
-            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
 
-            return "/" + basePosterDir + filename;
+            try (InputStream in = connection.getInputStream()) {
+                Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return "/posters/" + filename;
+
         } catch (Exception e) {
+            log.error("Ошибка загрузки постера: {}", url, e);
             return null;
         }
     }
