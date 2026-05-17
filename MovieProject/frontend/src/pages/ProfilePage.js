@@ -7,6 +7,35 @@ import { jwtDecode } from "jwt-decode";
 import LikedContent from "../components/LikedContent";
 import { getImageUrl } from "../utils/getImageUrl";
 
+function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="d-flex justify-content-center align-items-center gap-2 mt-5 mb-5">
+      <button
+        className="pag-circle"
+        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        disabled={currentPage === 1}
+      >
+        &lt;
+      </button>
+
+      <button className="pag-circle active">
+        {currentPage}
+      </button>
+
+      <button
+        className="pag-circle"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
+      >
+        &gt;
+      </button>
+    </div>
+  );
+}
+
 function ProfilePage() {
   const { username: urlUsername } = useParams();
   const navigate = useNavigate();
@@ -25,11 +54,22 @@ function ProfilePage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [reviews, setReviews] = useState([]);
 
+  const ITEMS_PER_PAGE = 20;
+  const [myPage, setMyPage] = useState(1);
+  const [subPage, setSubPage] = useState(1);
+  const [reviewsPage, setReviewsPage] = useState(1);
+
   const isFetchingRef = useRef(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
+  };
+  const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
+    setMyPage(1);
+    setSubPage(1);
+    setReviewsPage(1);
   };
 
   const fetchProfileData = useCallback(async () => {
@@ -162,6 +202,18 @@ function ProfilePage() {
     fetchProfileData();
   }, [fetchProfileData]);
 
+  const indexOfLastMy = myPage * ITEMS_PER_PAGE;
+  const indexOfFirstMy = indexOfLastMy - ITEMS_PER_PAGE;
+  const currentCompilations = compilations.slice(indexOfFirstMy, indexOfLastMy);
+
+  const indexOfLastSub = subPage * ITEMS_PER_PAGE;
+  const indexOfFirstSub = indexOfLastSub - ITEMS_PER_PAGE;
+  const currentSubscriptions = subscriptions.slice(indexOfFirstSub, indexOfLastSub);
+
+  const indexOfLastReview = reviewsPage * ITEMS_PER_PAGE;
+  const indexOfFirstReview = indexOfLastReview - ITEMS_PER_PAGE;
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
   const renderGrid = (items, emptyMessage) => (
     <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 mt-2">
       {items.length > 0 ? (
@@ -190,11 +242,7 @@ function ProfilePage() {
                   </div>
                 )}
                 <img
-                  src={
-                    comp.coverUrl
-                      ? `${getImageUrl(comp.coverUrl)}`
-                      : avatarDefault
-                  }
+                  src={comp.coverUrl ? `${getImageUrl(comp.coverUrl)}` : avatarDefault}
                   alt={comp.title}
                   className="w-100 h-100 object-fit-cover"
                 />
@@ -346,26 +394,26 @@ function ProfilePage() {
           <div className="d-flex justify-content-center border-bottom border-secondary mb-4">
             <button
               className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === "my" ? "border-bottom border-3 border-white fw-bold" : "opacity-50"}`}
-              onClick={() => setActiveTab("my")}
+              onClick={() => handleTabChange("my")}
             >
               {isMyProfile ? "Мои подборки" : "Подборки пользователя"}
             </button>
 
             <button
               className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === "subscribed" ? "border-bottom border-3 border-white fw-bold" : "opacity-50"}`}
-              onClick={() => setActiveTab("subscribed")}
+              onClick={() => handleTabChange("subscribed")}
             >
               Отслеживаемые
             </button>
             <button
               className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === "reviews" ? "border-bottom border-3 border-white fw-bold" : "opacity-50"}`}
-              onClick={() => setActiveTab("reviews")}
+              onClick={() => handleTabChange("reviews")}
             >
               Рецензии
             </button>
             <button
               className={`px-4 py-2 bg-transparent border-0 text-white fs-5 ${activeTab === "liked" ? "border-bottom border-3 border-white fw-bold" : "opacity-50"}`}
-              onClick={() => setActiveTab("liked")}
+              onClick={() => handleTabChange("liked")}
             >
               Понравилось
             </button>
@@ -376,105 +424,64 @@ function ProfilePage() {
                 userId={user.id || user.userId}
                 isMyProfile={isMyProfile}
                 renderGrid={renderGrid}
+                itemsPerPage={ITEMS_PER_PAGE}
               />
             )}
-            {activeTab === "my" && (
+           {activeTab === "my" && (
               <>
                 {isMyProfile && (
                   <div className="text-center mb-4">
-                    <Link
-                      to="/create-compilation"
-                      className="custom-btn py-2 px-4 text-decoration-none"
-                    >
-                      + новая
-                    </Link>
+                    <Link to="/create-compilation" className="custom-btn py-2 px-4 text-decoration-none">+ новая</Link>
                   </div>
                 )}
-                {renderGrid(
-                  compilations,
-                  isMyProfile
-                    ? "У вас пока нет созданных подборк."
-                    : "Нет публичных подборок.",
-                )}
+                {renderGrid(currentCompilations, isMyProfile ? "У вас пока нет созданных подборок." : "Нет публичных подборок.")}
+                <Pagination currentPage={myPage} totalItems={compilations.length} itemsPerPage={ITEMS_PER_PAGE} onPageChange={setMyPage} />
               </>
             )}
 
-            {activeTab === "subscribed" &&
-              renderGrid(subscriptions, "Тут пока пусто :(")}
+            {activeTab === "subscribed" && (
+              <>
+                {renderGrid(currentSubscriptions, "Тут пока пусто :(")}
+                <Pagination currentPage={subPage} totalItems={subscriptions.length} itemsPerPage={ITEMS_PER_PAGE} onPageChange={setSubPage} />
+              </>
+            )}
 
             {activeTab === "reviews" && (
               <div className="mt-3">
-                {reviews.length > 0 ? (
-                  reviews.map((rev) => (
-                    <div
-                      key={rev.id}
-                      className="stats-card p-4 text-white mb-5"
-                      style={{
-                        border: "2px solid white",
-                        borderRadius: "20px",
-                        background: "rgba(255,255,255,0.05)",
-                        position: "relative",
-                      }}
-                    >
-                      {/* Блок статуса (Черновик/Опубликовано) */}
+                {currentReviews.length > 0 ? (
+                  currentReviews.map((rev) => (
+                    <div key={rev.id} className="stats-card p-4 text-white mb-5" style={{ border: "2px solid white", borderRadius: "20px", background: "rgba(255,255,255,0.05)" }}>
                       {isMyProfile && (
                         <div className="mb-3 d-flex align-items-center gap-2">
                           {rev.status === "DRAFT" ? (
-                            <span className="text-warning">
-                              <i className="fa-solid fa-pen me-2"></i>
-                              <small className="text-uppercase fw-bold">
-                                Черновик
-                              </small>
-                            </span>
+                            <span className="text-warning"><i className="fa-solid fa-pen me-2"></i><small className="text-uppercase fw-bold">Черновик</small></span>
                           ) : (
-                            <span className="text-success">
-                              <i className="fa-solid fa-check me-2"></i>
-                              <small className="text-uppercase fw-bold">
-                                Опубликовано
-                              </small>
-                            </span>
+                            <span className="text-success"><i className="fa-solid fa-check me-2"></i><small className="text-uppercase fw-bold">Опубликовано</small></span>
                           )}
                         </div>
                       )}
-
                       <div className="d-flex justify-content-between">
-                        <Link
-                          to={`/reviews/${rev.id}`}
-                          className="text-decoration-none text-white hover-opacity"
-                        >
-                          <h5 className="fw-bold m-0">
-                            {rev.title || "Название рецензии"}
-                          </h5>
+                        <Link to={`/reviews/${rev.id}`} className="text-decoration-none text-white hover-opacity">
+                          <h5 className="fw-bold m-0">{rev.title || "Название рецензии"}</h5>
                         </Link>
-
                         <span className="badge rounded-pill d-flex align-items-center gap-2 px-3 py-2">
                           <i className="fa-solid fa-heart"></i>
                           <span>{rev.likesCount || 0}</span>
                         </span>
                       </div>
-
                       <div>
-                        <Link
-                          to={`/movies/${rev.movieId}`}
-                          className="text-decoration-none text-white-50 hover-opacity"
-                        >
-                          <h6 className="fw-bold m-0">
-                            {rev.movieName || "Название фильма"}
-                          </h6>
+                        <Link to={`/movies/${rev.movieId}`} className="text-decoration-none text-white-50 hover-opacity">
+                          <h6 className="fw-bold m-0">{rev.movieName || "Название фильма"}</h6>
                         </Link>
                       </div>
                       <p className="mt-2">{rev.text}</p>
-                      <small className="text-white-50">
-                        Опубликовано:{" "}
-                        {new Date(rev.createdAt).toLocaleDateString()}
-                      </small>
+                      <small className="text-white-50">Опубликовано: {new Date(rev.createdAt).toLocaleDateString()}</small>
                     </div>
                   ))
                 ) : (
-                  <div className="w-100 text-center text-white-50 py-4">
-                    Рецензий пока нет.
-                  </div>
+                  <div className="w-100 text-center text-white-50 py-4">Рецензий пока нет.</div>
                 )}
+                <Pagination currentPage={reviewsPage} totalItems={reviews.length} itemsPerPage={ITEMS_PER_PAGE} onPageChange={setReviewsPage} />
               </div>
             )}
           </section>

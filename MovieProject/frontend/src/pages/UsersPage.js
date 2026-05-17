@@ -104,8 +104,8 @@ function UsersPage() {
               value={sortOrder}
               onChange={(e) => updateFilters({ sortOrder: e.target.value })}
             >
-              <option value="desc">Сначала новые</option>
-              <option value="asc">Сначала старые</option>
+              <option value="desc">По убыванию</option>
+              <option value="asc">По возрастанию</option>
             </select>
           </div>
         </section>

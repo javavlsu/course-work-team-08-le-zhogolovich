@@ -32,7 +32,9 @@ function ReviewsPage() {
 
       if (response.data) {
         setReviews(response.data.content || []);
-        setTotalPages(response.data.totalPages || 0);
+        setTotalPages(
+          response.data.page?.totalPages || response.data.totalPages || 0,
+        );
       }
     } catch (error) {
       console.error("Ошибка загрузки рецензий:", error);
@@ -45,11 +47,10 @@ function ReviewsPage() {
   useEffect(() => {
     fetchReviews(currentPage, searchQuery, sortBy, sortOrder);
   }, [currentPage, searchQuery, sortBy, sortOrder, fetchReviews]);
+  
   const handlePageChange = (newPage) => {
-    if (newPage >= 0 && newPage < totalPages) {
-      setCurrentPage(newPage);
-      window.scrollTo(0, 0);
-    }
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0);
   };
 
   if (error) return <div className="text-danger text-center mt-5">{error}</div>;
@@ -121,7 +122,7 @@ function ReviewsPage() {
         <h2 className="section-title fw-light mb-5 text-center text-white">
           {searchQuery
             ? `Рецензии на сайте: ${searchQuery}`
-            : "Популярные рецензии"}
+            : "Рецензии на сайте"}
         </h2>
 
         <div className="d-flex flex-column gap-1">
@@ -191,6 +192,29 @@ function ReviewsPage() {
             );
           })}
         </div>
+        {totalPages > 1 && (
+              <div className="d-flex justify-content-center align-items-center gap-2 mt-5 mb-5">
+                <button
+                  className="pag-circle"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 0}
+                >
+                  &lt;
+                </button>
+
+                <button className="pag-circle active">
+                  {currentPage + 1}
+                </button>
+
+                <button
+                  className="pag-circle"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= totalPages - 1}
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
       </main>
     </div>
   );

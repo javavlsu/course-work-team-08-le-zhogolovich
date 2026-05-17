@@ -32,7 +32,8 @@ function CollectionsPage() {
 
       const data = response.data;
       setCompilations(data.content || []);
-      setTotalPages(data.totalPages || 0);
+      // Безопасное извлечение totalPages, если структура ответа вложенная
+      setTotalPages(data.page?.totalPages || data.totalPages || 0);
     } catch (err) {
       console.error("Ошибка при загрузке подборок:", err);
       setError("Не удалось загрузить подборки");
@@ -45,11 +46,10 @@ function CollectionsPage() {
     fetchCompilations(currentPage, searchQuery, sortBy, sortOrder);
   }, [currentPage, searchQuery, sortBy, sortOrder, fetchCompilations]);
 
+  // Упрощенная и надежная функция переключения страниц
   const handlePageChange = (newPage) => {
-    if (newPage >= 0 && newPage < totalPages) {
-      setCurrentPage(newPage);
-      window.scrollTo(0, 0);
-    }
+    setCurrentPage(newPage);
+    window.scrollTo(0, 0);
   };
 
   if (error) return <div className="text-danger text-center mt-5">{error}</div>;
@@ -160,45 +160,27 @@ function CollectionsPage() {
 
             {/* Блок пагинации */}
             {totalPages > 1 && (
-              <nav className="d-flex justify-content-center mt-5 mb-5">
-                <ul className="pagination custom-pagination">
-                  <li
-                    className={`page-item ${currentPage === 0 ? "disabled" : ""}`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                    >
-                      &laquo;
-                    </button>
-                  </li>
+              <div className="d-flex justify-content-center align-items-center gap-2 mt-5 mb-5">
+                <button
+                  className="pag-circle"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 0}
+                >
+                  &lt;
+                </button>
 
-                  {[...Array(totalPages)].map((_, index) => (
-                    <li
-                      key={index}
-                      className={`page-item ${index === currentPage ? "active" : ""}`}
-                    >
-                      <button
-                        className="page-link"
-                        onClick={() => handlePageChange(index)}
-                      >
-                        {index + 1}
-                      </button>
-                    </li>
-                  ))}
+                <button className="pag-circle active">
+                  {currentPage + 1}
+                </button>
 
-                  <li
-                    className={`page-item ${currentPage === totalPages - 1 ? "disabled" : ""}`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                    >
-                      &raquo;
-                    </button>
-                  </li>
-                </ul>
-              </nav>
+                <button
+                  className="pag-circle"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= totalPages - 1}
+                >
+                  &gt;
+                </button>
+              </div>
             )}
           </>
         )}
