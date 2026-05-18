@@ -53,7 +53,7 @@ public class CompilationController {
     }
 
     @PostMapping()
-    public CompilationDto createCompilation(@ModelAttribute @Valid CreateCompilationRequest request) {
+    public CompilationDto createCompilation(@Valid CreateCompilationRequest request) {
         return compilationService.createCompilation(request);
     }
 
