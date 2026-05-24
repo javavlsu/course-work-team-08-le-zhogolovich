@@ -62,15 +62,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/comment/**").permitAll()
                         // reviews
                         .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
-                        // import
+                        .requestMatchers(HttpMethod.POST, "/reviews/*/like").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/reviews/*/like").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/reviews").hasAnyRole("ADMIN", "REVIEWER")
+                        .requestMatchers(HttpMethod.PATCH, "/reviews/*").hasAnyRole("ADMIN", "REVIEWER")
+                        .requestMatchers(HttpMethod.DELETE, "/reviews/*").hasAnyRole("ADMIN", "REVIEWER")
+                                                // import
                         .requestMatchers("/api/import/**").hasRole("ADMIN")
                         // user
+                        .requestMatchers("/users/*/role").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/users").permitAll()
                         .requestMatchers("/users/me").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/users/{username}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "users/id/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/{username}/followers").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users/{username}/followings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/id/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/*/followers").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/*/followings").permitAll()
 
                         .anyRequest().authenticated()
                 )

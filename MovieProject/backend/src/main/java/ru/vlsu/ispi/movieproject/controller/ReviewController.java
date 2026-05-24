@@ -1,5 +1,6 @@
 package ru.vlsu.ispi.movieproject.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,12 +50,12 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ReviewDto createReview(@RequestBody CreateReviewRequest request) {
+    public ReviewDto createReview(@RequestBody @Valid CreateReviewRequest request) {
         return reviewService.create(request);
     }
 
     @PatchMapping("/{id}")
-    public ReviewDto editReview(@PathVariable Long id, @RequestBody EditReviewRequest request) {
+    public ReviewDto editReview(@PathVariable Long id, @RequestBody @Valid EditReviewRequest request) {
         return reviewService.edit(id, request);
     }
 

@@ -9,9 +9,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import ru.vlsu.ispi.movieproject.dto.user.ChangeRoleRequest;
 import ru.vlsu.ispi.movieproject.dto.user.EditProfileRequest;
 import ru.vlsu.ispi.movieproject.dto.user.UserDto;
 import ru.vlsu.ispi.movieproject.enums.FileDirectory;
+import ru.vlsu.ispi.movieproject.enums.Role;
 import ru.vlsu.ispi.movieproject.exception.AlreadyFollowedException;
 import ru.vlsu.ispi.movieproject.exception.FollowNotFoundException;
 import ru.vlsu.ispi.movieproject.exception.SelfFollowException;
@@ -191,6 +193,14 @@ public class UserServiceImpl implements UserService {
         return userFollowRepository.findFollowings(user.getId()).stream()
                 .map(userMapper::mapToDto)
                 .toList();
+    }
+
+    @Override
+    public void changeRole(Long userId, ChangeRoleRequest request) {
+        User user = userRepository.findByIdAndDeletedFalse(userId)
+                .orElseThrow(() -> new UserNotFoundException());
+
+        user.setRole(request.getRole());
     }
 
     private UserDto updateProfileInternal(Long userId, EditProfileRequest request) {

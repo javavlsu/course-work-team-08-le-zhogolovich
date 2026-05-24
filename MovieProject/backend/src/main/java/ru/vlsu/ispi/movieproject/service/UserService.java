@@ -2,8 +2,10 @@ package ru.vlsu.ispi.movieproject.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
+import ru.vlsu.ispi.movieproject.dto.user.ChangeRoleRequest;
 import ru.vlsu.ispi.movieproject.dto.user.EditProfileRequest;
 import ru.vlsu.ispi.movieproject.dto.user.UserDto;
+import ru.vlsu.ispi.movieproject.enums.Role;
 
 import java.util.List;
 
@@ -24,4 +26,5 @@ public interface UserService {
     List<UserDto> getFollowings();
     List<UserDto> getFollowersByUsername(String username);
     List<UserDto> getFollowingsByUsername(String username);
+    void changeRole(Long userId, ChangeRoleRequest request);
 }

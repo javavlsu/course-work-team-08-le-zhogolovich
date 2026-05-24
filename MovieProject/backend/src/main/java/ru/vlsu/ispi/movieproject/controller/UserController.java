@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import ru.vlsu.ispi.movieproject.dto.user.ChangeRoleRequest;
 import ru.vlsu.ispi.movieproject.dto.user.EditProfileRequest;
 import ru.vlsu.ispi.movieproject.dto.user.UserDto;
+import ru.vlsu.ispi.movieproject.enums.Role;
 import ru.vlsu.ispi.movieproject.service.UserService;
 
 import java.util.List;
@@ -109,5 +111,10 @@ public class UserController {
     @GetMapping("/{username}/followings")
     public List<UserDto> getFollowingsByUsername(@PathVariable String username) {
         return userService.getFollowingsByUsername(username);
+    }
+
+    @PatchMapping("/{id}/role")
+    public void changeUserRole(@PathVariable Long id, @RequestBody ChangeRoleRequest request) {
+        userService.changeRole(id, request);
     }
 }
