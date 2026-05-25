@@ -198,6 +198,24 @@ function ProfilePage() {
     }
   };
 
+ const toggleUserRole = async () => {
+  try {
+    const profileId = user.id || user.userId;
+    const nextRole = user.role === "REVIEWER" ? "USER" : "REVIEWER";
+
+    await apiClient.patch(`/users/${profileId}/role`, { role: nextRole });
+
+    setUser((prevUser) => ({
+      ...prevUser,
+      role: nextRole,
+    }));
+
+    alert(`Роль успешно изменена на ${nextRole}`);
+  } catch (err) {
+    console.error("Не удалось изменить роль:", err);
+    alert("Ошибка при изменении роли пользователя.");
+  }
+};
   useEffect(() => {
     fetchProfileData();
   }, [fetchProfileData]);
@@ -348,6 +366,20 @@ function ProfilePage() {
                     {isFollowing ? "Отписаться" : "Подписаться"}
                   </button>
                 )}
+
+                {isAdmin && !isMyProfile && (
+                  <div>
+                  <button
+                    onClick={toggleUserRole}
+                    className="custom-btn user-pill py-3 px-4 text-decoration-none btn-warning fw-bold"
+                    style={{ minWidth: "200px", whiteSpace: "nowrap" }}
+                  >
+                    {user.role === "REVIEWER" ? "Удалить из авторов" : "Сделать автором"}
+                  </button>
+                  
+                </div>
+                )}
+
               </div>
             </div>
 
