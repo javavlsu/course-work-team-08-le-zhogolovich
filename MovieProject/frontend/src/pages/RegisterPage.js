@@ -75,6 +75,8 @@ function RegisterPage() {
                 type="text"
                 className="search-input mb-3"
                 placeholder="Логин"
+                 minLength={3} 
+                  maxLength={50} 
                 onChange={(e) => setForm({ ...form, username: e.target.value })}
                 required
               />
@@ -85,6 +87,8 @@ function RegisterPage() {
                 type="email"
                 className="search-input mb-3"
                 placeholder="Email"
+                 minLength={5} 
+                  maxLength={50} 
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
               />
@@ -95,6 +99,8 @@ function RegisterPage() {
                 type="password"
                 className="search-input mb-3"
                 placeholder="Пароль"
+                 minLength={8} 
+                
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
               />

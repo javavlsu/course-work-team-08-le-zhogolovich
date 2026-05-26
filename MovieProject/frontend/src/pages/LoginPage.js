@@ -81,6 +81,8 @@ function LoginPage() {
                 type="password"
                 className="search-input mb-3"
                 placeholder="Пароль"
+                 minLength={8} 
+        
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

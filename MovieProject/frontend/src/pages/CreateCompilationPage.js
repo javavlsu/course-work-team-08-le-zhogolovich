@@ -103,6 +103,8 @@ const CreateCompilationPage = () => {
               type="text"
               className="form-control custom-input mb-4"
               placeholder="Введите название..."
+               minLength={1} 
+                  maxLength={255} 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -143,6 +145,8 @@ const CreateCompilationPage = () => {
                 style={{ height: "180px", resize: "none" }}
                 placeholder="Введите описание..."
                 value={description}
+               
+                  maxLength={2000} 
                 onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>

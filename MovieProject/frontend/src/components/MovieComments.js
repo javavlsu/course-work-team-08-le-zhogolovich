@@ -199,6 +199,7 @@ const MovieComments = ({
             style={{ minHeight: "100px" }}
             placeholder="Введите текст..."
             value={commentText}
+             maxLength={1000} 
             onChange={(e) => setCommentText(e.target.value)}
           />
           <div className="d-flex justify-content-end">

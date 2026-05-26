@@ -238,6 +238,8 @@ const EditCompilation = () => {
                   type="text"
                   className="form-control bg-transparent text-white border-white rounded-3 fs-4"
                   value={compilation.title}
+                   minLength={1} 
+                  maxLength={255} 
                   onChange={(e) =>
                     setCompilation({ ...compilation, title: e.target.value })
                   }
@@ -251,6 +253,8 @@ const EditCompilation = () => {
                   className="form-control bg-transparent text-white border-white rounded-3 fs-5"
                   rows="6"
                   value={compilation.description}
+                   
+                  maxLength={2000} 
                   onChange={(e) =>
                     setCompilation({
                       ...compilation,
@@ -270,7 +274,6 @@ const EditCompilation = () => {
                     type="checkbox"
                     id="privacySwitch"
                     style={{ width: "40px", height: "20px" }}
-                    // Если НЕ публичная (isPublic === false), значит чекбокс "Приватная" активен
                     checked={!compilation.isPublic}
                     onChange={(e) =>
                       setCompilation({

@@ -118,9 +118,9 @@ function WriteReviewPage() {
       }
       navigate("/reviews");
     } catch (err) {
-      console.error("Ошибка при сохранении:", err);
+      console.error("Вероятно нужно больше или меньше символов.  Ошибка при сохранении:", err);
       alert(
-        `Ошибка при сохранении: ${err.response?.status} ${err.response?.data?.message || ""}`,
+        `Вероятно нужно больше или меньше символов. Ошибка при сохранении: ${err.response?.status} ${err.response?.data?.message || ""}`,
       );
     }
   };
@@ -193,6 +193,8 @@ function WriteReviewPage() {
                 }}
                 placeholder="Введите заголовок вашей рецензии"
                 value={title}
+                 minLength={10} 
+                  maxLength={500} 
                 onChange={(e) => setTitle(e.target.value)}
               />
             </div>

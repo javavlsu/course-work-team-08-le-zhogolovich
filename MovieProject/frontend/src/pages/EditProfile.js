@@ -240,6 +240,8 @@ const EditProfile = () => {
                   <input
                     type="text"
                     className="form-control bg-transparent text-white rounded-3 py-2 px-3 fs-4"
+                     minLength={3} 
+                  maxLength={50} 
                     value={user.username || ""}
                     onChange={(e) =>
                       setUser({ ...user, username: e.target.value })
