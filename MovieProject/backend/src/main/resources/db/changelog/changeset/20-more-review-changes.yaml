@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-likes-count-to-review
+      author: Hiraeth
+      changes:
+        - addColumn:
+            tableName: review
+            columns:
+              - column: { name: "likes_count", type: INT, defaultValue: 0, constraints: { nullable: false } }

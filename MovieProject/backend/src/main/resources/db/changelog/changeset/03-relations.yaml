@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-movie-genre
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: movie_genre
+            columns:
+              - column: { name: movie_id, type: BIGINT }
+              - column: { name: genre_id, type: BIGINT }
+        - addPrimaryKey:
+            tableName: movie_genre
+            columnNames: movie_id, genre_id
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_genre_movie
+            baseTableName: movie_genre
+            baseColumnNames: movie_id
+            referencedTableName: movie
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_genre_genre
+            baseTableName: movie_genre
+            baseColumnNames: genre_id
+            referencedTableName: genre
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: create-movie-country
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: movie_country
+            columns:
+              - column: { name: movie_id, type: BIGINT }
+              - column: { name: country_id, type: BIGINT }
+        - addPrimaryKey:
+            tableName: movie_country
+            columnNames: movie_id, country_id
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_country_movie
+            baseTableName: movie_country
+            baseColumnNames: movie_id
+            referencedTableName: movie
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_country_country
+            baseTableName: movie_country
+            baseColumnNames: country_id
+            referencedTableName: country
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: create-movie-tag
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: movie_tag
+            columns:
+              - column: { name: movie_id, type: BIGINT }
+              - column: { name: tag_id, type: BIGINT }
+        - addPrimaryKey:
+            tableName: movie_tag
+            columnNames: movie_id, tag_id
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_tag_movie
+            baseTableName: movie_tag
+            baseColumnNames: movie_id
+            referencedTableName: movie
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_movie_tag_tag
+            baseTableName: movie_tag
+            baseColumnNames: tag_id
+            referencedTableName: tag
+            referencedColumnNames: id
+            onDelete: CASCADE

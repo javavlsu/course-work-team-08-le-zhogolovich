@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-follow
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: user_follow
+            columns:
+              - column: { name: id, type: BIGINT AUTO_INCREMENT, constraints: { primaryKey: true } }
+              - column: { name: follower_id, type: BIGINT }
+              - column: { name: followed_user_id, type: BIGINT }
+              - column: { name: followed_at, type: DATETIME, constraints: { nullable: false } }
+        - addUniqueConstraint:
+            tableName: user_follow
+            columnNames: follower_id, followed_user_id
+        - addForeignKeyConstraint:
+            constraintName: fk_user_follow_follower_user
+            baseTableName: user_follow
+            baseColumnNames: follower_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_user_follow_followed_user
+            baseTableName: user_follow
+            baseColumnNames: followed_user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: create-user-saved-compilation
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: user_saved_compilation
+            columns:
+              - column: { name: id, type: BIGINT AUTO_INCREMENT, constraints: { primaryKey: true } }
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: collection_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: saved_at, type: DATETIME }
+        - addForeignKeyConstraint:
+            constraintName: fk_user_saved_compilation_user
+            baseTableName: user_saved_compilation
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_user_saved_compilation_compilation
+            baseTableName: user_saved_compilation
+            baseColumnNames: collection_id
+            referencedTableName: compilation
+            referencedColumnNames: id
+            onDelete: CASCADE

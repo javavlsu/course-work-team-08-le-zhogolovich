@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-compilation-subscription-table
+      author: Hiraeth
+      changes:
+        - createTable:
+            tableName: compilation_subscription
+            columns:
+              - column: { name: id, type: BIGINT AUTO_INCREMENT, constraints: { primaryKey: true } }
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false } }
+              - column: { name: compilation_id, type: BIGINT, constraints: { nullable: false } }
+        - addForeignKeyConstraint:
+            constraintName: fk_compilation_subscription_user
+            baseTableName: compilation_subscription
+            baseColumnNames: user_id
+            referencedTableName: user
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_compilation_subscription_compilation
+            baseTableName: compilation_subscription
+            baseColumnNames: compilation_id
+            referencedTableName: compilation
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: delete-unused-table
+      author: Hiraeth
+      changes:
+        - dropTable:
+            tableName: user_saved_compilation

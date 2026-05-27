@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: rename-table
+      author: Hiraeth
+      changes:
+        - renameTable:
+            oldTableName: compilation_rating
+            newTableName: compilation_like
+
+  - changeSet:
+      id: rename-column
+      author: Hiraeth
+      changes:
+        - renameColumn:
+            tableName: compilation_like
+            oldColumnName: collection_id
+            newColumnName: compilation_id
+            columnDataType: BIGINT
+
+  - changeSet:
+      id: drop-rating-column
+      author: Hiraeth
+      changes:
+        - dropColumn:
+            tableName: compilation_like
+            columnName: rating
+
+  - changeSet:
+      id: add-cover_url-column
+      author: Hiraeth
+      changes:
+        - addColumn:
+            tableName: compilation
+            columns:
+              - column: { name: "cover_url", type: VARCHAR(1000) }
+
+  - changeSet:
+      id: add-indexes-to-compilation-like
+      author: Hiraeth
+      changes:
+        - createIndex:
+            indexName: idx_compilation_like_compilation_id
+            tableName: compilation_like
+            columns:
+              - column:
+                  name: compilation_id
+
+        - createIndex:
+            indexName: idx_compilation_like_user_compilation
+            tableName: compilation_like
+            columns:
+              - column:
+                  name: compilation_id
+              - column:
+                  name: user_id
